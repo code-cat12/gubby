@@ -89,7 +89,8 @@
             const [imageError, setImageError] = useState(false);
             const [skyGubbies, setSkyGubbies] = useState([]);
 
-            const gubbyImgUrl = "https://static.wikia.nocookie.net/robloxcities/images/1/1e/Gubby.webp/revision/latest?cb=20250511065644";
+            // Latest Background-Free Gubby Image URL
+            const gubbyImgUrl = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/107099ce-b544-4387-8f1b-732b9d9dc00b/dk23ht9-6f9aa975-1b3a-4ebb-a724-c997d831d50d.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8xMDcwOTljZS1iNTQ0LTQzODctOGYxYi03MzJiOWQ5ZGMwMGIvZGsyM2h0OS02ZjlhYTk3NS0xYjNhLTRlYmItYTcyNC1jOTk3ZDgzMWQ1MGQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.MGKQ0tytJOk-j9WF3etWMpgAHyyFyNtmcTi4ZmFx8f8";
             const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
             const megaStarUrl = "https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png";
             const omegaCrownUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png";
@@ -124,7 +125,6 @@
                 }
             ];
 
-            // Persistent Sky Gubby Effect
             useEffect(() => {
                 const spawnGubby = () => {
                     const id = Math.random().toString(36).substring(7);
@@ -134,7 +134,7 @@
                         duration: 3.5 + Math.random() * 4,
                         size: 35 + Math.random() * 35,
                         rotation: Math.random() * 360,
-                        delay: Math.random() * 2 // Staggered start
+                        delay: Math.random() * 2 
                     };
                     setSkyGubbies(prev => [...prev.slice(-40), newGubby]);
                     
@@ -205,7 +205,6 @@
 
             return (
                 <div className="min-h-screen flex flex-col items-center p-4 select-none relative">
-                    
                     <div className="fixed inset-0 pointer-events-none z-0">
                         {skyGubbies.map(gubby => (
                             <div key={gubby.id} className="absolute animate-sky-fall"
@@ -283,7 +282,7 @@
                             </div>
                             <button onClick={handleMainClick} className="group relative w-full h-full active:scale-90 transition-all flex items-center justify-center outline-none z-10">
                                 {!imageError ? (
-                                    <img src={gubbyImgUrl} className="w-full h-full object-contain group-hover:scale-105 transition-transform drop-shadow-2xl" />
+                                    <img src={gubbyImgUrl} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                                 ) : (
                                     <div className="text-9xl group-hover:scale-110 transition-transform">🐟</div>
                                 )}
@@ -297,7 +296,6 @@
                     </main>
 
                     <div className="z-20 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                        {/* Market Section */}
                         <section className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-xl">
                             <h3 className="text-xs font-black uppercase tracking-widest mb-4 px-2 text-black">THE MARKET</h3>
                             <div className="space-y-3">
@@ -321,7 +319,6 @@
                             </div>
                         </section>
 
-                        {/* Inventory Section */}
                         <section className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-xl flex flex-col">
                             <h3 className="text-xs font-black uppercase tracking-widest mb-6 px-2 text-black">INVENTORY</h3>
                             <div className="flex justify-around items-center flex-1 gap-4 py-4 px-2">
@@ -337,7 +334,6 @@
                                             <span className={`absolute -top-3 -right-3 px-2 py-1 min-w-[32px] rounded-xl flex items-center justify-center text-xs font-black border-2 border-white shadow-md ${inventory[item.id] > 0 ? 'bg-[#111111] text-white' : 'bg-gray-200 text-[#999999]'}`}>
                                                 {inventory[item.id]}
                                             </span>
-                                            {/* Bar at the very bottom edge */}
                                             <div className={`absolute bottom-1 w-8 h-1.5 rounded-full ${item.barColor}`} />
                                         </button>
                                         <span className="text-[10px] font-black uppercase text-[#333333] tracking-wider text-center max-w-[80px] leading-tight">
