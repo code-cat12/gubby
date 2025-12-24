@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gubby Clicker</title>
+    <title>Gubby Clicker - Infinite Scaling</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -86,7 +86,6 @@
 
             const currentPrestigeCost = Math.floor(10000 * Math.pow(1.5, prestigeLevel));
 
-            // Passive Income Logic
             useEffect(() => {
                 if (autoclickers > 0) {
                     const interval = setInterval(() => {
@@ -98,18 +97,15 @@
                 }
             }, [autoclickers, prestigeLevel]);
 
-            // Boss Triggering Logic
             useEffect(() => {
                 if (totalClicksSession > 0 && !isBattleActive) {
                     const lastProcessedMega = window._lastMegaTriggered || 0;
                     const lastProcessedNormal = window._lastNormalTriggered || 0;
 
-                    // Trigger Mega Boss every 500 clicks
                     if (totalClicksSession >= lastProcessedMega + 500) {
                         triggerBattle('mega');
                         window._lastMegaTriggered = Math.floor(totalClicksSession / 500) * 500;
                     } 
-                    // Trigger Normal Boss every 100 clicks
                     else if (totalClicksSession >= lastProcessedNormal + 100) {
                         triggerBattle('normal');
                         window._lastNormalTriggered = Math.floor(totalClicksSession / 100) * 100;
@@ -119,7 +115,6 @@
 
             const triggerBattle = (type) => {
                 const isMega = type === 'mega';
-                // Health scaling: Increases per boss defeated
                 let hp;
                 if (isMega) {
                     hp = 200 + (megaBossCount * 150) + Math.floor(gold / 100);
@@ -130,7 +125,7 @@
                 setBattleType(type);
                 setBattleHP(hp);
                 setMaxBattleHP(hp);
-                setBattleTimer(isMega ? 40 : 20); // 40s for Mega, 20s for Normal
+                setBattleTimer(isMega ? 40 : 20);
                 setIsBattleActive(true);
                 setNotification({ 
                     title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", 
@@ -317,7 +312,7 @@
                                         <div className="w-10 h-10 bg-white rounded-xl p-1 border shadow-sm"><img src={friendImgUrl} className="w-full h-full object-contain"/></div>
                                         <div className="text-left"><p className="font-black text-xs uppercase">Gubby Friend</p><p className="text-[8px] font-bold text-slate-400">+{prestigeLevel + 1} Passive Click/sec</p></div>
                                     </div>
-                                    <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{autoclickerCost}G</div>
+                                    <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{autoclickerCost} Gold</div>
                                 </button>
                                 {SHOP_ITEMS.map(item => (
                                     <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all">
@@ -325,7 +320,7 @@
                                             <div className="w-10 h-10 bg-white rounded-xl p-1.5 border shadow-sm"><img src={item.img} className="w-full h-full object-contain"/></div>
                                             <div className="text-left"><p className="font-black text-xs uppercase">{item.name}</p><p className="text-[8px] font-bold text-slate-400">{item.power}x Power · {item.duration}s</p></div>
                                         </div>
-                                        <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{item.cost}G</div>
+                                        <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{item.cost} Gold</div>
                                     </button>
                                 ))}
                             </div>
