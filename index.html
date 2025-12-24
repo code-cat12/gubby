@@ -25,10 +25,13 @@
         }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes squish { 0% { transform: scale(1, 1); } 30% { transform: scale(1.2, 0.8); } 100% { transform: scale(1, 1); } }
+        @keyframes helper-tap { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px) rotate(var(--rot)); } }
+        
         .animate-sky-fall { animation-name: sky-fall; animation-timing-function: linear; animation-fill-mode: forwards; }
         .animate-text-pop { animation: text-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .animate-shake { animation: shake 0.2s ease-in-out infinite; }
         .animate-squish { animation: squish 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .animate-helper { animation: helper-tap 0.5s ease-in-out infinite; }
     </style>
 </head>
 <body>
@@ -41,7 +44,7 @@
             const [totalClicksSession, setTotalClicksSession] = useState(0); 
             const [gold, setGold] = useState(0);
             const [activeBuff, setActiveBuff] = useState(null);
-            const [inventory, setInventory] = useState({ rainbow: 0, mega: 0, omega: 0, godly: 0 });
+            const [inventory, setInventory] = useState({ rainbow: 0, mega: 0, omega: 0, godly: 0, fever: 0, rain: 0, warp: 0 });
             const [textParticles, setTextParticles] = useState([]);
             const [notification, setNotification] = useState(null);
             const [skyGubbies, setSkyGubbies] = useState([]);
@@ -50,7 +53,6 @@
             const [autoclickerCost, setAutoclickerCost] = useState(150);
             const [prestigeLevel, setPrestigeLevel] = useState(0);
             
-            // Battle State
             const [isBattleActive, setIsBattleActive] = useState(false);
             const [battleType, setBattleType] = useState('normal'); 
             const [battleHP, setBattleHP] = useState(0);
@@ -61,63 +63,123 @@
 
             const gubbyImgUrl = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
             const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
-            const megaStarUrl = "https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png";
-            const godlyDiamondUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png";
-            const omegaCrownUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png";
             const friendImgUrl = "https://static.vecteezy.com/system/resources/thumbnails/012/026/493/small/add-new-friend-user-group-icon-3d-render-png.png";
 
             const SHOP_ITEMS = [
-                { id: 'rainbow', name: 'Rainbow Charge', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png', color: 'from-pink-100 to-indigo-100', borderColor: 'border-indigo-300', activeColor: 'from-pink-400 to-indigo-400' },
-                { id: 'mega', name: 'Mega Charge', cost: 800, power: 25, duration: 12, img: megaStarUrl, color: 'from-yellow-100 to-orange-100', borderColor: 'border-orange-300', activeColor: 'from-yellow-400 to-orange-400' },
-                { id: 'omega', name: 'Omega Charge', cost: 2000, power: 120, duration: 10, img: godlyDiamondUrl, color: 'from-purple-100 to-fuchsia-100', borderColor: 'border-fuchsia-300', activeColor: 'from-purple-400 to-fuchsia-400' },
-                { id: 'godly', name: 'Godly Core', cost: 5000, power: 500, duration: 8, img: omegaCrownUrl, color: 'from-cyan-100 to-blue-100', borderColor: 'border-blue-300', activeColor: 'from-cyan-400 to-blue-400' }
+                { id: 'rainbow', name: 'Rainbow', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
+                { id: 'mega', name: 'Mega', cost: 800, power: 25, duration: 12, img: 'https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png' },
+                { id: 'omega', name: 'Omega', cost: 2000, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
+                { id: 'fever', name: 'Gubby Fever', cost: 3200, power: 100, duration: 7, description: '4 Overpowered Helpers (100x/0.75s)', img: 'https://static.wikitide.net/cafewiki/thumb/0/01/GubbyModel.png/400px-GubbyModel.png' },
+                { id: 'godly', name: 'Godly', cost: 5000, power: 500, duration: 8, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
+                { id: 'rain', name: 'Golden Rain', cost: 7500, power: 1000, duration: 18, description: '300 Gold/Sec', img: 'https://static.vecteezy.com/system/resources/previews/035/715/093/non_2x/3d-gold-coin-rain-png.png' },
+                { id: 'warp', name: 'Time Warp', cost: 12000, power: 1, duration: 1, description: '+30s Battle Time', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' }
             ];
 
-            const currentPrestigeCost = Math.floor(10000 * Math.pow(1.5, prestigeLevel));
+            const currentPrestigeCost = Math.floor(10000 * Math.pow(2.5, prestigeLevel));
 
+            // Standard Passive Generation (1s)
             useEffect(() => {
-                if (autoclickers > 0) {
-                    const interval = setInterval(() => {
-                        const gain = autoclickers * (prestigeLevel + 1);
+                const interval = setInterval(() => {
+                    const prestigeMult = (prestigeLevel + 1);
+                    if (autoclickers > 0) {
+                        const gain = autoclickers * prestigeMult;
                         setClicks(prev => prev + gain);
                         setTotalClicksSession(prev => prev + gain);
-                    }, 1000);
-                    return () => clearInterval(interval);
-                }
+                    }
+                }, 1000);
+                return () => clearInterval(interval);
             }, [autoclickers, prestigeLevel]);
 
+            // Gubby Fever Special Logic (0.75s)
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    if (activeBuff && activeBuff.id === 'fever') {
+                        const prestigeMult = (prestigeLevel + 1);
+                        const feverPower = 400 * prestigeMult; // 4 helpers * 100 power each
+                        
+                        if (isBattleActive) {
+                            setBattleHP(prev => {
+                                const next = prev - feverPower;
+                                if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
+                                return next;
+                            });
+                        } else {
+                            setClicks(prev => prev + feverPower);
+                            setTotalClicksSession(prev => prev + feverPower);
+                        }
+                    }
+                }, 750);
+                return () => clearInterval(interval);
+            }, [activeBuff, prestigeLevel, isBattleActive]);
+
+            // BOSS TRIGGER LOGIC
             useEffect(() => {
                 if (totalClicksSession > 0 && !isBattleActive) {
                     const lastProcessedMega = window._lastMegaTriggered || 0;
                     const lastProcessedNormal = window._lastNormalTriggered || 0;
 
-                    if (totalClicksSession >= lastProcessedMega + 500) {
+                    if (totalClicksSession >= lastProcessedMega + 750) {
                         triggerBattle('mega');
-                        window._lastMegaTriggered = Math.floor(totalClicksSession / 500) * 500;
+                        window._lastMegaTriggered = Math.floor(totalClicksSession / 750) * 750;
+                        window._lastNormalTriggered = totalClicksSession; 
                     } 
-                    else if (totalClicksSession >= lastProcessedNormal + 100) {
+                    else if (totalClicksSession >= lastProcessedNormal + 250) {
                         triggerBattle('normal');
-                        window._lastNormalTriggered = Math.floor(totalClicksSession / 100) * 100;
+                        window._lastNormalTriggered = Math.floor(totalClicksSession / 250) * 250;
                     }
                 }
             }, [totalClicksSession, isBattleActive]);
 
             const triggerBattle = (type) => {
                 const isMega = type === 'mega';
-                let hp = isMega ? 200 + (megaBossCount * 150) + Math.floor(gold / 100) : 50 + (normalBossCount * 25) + Math.floor(gold / 250);
+                let hp = isMega 
+                    ? 50 + (megaBossCount * 800)
+                    : 20 + (normalBossCount * 80);
+                
                 setBattleType(type);
                 setBattleHP(hp);
                 setMaxBattleHP(hp);
-                setBattleTimer(isMega ? 40 : 20);
+                
+                const baseTime = isMega ? 45 : 30;
+                const bonusTime = isMega ? (megaBossCount * 8) : (normalBossCount * 5);
+                setBattleTimer(baseTime + bonusTime);
                 setIsBattleActive(true);
-                setNotification({ title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", message: isMega ? `Mega Boss #${megaBossCount + 1} is here!` : `Gubby Boss #${normalBossCount + 1} appears!`, type: "warning" });
+            };
+
+            const endBattle = (won) => {
+                setIsBattleActive(false);
+                if (won) {
+                    const isMega = battleType === 'mega';
+                    if (isMega) setMegaBossCount(c => c + 1);
+                    else setNormalBossCount(c => c + 1);
+                    
+                    const reward = Math.floor(maxBattleHP * (isMega ? 6 : 3));
+                    setGold(prev => prev + reward);
+                    setNotification({ title: "VICTORY!", message: `Reward: ${reward} Gold.`, type: "success" });
+                } else {
+                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped! Try again in 250 clicks.`, type: "error" });
+                }
             };
 
             useEffect(() => {
                 const interval = setInterval(() => {
-                    if (activeBuff) setActiveBuff(prev => (!prev || prev.timeLeft <= 1) ? null : { ...prev, timeLeft: prev.timeLeft - 1 });
-                    if (isBattleActive) setBattleTimer(prev => (prev <= 1) ? (endBattle(false), 0) : prev - 1);
+                    if (activeBuff) {
+                        if (activeBuff.id === 'rain') {
+                            setGold(prev => prev + 300);
+                        }
+                        setActiveBuff(prev => {
+                            if (!prev || prev.timeLeft <= 1) return null;
+                            return { ...prev, timeLeft: prev.timeLeft - 1 };
+                        });
+                    }
+                    if (isBattleActive) {
+                        setBattleTimer(prev => {
+                            if (prev <= 1) { endBattle(false); return 0; }
+                            return prev - 1;
+                        });
+                    }
                 }, 1000);
+
                 const skyInterval = setInterval(() => {
                     if (Math.random() > 0.4) {
                         const newGubby = { id: Date.now() + Math.random(), left: Math.random() * 100, size: 15 + Math.random() * 50, duration: 2 + Math.random() * 4, rotation: (Math.random() - 0.5) * 1000 };
@@ -128,69 +190,83 @@
                 return () => { clearInterval(interval); clearInterval(skyInterval); };
             }, [activeBuff, isBattleActive]);
 
-            const endBattle = (won) => {
-                setIsBattleActive(false);
-                if (won) {
-                    if (battleType === 'mega') setMegaBossCount(c => c + 1);
-                    else setNormalBossCount(c => c + 1);
-                    const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 15 : 5));
-                    setGold(prev => prev + reward);
-                    setNotification({ title: "VICTORY!", message: `Reward: ${reward} Gold.`, type: "success" });
-                } else {
-                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" });
+            const sellClicks = () => {
+                if (!isBattleActive && clicks > 0) {
+                    setGold(g => g + Math.floor(clicks));
+                    setClicks(0);
+                    setNotification({ title: "SOLD!", message: `You converted clicks to gold!`, type: "success" });
                 }
             };
 
-            const tryAscend = () => {
+            const ascend = () => {
                 if (gold >= currentPrestigeCost) {
-                    setNotification({
-                        title: "Confirm Ascension?",
-                        message: `Reset to gain permanent +1x Power!`,
-                        confirmAction: () => {
-                            setPrestigeLevel(prev => prev + 1);
-                            setGold(0); setClicks(0); setAutoclickers(0); setAutoclickerCost(150);
-                            setNormalBossCount(0); setMegaBossCount(0);
-                            setInventory({ rainbow: 0, mega: 0, omega: 0, godly: 0 });
-                            setNotification({ title: "ASCENDED!", message: `Prestige Level ${prestigeLevel + 1}!`, type: "success" });
-                            window._lastNormalTriggered = 0; window._lastMegaTriggered = 0;
-                        }
+                    setPrestigeLevel(p => p + 1);
+                    setGold(0);
+                    setClicks(0);
+                    setAutoclickers(0);
+                    setAutoclickerCost(150);
+                    setInventory({ rainbow: 0, mega: 0, omega: 0, godly: 0, fever: 0, rain: 0, warp: 0 });
+                    setActiveBuff(null);
+                    setNotification({ 
+                        title: "ASCENDED!", 
+                        message: `You are now Prestige Level ${prestigeLevel + 1}. All power and income increased!`, 
+                        type: "success" 
                     });
-                } else {
-                    setNotification({ title: "Locked", message: `Need ${currentPrestigeCost.toLocaleString()} Gold.`, type: "error" });
                 }
             };
 
             const handleMainClick = (e) => {
                 const basePower = (prestigeLevel + 1);
+                let multiplier = activeBuff ? (activeBuff.id === 'fever' || activeBuff.id === 'rain' || activeBuff.id === 'warp' ? 1 : activeBuff.power) : 1;
+                const currentPower = basePower * multiplier;
+                
                 const rect = e.currentTarget.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - rect.width / 2;
                 const clickY = e.clientY - rect.top - rect.height / 2;
                 setIsSquishing(true);
                 setTimeout(() => setIsSquishing(false), 200);
 
+                setTotalClicksSession(prev => prev + 1);
+
                 if (isBattleActive) {
-                    const damage = activeBuff ? Math.ceil(activeBuff.multiplier * basePower) : basePower;
                     setBattleHP(prev => {
-                        const next = prev - damage;
+                        const next = prev - currentPower;
                         if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
                         return next;
                     });
-                    spawnParticle(clickX, clickY, "HIT!", "text-black");
+                    spawnParticle(clickX, clickY, "HIT!", "text-black font-black");
                 } else {
-                    setClicks(prev => prev + basePower);
-                    setTotalClicksSession(prev => prev + basePower);
-                    spawnParticle(clickX, clickY, `+${basePower}`, "text-black");
+                    setClicks(prev => prev + currentPower);
+                    spawnParticle(clickX, clickY, `+${Math.floor(currentPower)}`, "text-black font-black");
                 }
             };
 
-            const spawnParticle = (x, y, text) => {
+            const useItem = (item) => {
+                if (inventory[item.id] > 0 && !activeBuff) {
+                    setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 }));
+                    
+                    if (item.id === 'warp') {
+                        if (isBattleActive) {
+                            setBattleTimer(prev => prev + 30);
+                            setNotification({ title: "TIME WARPED!", message: "+30 seconds added to battle!", type: "success" });
+                        } else {
+                            setNotification({ title: "TOO SOON!", message: "Time Warp only works during boss battles!", type: "warning" });
+                            setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 }));
+                        }
+                    } else {
+                        setActiveBuff({ ...item, timeLeft: item.duration });
+                    }
+                }
+            };
+
+            const spawnParticle = (x, y, text, colorClass) => {
                 const textId = Date.now() + Math.random();
-                setTextParticles(prev => [...prev, { id: textId, x: x, y: y, popX: (Math.random() - 0.5) * 40, value: text }]);
+                setTextParticles(prev => [...prev, { id: textId, x: x, y: y, popX: (Math.random() - 0.5) * 40, value: text, color: colorClass }]);
                 setTimeout(() => setTextParticles(prev => prev.filter(p => p.id !== textId)), 800);
             };
 
             return (
-                <div className="min-h-screen flex flex-col items-center px-4 py-2 select-none relative bg-slate-50 overflow-x-hidden">
+                <div className="min-h-screen flex flex-col items-center px-4 py-2 select-none relative bg-slate-50 overflow-x-hidden pb-12">
                     <div className="fixed inset-0 pointer-events-none z-0">
                         {skyGubbies.map(g => (
                             <img key={g.id} src={gubbyImgUrl} className="absolute animate-sky-fall grayscale opacity-40" style={{ left: `${g.left}%`, width: `${g.size}px`, '--sky-rotation': `${g.rotation}deg`, animationDuration: `${g.duration}s` }} />
@@ -202,128 +278,147 @@
                             <div className="bg-white p-8 rounded-[2.5rem] max-w-sm w-full shadow-2xl border-4 border-slate-100">
                                 <h4 className="font-black text-2xl text-center mb-2 uppercase">{notification.title}</h4>
                                 <p className="text-slate-500 text-center mb-6 font-medium leading-snug">{notification.message}</p>
-                                <div className="flex flex-col gap-2">
-                                    {notification.confirmAction ? (
-                                        <>
-                                            <button onClick={() => { notification.confirmAction(); setNotification(null); }} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase hover:bg-indigo-700">Ascend</button>
-                                            <button onClick={() => setNotification(null)} className="w-full bg-slate-100 text-slate-500 py-4 rounded-2xl font-black uppercase">Not yet</button>
-                                        </>
-                                    ) : (
-                                        <button onClick={() => setNotification(null)} className="w-full bg-black text-white py-4 rounded-2xl font-black uppercase">Okay</button>
-                                    )}
-                                </div>
+                                <button onClick={() => setNotification(null)} className="w-full bg-black text-white py-4 rounded-2xl font-black uppercase">Okay</button>
                             </div>
                         </div>
                     )}
 
-                    <header className="z-20 w-full max-w-2xl flex flex-col items-center gap-3 mt-4 mb-2">
-                        <div className="flex items-center gap-3">
+                    <header className="z-20 w-full max-w-4xl flex flex-col items-center gap-3 mt-4 mb-2">
+                        <div className="flex items-center gap-4">
                             <h1 className="text-3xl font-black text-black tracking-[0.1em] uppercase">Gubby Clicker</h1>
-                            {prestigeLevel > 0 && <div className="bg-yellow-400 text-black px-3 py-1 rounded-full font-black text-xs border-2 border-white">P{prestigeLevel}</div>}
+                            {prestigeLevel > 0 && (
+                                <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">Prestige {prestigeLevel}</span>
+                            )}
                         </div>
-                        <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex items-center justify-between">
-                            <div className="flex items-center gap-2 sm:gap-6 flex-1 text-center">
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Session</p><span className="text-xl font-black">{totalClicksSession.toLocaleString()}</span></div>
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span className="text-xl font-black">{clicks.toLocaleString()}</span></div>
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div className="flex items-center justify-center gap-1"><img src={goldCoinUrl} className="w-4 h-4"/><span className="text-xl font-black">{gold.toLocaleString()}</span></div></div>
+                        
+                        <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 sm:gap-10 flex-1 flex-wrap justify-center sm:justify-start">
+                                <div className="text-center sm:text-left">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p>
+                                    <span className="text-xl font-black tracking-tight">{Math.floor(clicks).toLocaleString()}</span>
+                                </div>
+                                <div className="text-center sm:text-left">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p>
+                                    <span className="text-xl font-black tracking-tight text-black">{Math.floor(totalClicksSession).toLocaleString()}</span>
+                                </div>
+                                <div className="text-center sm:text-left">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p>
+                                    <div className="flex items-center justify-center sm:justify-start gap-1">
+                                        <img src={goldCoinUrl} className="w-4 h-4"/>
+                                        <span className="text-xl font-black">{gold.toLocaleString()}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2 ml-4">
-                                <button onClick={tryAscend} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${gold >= currentPrestigeCost ? 'bg-indigo-600 text-white animate-pulse' : 'bg-slate-100 text-slate-400'}`}>Ascend</button>
-                                <button onClick={() => { if (!isBattleActive && clicks > 0) { const mult = activeBuff ? activeBuff.multiplier : 1; setGold(g => g + (clicks * mult)); setClicks(0); } }} disabled={isBattleActive} className="bg-yellow-400 text-black px-5 py-2 rounded-xl font-black uppercase text-[10px] disabled:opacity-30">Sell</button>
+                            
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={ascend} 
+                                    disabled={gold < currentPrestigeCost || isBattleActive} 
+                                    className={`px-5 py-2 rounded-xl font-black uppercase text-[10px] transition-all ${gold >= currentPrestigeCost ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-100 text-slate-300'}`}
+                                >
+                                    Ascend ({currentPrestigeCost.toLocaleString()})
+                                </button>
+                                <button onClick={sellClicks} disabled={isBattleActive} className="bg-yellow-400 text-black px-5 py-2 rounded-xl font-black uppercase text-[10px] disabled:opacity-30">Sell</button>
                             </div>
                         </div>
                     </header>
 
-                    <main className="z-10 relative flex flex-col items-center justify-start w-full flex-1 pt-4">
-                        <div className="h-16 flex items-center justify-center w-full mb-2">
+                    <main className="z-10 relative flex flex-col items-center justify-start w-full flex-1 pt-0 min-h-[400px]">
+                        <div className="h-16 flex flex-col items-center justify-center w-full mb-0">
                             {isBattleActive && (
-                                <div className="flex flex-col items-center w-full max-w-xs">
+                                <div className="flex flex-col items-center w-full max-w-xs px-4">
                                     <div className="flex justify-between w-full mb-1">
-                                        <span className={`text-xs font-black uppercase ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleType === 'mega' ? `Mega Boss` : `Boss`}</span>
-                                        <span className={`text-xs font-black`}>{battleTimer}s</span>
+                                        <span className={`text-[10px] font-black uppercase ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleType === 'mega' ? `MEGA BOSS #${megaBossCount+1}` : `BOSS #${normalBossCount+1}`}</span>
+                                        <span className="text-[10px] font-black">{battleTimer}s</span>
                                     </div>
-                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border">
+                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border mb-2">
                                         <div className={`h-full transition-all duration-300 ${battleType === 'mega' ? 'bg-indigo-600' : 'bg-red-600'}`} style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
                                     </div>
+                                    <span className="text-[9px] font-bold text-slate-400">{Math.ceil(battleHP).toLocaleString()} / {maxBattleHP.toLocaleString()} HP</span>
+                                </div>
+                            )}
+                            {!isBattleActive && activeBuff && (
+                                <div className="bg-white px-6 py-2 rounded-full border-2 border-indigo-100 shadow-md animate-bounce text-center">
+                                    <span className="text-xs font-black uppercase text-indigo-600 tracking-wider block">{activeBuff.name}</span>
+                                    <span className="text-[10px] font-bold text-slate-400">{activeBuff.timeLeft}s remaining</span>
                                 </div>
                             )}
                         </div>
 
-                        <div className="relative">
-                            {activeBuff && (
-                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white px-4 py-1.5 rounded-full border-2 border-indigo-100 shadow-md z-30 whitespace-nowrap">
-                                    <span className="text-xs font-black uppercase text-indigo-600 tracking-wider">{activeBuff.name}: {activeBuff.timeLeft}s</span>
-                                </div>
-                            )}
+                        <div className="relative mt-2">
                             <div className="absolute inset-0 pointer-events-none z-40">
                                 {textParticles.map(p => (
-                                    <span key={p.id} className="absolute font-black text-3xl text-black animate-text-pop" style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
+                                    <span key={p.id} className={`absolute text-3xl animate-text-pop ${p.color || 'text-black'}`} style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
                                 ))}
                             </div>
-                            <button onClick={handleMainClick} className={`relative outline-none group ${battleType === 'mega' && isBattleActive ? 'w-64 h-64 sm:w-80 sm:h-80' : 'w-48 h-48 sm:w-64 sm:h-64'} ${isBattleActive ? 'animate-shake' : ''} ${isSquishing ? 'animate-squish' : ''}`}>
+                            
+                            {activeBuff?.id === 'fever' && (
+                                <>
+                                    <img src={gubbyImgUrl} className="absolute w-14 h-14 -top-8 -left-10 animate-helper" style={{'--rot': '-15deg', animationDelay: '0s'}} />
+                                    <img src={gubbyImgUrl} className="absolute w-14 h-14 -top-8 -right-10 animate-helper" style={{'--rot': '15deg', animationDelay: '0.1s'}} />
+                                    <img src={gubbyImgUrl} className="absolute w-14 h-14 -bottom-8 -left-10 animate-helper" style={{'--rot': '-10deg', animationDelay: '0.2s'}} />
+                                    <img src={gubbyImgUrl} className="absolute w-14 h-14 -bottom-8 -right-10 animate-helper" style={{'--rot': '10deg', animationDelay: '0.3s'}} />
+                                </>
+                            )}
+
+                            <button 
+                                onClick={handleMainClick} 
+                                className={`relative outline-none group flex items-center justify-center transition-all duration-75 active:scale-95
+                                    ${battleType === 'mega' && isBattleActive ? 'w-80 h-80' : 'w-64 h-64'} 
+                                    ${isBattleActive ? 'animate-shake' : ''} 
+                                    ${isSquishing ? 'animate-squish' : ''}`}
+                            >
                                 <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl transition-all ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200' : ''}`} />
                             </button>
                         </div>
                     </main>
 
-                    <div className="z-20 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 mb-8">
-                        {/* Marketplace */}
+                    <div className="z-20 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 mb-8">
                         <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Marketplace</h3>
-                            <div className="flex flex-col gap-3">
-                                {/* Autoclicker - Scaled down to match other small items */}
-                                <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 transition-all">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-sm border border-slate-100">
-                                            <img src={friendImgUrl} className="w-full h-full object-contain"/>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-black text-xs uppercase text-slate-800">Gubby Friend</p>
-                                            <p className="text-[9px] font-bold text-slate-500 tracking-tight">+{prestigeLevel + 1} Passive Click/sec</p>
-                                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-slate-300 transition-all text-left">
+                                    <img src={friendImgUrl} className="w-10 h-10 object-contain"/>
+                                    <div className="flex-1">
+                                        <p className="font-black text-[10px] uppercase">Gubby Friend</p>
+                                        <p className="text-[8px] font-medium text-slate-400 leading-none mt-1">+{autoclickers+1} CPS</p>
                                     </div>
-                                    <div className="bg-black text-white px-3 py-1.5 rounded-lg text-[10px] font-black">{autoclickerCost} Gold</div>
+                                    <span className="bg-black text-white px-2 py-1 rounded text-[9px] font-black">{autoclickerCost.toLocaleString()}</span>
                                 </button>
-
                                 {SHOP_ITEMS.map(item => (
-                                    <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 transition-all">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-sm border border-slate-100"><img src={item.img} className="w-full h-full object-contain"/></div>
-                                            <div className="text-left"><p className="font-black text-xs uppercase text-slate-800">{item.name}</p><p className="text-[9px] font-bold text-slate-500">{item.power}x Power · {item.duration}s</p></div>
+                                    <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-slate-300 transition-all text-left">
+                                        <img src={item.img} className="w-10 h-10 object-contain"/>
+                                        <div className="flex-1">
+                                            <p className="font-black text-[10px] uppercase">{item.name}</p>
+                                            <p className="text-[8px] font-medium text-slate-400 leading-none mt-1">{item.description || `${item.power}x Power`}</p>
                                         </div>
-                                        <div className="bg-black text-white px-3 py-1.5 rounded-lg text-[10px] font-black">{item.cost} Gold</div>
+                                        <span className="bg-black text-white px-2 py-1 rounded text-[9px] font-black">{item.cost.toLocaleString()}</span>
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        {/* Inventory - Vertical List, 1 per row */}
                         <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
-                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Player Inventory</h3>
-                            <div className="flex flex-col gap-2">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Inventory</h3>
+                            <div className="grid grid-cols-2 gap-3">
                                 {SHOP_ITEMS.map(item => (
                                     <button 
                                         key={`inv-${item.id}`} 
-                                        onClick={() => { if (inventory[item.id] > 0 && !activeBuff) { setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 })); setActiveBuff({ ...item, multiplier: item.power, timeLeft: item.duration }); } }} 
-                                        disabled={inventory[item.id] === 0 || activeBuff !== null} 
-                                        className={`relative group flex items-center gap-4 p-3 rounded-2xl border-2 transition-all duration-200 ${inventory[item.id] > 0 ? `bg-white ${item.borderColor} shadow-md scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer` : 'bg-slate-50 border-slate-100 opacity-40 grayscale pointer-events-none'}`}
+                                        onClick={() => useItem(item)}
+                                        disabled={inventory[item.id] === 0 || (activeBuff !== null && item.id !== 'warp')}
+                                        className={`flex items-center gap-3 p-3 rounded-2xl border-2 transition-all ${inventory[item.id] > 0 ? `bg-white border-indigo-200 shadow hover:border-indigo-400 active:scale-95` : 'bg-slate-50 border-slate-100 opacity-30 grayscale'}`}
                                     >
-                                        <div className={`w-12 h-12 flex-shrink-0 rounded-xl p-2 bg-gradient-to-br ${item.color} shadow-inner`}>
-                                            <img src={item.img} className="w-full h-full object-contain drop-shadow-sm"/>
+                                        <div className="relative">
+                                            <img src={item.img} className="w-10 h-10 object-contain"/>
+                                            <span className="absolute -top-2 -right-2 bg-black text-white text-[8px] font-black w-5 h-5 flex items-center justify-center rounded-full">{inventory[item.id]}</span>
                                         </div>
-                                        <div className="flex-1 text-left">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-black uppercase text-slate-800">{item.name}</span>
-                                                <div className="bg-black text-white px-2 py-0.5 rounded-lg text-[10px] font-black">
-                                                    x{inventory[item.id]}
-                                                </div>
-                                            </div>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Click to activate {item.power}x boost</p>
+                                        <div className="text-left overflow-hidden">
+                                            <p className="text-[10px] font-black uppercase truncate">{item.name}</p>
+                                            <p className="text-[8px] font-bold text-indigo-500 uppercase">{item.id === 'warp' ? '+30s BATTLE' : `${item.duration}s`}</p>
                                         </div>
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-[9px] text-center text-slate-400 mt-4 uppercase font-bold tracking-widest italic">Use charges to defeat bosses faster!</p>
                         </section>
                     </div>
                 </div>
