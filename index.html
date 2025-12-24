@@ -22,34 +22,40 @@
             padding: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            background-color: #f9fafb;
+            background-color: #f3f4f6;
         }
 
         @keyframes sky-fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            95% { opacity: 1; }
-            100% { transform: translateY(115vh) rotate(var(--sky-rotation)); opacity: 0; }
+            0% { transform: translateY(-20vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(120vh) rotate(var(--sky-rotation)); opacity: 0; }
         }
 
         @keyframes text-pop {
-            0% { opacity: 0; transform: translateY(0) scale(0.5); }
-            20% { opacity: 1; transform: translateY(-30px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(-100px) scale(1); }
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            20% { opacity: 1; transform: translate(var(--pop-x), -40px) scale(1.3); }
+            100% { opacity: 0; transform: translate(var(--pop-x), -120px) scale(1); }
         }
 
-        .animate-sky-fall {
-            animation-name: sky-fall;
-            animation-timing-function: linear;
-            animation-fill-mode: forwards;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
-        .animate-text-pop {
-            animation: text-pop 1s ease-out forwards;
+        @keyframes squish {
+            0% { transform: scale(1, 1); }
+            30% { transform: scale(1.2, 0.8); }
+            100% { transform: scale(1, 1); }
         }
 
-        [data-lucide] {
-            display: inline-block;
-        }
+        .animate-sky-fall { animation-name: sky-fall; animation-timing-function: linear; animation-fill-mode: forwards; }
+        .animate-text-pop { animation: text-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .animate-shake { animation: shake 0.2s ease-in-out infinite; }
+        .animate-squish { animation: squish 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        [data-lucide] { display: inline-block; }
     </style>
 </head>
 <body>
@@ -81,103 +87,195 @@
 
         const App = () => {
             const [clicks, setClicks] = useState(0);
+            const [totalClicksSession, setTotalClicksSession] = useState(0); 
             const [gold, setGold] = useState(0);
             const [activeBuff, setActiveBuff] = useState(null);
-            const [inventory, setInventory] = useState({ rainbow: 0, mega: 0, omega: 0 });
+            const [inventory, setInventory] = useState({ rainbow: 0, mega: 0, omega: 0, godly: 0 });
             const [textParticles, setTextParticles] = useState([]);
             const [notification, setNotification] = useState(null);
-            const [imageError, setImageError] = useState(false);
             const [skyGubbies, setSkyGubbies] = useState([]);
+            const [isSquishing, setIsSquishing] = useState(false);
 
-            // Updated URL for Gubby (Wikia source)
+            // Passive Income State
+            const [autoclickers, setAutoclickers] = useState(0);
+            const [autoclickerCost, setAutoclickerCost] = useState(150);
+
+            // Prestige State
+            const [prestigeLevel, setPrestigeLevel] = useState(0);
+            
+            const [isBattleActive, setIsBattleActive] = useState(false);
+            const [battleType, setBattleType] = useState('normal'); 
+            const [battleHP, setBattleHP] = useState(0);
+            const [maxBattleHP, setMaxBattleHP] = useState(0);
+            const [battleTimer, setBattleTimer] = useState(0);
+
             const gubbyImgUrl = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
             const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
             const megaStarUrl = "https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png";
+            const godlyDiamondUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png";
             const omegaCrownUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png";
+            const friendImgUrl = "https://static.vecteezy.com/system/resources/thumbnails/012/026/493/small/add-new-friend-user-group-icon-3d-render-png.png";
 
             const SHOP_ITEMS = [
-                { 
-                    id: 'rainbow', 
-                    name: 'Rainbow Charge', 
-                    cost: 250, 
-                    power: 10, 
-                    duration: 30, 
-                    img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png',
-                    barColor: 'bg-pink-400' 
-                },
-                { 
-                    id: 'mega', 
-                    name: 'Mega Charge', 
-                    cost: 750, 
-                    power: 20, 
-                    duration: 40, 
-                    img: megaStarUrl,
-                    barColor: 'bg-yellow-400' 
-                },
-                { 
-                    id: 'omega', 
-                    name: 'Omega Charge', 
-                    cost: 2500, 
-                    power: 100, 
-                    duration: 30, 
-                    img: omegaCrownUrl,
-                    barColor: 'bg-orange-500' 
-                }
+                { id: 'rainbow', name: 'Rainbow Charge', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png', color: 'from-pink-100 to-indigo-100', borderColor: 'border-indigo-300', activeColor: 'from-pink-400 to-indigo-400' },
+                { id: 'mega', name: 'Mega Charge', cost: 800, power: 25, duration: 12, img: megaStarUrl, color: 'from-yellow-100 to-orange-100', borderColor: 'border-orange-300', activeColor: 'from-yellow-400 to-orange-400' },
+                { id: 'omega', name: 'Omega Charge', cost: 2000, power: 120, duration: 10, img: godlyDiamondUrl, color: 'from-purple-100 to-fuchsia-100', borderColor: 'border-fuchsia-300', activeColor: 'from-purple-400 to-fuchsia-400' },
+                { id: 'godly', name: 'Godly Core', cost: 5000, power: 500, duration: 8, img: omegaCrownUrl, color: 'from-cyan-100 to-blue-100', borderColor: 'border-blue-300', activeColor: 'from-cyan-400 to-blue-400' }
             ];
 
+            const currentPrestigeCost = Math.floor(10000 * Math.pow(1.5, prestigeLevel));
+
+            // Logic update: Passive income now increases session total as well
             useEffect(() => {
-                const spawnGubby = () => {
-                    const id = Math.random().toString(36).substring(7);
-                    const newGubby = {
-                        id,
-                        left: Math.random() * 100,
-                        duration: 3.5 + Math.random() * 4,
-                        size: 35 + Math.random() * 35,
-                        rotation: Math.random() * 360,
-                        delay: Math.random() * 2 
-                    };
-                    setSkyGubbies(prev => [...prev.slice(-40), newGubby]);
-                    
-                    const nextSpawn = 400 + Math.random() * 800;
-                    setTimeout(spawnGubby, nextSpawn);
+                if (autoclickers > 0) {
+                    const interval = setInterval(() => {
+                        const gain = autoclickers * (prestigeLevel + 1);
+                        setClicks(prev => prev + gain);
+                        setTotalClicksSession(prev => prev + gain);
+                    }, 1000);
+                    return () => clearInterval(interval);
+                }
+            }, [autoclickers, prestigeLevel]);
+
+            useEffect(() => {
+                // Battle triggering checks based on total session clicks
+                if (totalClicksSession > 0 && !isBattleActive) {
+                    // Check triggers using logic that accounts for the gap between thresholds
+                    const lastProcessed = window._lastBattleTriggered || 0;
+                    if (totalClicksSession >= lastProcessed + 100) {
+                        if (Math.floor(totalClicksSession / 500) > Math.floor(lastProcessed / 500)) {
+                            triggerBattle('mega');
+                        } else {
+                            triggerBattle('normal');
+                        }
+                        window._lastBattleTriggered = Math.floor(totalClicksSession / 100) * 100;
+                    }
+                }
+            }, [totalClicksSession]);
+
+            const triggerBattle = (type) => {
+                const isMega = type === 'mega';
+                const hp = isMega 
+                    ? 500 + Math.floor(gold / 10) 
+                    : 40 + Math.floor(gold / 100);
+                
+                setBattleType(type);
+                setBattleHP(hp);
+                setMaxBattleHP(hp);
+                setBattleTimer(isMega ? 60 : 30);
+                setIsBattleActive(true);
+                setNotification({ 
+                    title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", 
+                    message: isMega ? "A COLOSSAL MEGA GUBBY HAS ARRIVED!" : "A Corrupted Gubby has appeared!", 
+                    type: "warning" 
+                });
+            };
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    if (activeBuff) {
+                        setActiveBuff(prev => (!prev || prev.timeLeft <= 1) ? null : { ...prev, timeLeft: prev.timeLeft - 1 });
+                    }
+                    if (isBattleActive) {
+                        setBattleTimer(prev => (prev <= 1) ? (endBattle(false), 0) : prev - 1);
+                    }
+                }, 1000);
+
+                const skyInterval = setInterval(() => {
+                    if (Math.random() > 0.4) {
+                        const newGubby = {
+                            id: Date.now() + Math.random(),
+                            left: Math.random() * 100,
+                            size: 15 + Math.random() * 50,
+                            duration: 2 + Math.random() * 4,
+                            rotation: (Math.random() - 0.5) * 1000
+                        };
+                        setSkyGubbies(prev => [...prev, newGubby]);
+                        setTimeout(() => setSkyGubbies(prev => prev.filter(g => g.id !== newGubby.id)), newGubby.duration * 1000);
+                    }
+                }, 400);
+
+                return () => {
+                    clearInterval(interval);
+                    clearInterval(skyInterval);
                 };
+            }, [activeBuff, isBattleActive]);
 
-                const timeout = setTimeout(spawnGubby, 500);
-                return () => clearTimeout(timeout);
-            }, []);
+            const endBattle = (won) => {
+                setIsBattleActive(false);
+                if (won) {
+                    const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 15 : 2));
+                    setGold(prev => prev + reward);
+                    setNotification({ title: "VICTORY!", message: `Boss defeated! Reward: ${reward} Gold.`, type: "success" });
+                } else {
+                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" });
+                }
+            };
 
-            useEffect(() => {
-                if (!activeBuff) return;
-                const timer = setInterval(() => {
-                    setActiveBuff(prev => {
-                        if (!prev || prev.timeLeft <= 1) return null;
-                        return { ...prev, timeLeft: prev.timeLeft - 1 };
+            const tryAscend = () => {
+                if (gold >= currentPrestigeCost) {
+                    setNotification({
+                        title: "Confirm Ascension?",
+                        message: `Ascending will reset your progress but you will permanently gain +1x Multiplier for everything!`,
+                        confirmAction: () => {
+                            setPrestigeLevel(prev => prev + 1);
+                            setGold(0);
+                            setClicks(0);
+                            setAutoclickers(0);
+                            setAutoclickerCost(150);
+                            setInventory({ rainbow: 0, mega: 0, omega: 0, godly: 0 });
+                            setNotification({ title: "ASCENDED!", message: `You are now Prestige Level ${prestigeLevel + 1}!`, type: "success" });
+                            window._lastBattleTriggered = 0;
+                        }
                     });
-                }, 1000);
-                return () => clearInterval(timer);
-            }, [activeBuff]);
+                } else {
+                    setNotification({
+                        title: "Ascension Locked",
+                        message: `You need ${currentPrestigeCost.toLocaleString()} Gold to Ascend.`,
+                        type: "error"
+                    });
+                }
+            };
 
-            const handleMainClick = () => {
-                const gain = activeBuff ? activeBuff.multiplier : 1;
-                setClicks(prev => prev + gain);
-                
+            const handleMainClick = (e) => {
+                const basePower = (prestigeLevel + 1);
+                const gain = activeBuff ? activeBuff.multiplier * basePower : basePower;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left - rect.width / 2;
+                const clickY = e.clientY - rect.top - rect.height / 2;
+
+                setIsSquishing(true);
+                setTimeout(() => setIsSquishing(false), 200);
+
+                if (isBattleActive) {
+                    const damage = activeBuff ? Math.ceil(activeBuff.multiplier / 2) : 1;
+                    setBattleHP(prev => {
+                        const next = prev - damage;
+                        if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
+                        return next;
+                    });
+                } else {
+                    setClicks(prev => prev + gain);
+                    setTotalClicksSession(prev => prev + gain); 
+                }
+
                 const textId = Date.now() + Math.random();
-                setTextParticles(prev => [...prev, { 
-                    id: textId, 
-                    x: 60 + (Math.random() * 20), 
-                    y: (Math.random() - 0.5) * 40, 
-                    value: gain 
-                }]);
-                
-                setTimeout(() => {
-                    setTextParticles(prev => prev.filter(p => p.id !== textId));
-                }, 1000);
+                setTextParticles(prev => [...prev, { id: textId, x: clickX, y: clickY, popX: (Math.random() - 0.5) * 40, value: isBattleActive ? "HIT!" : `+${gain}` }]);
+                setTimeout(() => setTextParticles(prev => prev.filter(p => p.id !== textId)), 800);
             };
 
             const sellClicks = () => {
-                if (clicks === 0) return;
+                if (clicks === 0 || isBattleActive) return;
                 setGold(prev => prev + clicks);
                 setClicks(0);
+            };
+
+            const buyAutoclicker = () => {
+                if (gold >= autoclickerCost) {
+                    setGold(prev => prev - autoclickerCost);
+                    setAutoclickers(prev => prev + 1);
+                    setAutoclickerCost(prev => Math.floor(prev * 1.5));
+                }
             };
 
             const buyCharge = (item) => {
@@ -185,162 +283,220 @@
                     setGold(prev => prev - item.cost);
                     setInventory(prev => ({ ...prev, [item.id]: prev[item.id] + 1 }));
                 } else {
-                    setNotification({ title: "Insufficient Gold", message: `You need ${item.cost - gold} more gold to buy ${item.name}.`, type: "error" });
+                    setNotification({ title: "No Gold!", message: `You need ${item.cost - gold} more gold.`, type: "error" });
                 }
             };
 
             const useCharge = (id) => {
-                if (inventory[id] > 0) {
-                    if (activeBuff) {
-                        setNotification({ title: "Ability Active", message: "Wait for your current charge to finish first!", type: "warning" });
-                        return;
-                    }
+                if (inventory[id] > 0 && !activeBuff) {
                     const item = SHOP_ITEMS.find(i => i.id === id);
                     setInventory(prev => ({ ...prev, [id]: prev[id] - 1 }));
                     setActiveBuff({ id: item.id, multiplier: item.power, timeLeft: item.duration, name: item.name });
-                } else {
-                    setNotification({ title: "Out of Stock", message: `You don't have any ${id} charges. Check the Market!`, type: "warning" });
                 }
             };
 
             return (
-                <div className="min-h-screen flex flex-col items-center p-4 select-none relative">
+                <div className="min-h-screen flex flex-col items-center px-4 py-2 select-none relative bg-slate-50 overflow-x-hidden">
                     <div className="fixed inset-0 pointer-events-none z-0">
-                        {skyGubbies.map(gubby => (
-                            <div key={gubby.id} className="absolute animate-sky-fall"
-                                style={{
-                                    left: `${gubby.left}%`,
-                                    top: '-15%',
-                                    width: `${gubby.size}px`,
-                                    height: `${gubby.size}px`,
-                                    animationDuration: `${gubby.duration}s`,
-                                    animationDelay: `${gubby.delay}s`,
-                                    '--sky-rotation': `${gubby.rotation}deg`
-                                }}>
-                                {!imageError ? (
-                                    <img src={gubbyImgUrl} className="w-full h-full object-contain opacity-40" onError={() => setImageError(true)} />
-                                ) : (
-                                    <span style={{ fontSize: gubby.size }} className="opacity-40">🐟</span>
-                                )}
-                            </div>
+                        {skyGubbies.map(g => (
+                            <img key={g.id} src={gubbyImgUrl} className="absolute animate-sky-fall grayscale brightness-110" style={{ left: `${g.left}%`, width: `${g.size}px`, '--sky-rotation': `${g.rotation}deg`, animationDuration: `${g.duration}s` }} />
                         ))}
                     </div>
 
                     {notification && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-                            <div className="bg-white border-2 border-slate-200 p-6 rounded-3xl max-w-sm w-full shadow-2xl">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <Icon name="AlertCircle" size={24} className={notification.type === 'error' ? 'text-red-500' : 'text-amber-500'} />
-                                        <h4 className="font-bold text-lg text-[#111111] m-0 p-0">{notification.title}</h4>
-                                    </div>
-                                    <button onClick={() => setNotification(null)} className="p-1 hover:bg-gray-100 rounded-lg">
-                                        <Icon name="X" size={20} />
-                                    </button>
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                            <div className="bg-white p-8 rounded-[2.5rem] max-w-sm w-full shadow-2xl border-4 border-slate-100">
+                                <h4 className="font-black text-2xl text-center mb-2 uppercase tracking-tight">{notification.title}</h4>
+                                <p className="text-slate-500 text-center mb-6 font-medium leading-snug">{notification.message}</p>
+                                <div className="flex flex-col gap-2">
+                                    {notification.confirmAction ? (
+                                        <>
+                                            <button onClick={() => { notification.confirmAction(); setNotification(null); }} className="w-full bg-yellow-400 text-black py-4 rounded-2xl font-black uppercase hover:bg-yellow-500 transition-colors">Ascend Now</button>
+                                            <button onClick={() => setNotification(null)} className="w-full bg-slate-100 text-slate-500 py-4 rounded-2xl font-black uppercase">Cancel</button>
+                                        </>
+                                    ) : (
+                                        <button onClick={() => setNotification(null)} className="w-full bg-[#111111] text-white py-4 rounded-2xl font-black uppercase hover:scale-[1.02] transition-transform">Confirm</button>
+                                    )}
                                 </div>
-                                <p className="text-[#444444] mb-6 leading-relaxed m-0 p-0">{notification.message}</p>
-                                <button onClick={() => setNotification(null)} className="w-full bg-[#333333] text-white py-3 rounded-xl font-bold uppercase tracking-widest hover:bg-[#111111] transition-colors">Close</button>
                             </div>
                         </div>
                     )}
 
-                    <header className="z-20 w-full max-w-xl flex flex-col items-center gap-2 mt-4">
-                        <h1 className="text-4xl font-black text-[#111111] tracking-tight text-center">Gubby Clicker</h1>
-                        <div className="w-full flex flex-wrap justify-center items-center gap-4 bg-white/95 border border-slate-200 p-3 rounded-2xl shadow-lg backdrop-blur-md">
-                            <div className="flex flex-col items-center px-4 border-r border-slate-100">
-                                <span className="text-[10px] uppercase font-bold text-[#666666] tracking-widest">Clicks</span>
-                                <span className="text-2xl font-black text-[#111111] leading-none">{clicks.toLocaleString()}</span>
-                            </div>
-                            <div className="flex flex-col items-center px-4 border-r border-slate-100">
-                                <span className="text-[10px] uppercase font-bold text-[#666666] tracking-widest">Gold</span>
-                                <div className="flex items-center gap-1 leading-none">
-                                    <img src={goldCoinUrl} className="w-7 h-7 object-contain" alt="coin" />
-                                    <span className="text-2xl font-black text-[#111111]">{gold.toLocaleString()}</span>
+                    <header className="z-20 w-full max-w-2xl flex flex-col items-center gap-3 mt-4 mb-2">
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-[2.25rem] font-black text-[#111111] tracking-[0.12em] drop-shadow-sm uppercase">Gubby Clicker</h1>
+                            {prestigeLevel > 0 && (
+                                <div className="bg-yellow-400 text-black px-3 py-1 rounded-full font-black text-xs border-2 border-white shadow-sm">
+                                    P{prestigeLevel}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex items-center justify-between min-h-[100px]">
+                            <div className="flex items-center gap-2 sm:gap-6 flex-1">
+                                <div className="flex flex-col items-center flex-1">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5 h-[10px]">Total Clicks</span>
+                                    <span className="text-2xl font-black text-slate-600 leading-none">{totalClicksSession.toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-center flex-1">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5 h-[10px]">Clicks</span>
+                                    <span className="text-2xl font-black text-black leading-none">{clicks.toLocaleString()}</span>
+                                </div>
+                                <div className="flex flex-col items-center flex-1">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5 h-[10px]">Gold</span>
+                                    <div className="flex items-center gap-1.5 leading-none h-6">
+                                        <img src={goldCoinUrl} className="w-5 h-5 object-contain" />
+                                        <span className="text-2xl font-black text-black">{gold.toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <button onClick={sellClicks} className="px-6 py-2 bg-yellow-400 text-black rounded-xl font-black hover:bg-yellow-300 active:scale-95 transition-all shadow-sm ml-2">Sell All</button>
+
+                            <div className="flex items-center gap-3 h-full ml-4">
+                                <div className="flex flex-col items-center justify-center relative">
+                                    <button 
+                                        onClick={tryAscend} 
+                                        className={`px-5 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-sm flex items-center justify-center ${gold >= currentPrestigeCost ? 'bg-indigo-600 text-white animate-pulse' : 'bg-slate-100 text-slate-400'}`}
+                                    >
+                                        Ascend
+                                    </button>
+                                    <span className="text-[8px] font-black text-slate-400 mt-1 uppercase whitespace-nowrap absolute -bottom-4">
+                                        {currentPrestigeCost.toLocaleString()} Gold
+                                    </span>
+                                </div>
+                                <button 
+                                    onClick={sellClicks} 
+                                    disabled={isBattleActive}
+                                    className="bg-yellow-400 text-black px-7 py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-yellow-300 active:scale-95 transition-all shadow-md shadow-yellow-100/50 disabled:opacity-30 disabled:grayscale flex items-center justify-center"
+                                >
+                                    Sell
+                                </button>
+                            </div>
                         </div>
                     </header>
 
-                    <main className="z-10 relative flex flex-col items-center justify-center w-full min-h-[350px] my-6">
-                        {activeBuff && (
-                            <div className="absolute top-0 flex items-center gap-3 px-5 py-2.5 bg-white rounded-full border border-slate-100 shadow-lg animate-bounce z-30">
-                                <Icon name="Timer" size={18} className="text-blue-600" />
-                                <span className="font-bold text-sm">{activeBuff.name} active!</span>
-                                <span className="bg-[#333333] text-white px-2 py-0.5 rounded-full text-xs font-bold">{activeBuff.timeLeft}s</span>
-                            </div>
-                        )}
+                    <main className="z-10 relative flex flex-col items-center justify-start w-full flex-1 pt-6 my-0">
+                        <div className="h-16 flex items-center justify-center mb-1 w-full">
+                            {isBattleActive && (
+                                <div className="flex flex-col items-center w-full max-w-xs px-4">
+                                    <div className="flex justify-between w-full mb-0.5">
+                                        <span className={`text-[10px] font-black uppercase tracking-tighter animate-pulse ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>
+                                            {battleType === 'mega' ? 'BOSS' : 'BATTLE'}
+                                        </span>
+                                        <span className={`text-[10px] font-black ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleTimer}s</span>
+                                    </div>
+                                    <div className={`w-full h-4 bg-slate-200 rounded-full overflow-hidden border shadow-inner ${battleType === 'mega' ? 'border-purple-300' : 'border-red-300'}`}>
+                                        <div className={`h-full transition-all duration-300 relative ${battleType === 'mega' ? 'bg-gradient-to-r from-purple-600 to-indigo-600' : 'bg-gradient-to-r from-red-600 to-orange-600'}`} style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
-                        <div className="relative w-52 h-52 sm:w-64 sm:h-64 flex items-center justify-center">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none z-20">
+                        <div className="relative mt-2">
+                            {activeBuff && (
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-slate-100 shadow-lg z-30 whitespace-nowrap">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase">{activeBuff.name}: {activeBuff.timeLeft}s</span>
+                                </div>
+                            )}
+
+                            <div className="absolute inset-0 pointer-events-none z-40">
                                 {textParticles.map(p => (
-                                    <span key={p.id} className="absolute font-black text-6xl text-[#111111] animate-text-pop drop-shadow-md"
-                                        style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)` }}>
-                                        +{p.value}
-                                    </span>
+                                    <span key={p.id} className="absolute font-black text-3xl text-black animate-text-pop drop-shadow-md whitespace-nowrap" style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
                                 ))}
                             </div>
-                            <button onClick={handleMainClick} className="group relative w-full h-full active:scale-90 transition-all flex items-center justify-center outline-none z-10">
-                                {!imageError ? (
-                                    <img src={gubbyImgUrl} className="w-full h-full object-contain group-hover:scale-105 transition-transform" onError={() => setImageError(true)} />
-                                ) : (
-                                    <div className="text-9xl group-hover:scale-110 transition-transform">🐟</div>
-                                )}
+
+                            <button onClick={handleMainClick} className={`relative transition-transform outline-none group
+                                ${battleType === 'mega' && isBattleActive ? 'w-64 h-64 sm:w-96 sm:h-96' : 'w-48 h-48 sm:w-72 sm:h-72'}
+                                ${isBattleActive ? 'animate-shake' : ''} ${isSquishing ? 'animate-squish' : ''}`}>
+                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform 
+                                    ${isBattleActive && battleType === 'normal' ? 'grayscale-[0.4] brightness-90' : ''}
+                                    ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 brightness-110 drop-shadow-[0_0_35px_rgba(147,51,234,0.5)]' : ''}`} />
                             </button>
                         </div>
-                        <div className="mt-4 z-10">
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#333333] bg-white/90 px-4 py-2 rounded-full border border-slate-100 shadow-sm">
-                                Power: <span className="text-lg ml-1 text-black font-black">{activeBuff ? activeBuff.multiplier : 1}x</span>
-                            </p>
-                        </div>
+                        
+                        {autoclickers > 0 && (
+                            <div className="mt-4 bg-white/50 px-4 py-1 rounded-full border border-slate-200">
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Passive: <span className="text-black">{autoclickers * (prestigeLevel + 1)} Clicks/sec</span>
+                                </p>
+                            </div>
+                        )}
                     </main>
 
-                    <div className="z-20 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                        <section className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-xl">
-                            <h3 className="text-xs font-black uppercase tracking-widest mb-4 px-2 text-black">THE MARKET</h3>
-                            <div className="space-y-3">
+                    <div className="z-20 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-4">
+                        <section className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Market</h3>
+                                <Icon name="ShoppingBag" size={14} className="text-slate-300" />
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                                <button onClick={buyAutoclicker} className="group flex items-center justify-between p-3 rounded-2xl bg-indigo-50/50 hover:bg-indigo-50 transition-all border border-transparent hover:border-indigo-200">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow-sm border border-slate-100">
+                                            <img src={friendImgUrl} className="w-full h-full object-contain" />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-black text-xs uppercase tracking-tight">Gubby Friend</p>
+                                            <p className="text-[9px] font-bold text-slate-400 uppercase">+{prestigeLevel + 1} Passive Click/sec</p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-black text-white px-4 py-1.5 rounded-xl flex flex-col items-center min-w-[80px]">
+                                        <span className="text-xs font-black tracking-tight">{autoclickerCost.toLocaleString()}</span>
+                                        <span className="text-[7px] font-black uppercase opacity-50">Gold</span>
+                                    </div>
+                                </button>
+
                                 {SHOP_ITEMS.map(item => (
-                                    <button key={item.id} onClick={() => buyCharge(item)} className="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-slate-100 active:scale-[0.98] transition-all">
-                                        <div className="flex items-center gap-4">
-                                            <div className="aspect-square w-12 flex items-center justify-center bg-white border border-slate-100 shadow-sm rounded-xl p-2">
-                                                <img src={item.img} className="w-full h-full object-contain" alt={item.name} />
+                                    <button key={item.id} onClick={() => buyCharge(item)} className="group flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-sm border border-slate-100">
+                                                <img src={item.img} className="w-full h-full object-contain" />
                                             </div>
                                             <div className="text-left">
-                                                <p className="text-lg font-black leading-none mb-1 text-black">{item.name}</p>
-                                                <p className="text-xs text-[#666666] font-bold">{item.power}x Power · {item.duration}s</p>
+                                                <p className="font-black text-xs uppercase tracking-tight">{item.name}</p>
+                                                <p className="text-[9px] font-bold text-slate-400 uppercase">{item.power}x · {item.duration}s</p>
                                             </div>
                                         </div>
-                                        <div className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-center min-w-[90px] shadow-md">
-                                            <p className="text-lg font-black leading-none">{item.cost.toLocaleString()}</p>
-                                            <p className="text-[9px] font-bold uppercase mt-0.5 tracking-tighter opacity-70">Gold</p>
+                                        <div className="bg-black text-white px-4 py-1.5 rounded-xl flex flex-col items-center min-w-[80px]">
+                                            <span className="text-xs font-black tracking-tight">{item.cost.toLocaleString()}</span>
+                                            <span className="text-[7px] font-black uppercase opacity-50">Gold</span>
                                         </div>
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        <section className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-xl flex flex-col">
-                            <h3 className="text-xs font-black uppercase tracking-widest mb-6 px-2 text-black">INVENTORY</h3>
-                            <div className="flex justify-around items-center flex-1 gap-4 py-4 px-2">
-                                {SHOP_ITEMS.map(item => (
-                                    <div key={`inv-container-${item.id}`} className="flex flex-col items-center gap-2 flex-1">
+                        <section className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Inventory</h3>
+                            <div className="grid grid-cols-2 gap-3 h-full content-start">
+                                {SHOP_ITEMS.map(item => {
+                                    const count = inventory[item.id];
+                                    const hasItems = count > 0;
+                                    const currentBg = hasItems ? `bg-gradient-to-br ${item.activeColor}` : `bg-gradient-to-br ${item.color}`;
+                                    const currentBorder = hasItems ? item.borderColor : 'border-slate-200';
+                                    
+                                    return (
                                         <button 
+                                            key={`inv-${item.id}`} 
                                             onClick={() => useCharge(item.id)} 
-                                            className="relative aspect-square w-20 rounded-2xl flex flex-col items-center justify-center transition-all active:scale-90 bg-white border-2 border-slate-100 hover:border-slate-300 hover:bg-gray-50 shadow-sm p-3 group overflow-visible"
+                                            disabled={!hasItems || activeBuff !== null} 
+                                            className={`relative flex flex-col items-center justify-center p-4 rounded-3xl border transition-all active:scale-95 shadow-sm ${currentBg} ${currentBorder} ${!hasItems ? 'opacity-60 grayscale-[40%]' : 'hover:scale-105 hover:shadow-md'}`}
                                         >
-                                            <div className="w-[80%] h-[80%] flex items-center justify-center mb-1">
-                                                <img src={item.img} className="w-full h-full object-contain group-hover:scale-110 transition-transform" alt={item.id} />
+                                            <div className={`w-10 h-10 mb-2 transition-transform ${hasItems ? 'drop-shadow-md scale-110' : 'opacity-70 grayscale-[20%]'}`}>
+                                                <img src={item.img} className="w-full h-full object-contain" />
                                             </div>
-                                            <span className={`absolute -top-3 -right-3 px-2 py-1 min-w-[32px] rounded-xl flex items-center justify-center text-xs font-black border-2 border-white shadow-md ${inventory[item.id] > 0 ? 'bg-[#111111] text-white' : 'bg-gray-200 text-[#999999]'}`}>
-                                                {inventory[item.id]}
+                                            <span className={`text-[9px] font-black uppercase tracking-widest ${hasItems ? 'text-black' : 'text-slate-500'}`}>
+                                                {item.name.split(' ')[0]}
                                             </span>
-                                            <div className={`absolute bottom-1 w-8 h-1.5 rounded-full ${item.barColor}`} />
+                                            <span className={`absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black border-2 border-white shadow-md ${hasItems ? 'bg-black text-white' : 'bg-slate-300 text-white'}`}>
+                                                {count}
+                                            </span>
+                                            {hasItems && (
+                                                <div className="absolute inset-0 rounded-3xl pointer-events-none border-2 border-white/30 animate-pulse" />
+                                            )}
                                         </button>
-                                        <span className="text-[10px] font-black uppercase text-[#333333] tracking-wider text-center max-w-[80px] leading-tight">
-                                            {item.name.split(' ')[0]}
-                                        </span>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </section>
                     </div>
