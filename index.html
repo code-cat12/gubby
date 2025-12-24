@@ -36,17 +36,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        const Icon = ({ name, size = 20, className = "" }) => {
-            const iconRef = useRef(null);
-            useEffect(() => {
-                if (iconRef.current && window.lucide) {
-                    iconRef.current.innerHTML = `<span data-lucide="${name}"></span>`;
-                    window.lucide.createIcons({ attrs: { 'stroke-width': 2, width: size, height: size, class: className } });
-                }
-            }, [name, size, className]);
-            return <span ref={iconRef} className="inline-flex items-center justify-center"></span>;
-        };
-
         const App = () => {
             const [clicks, setClicks] = useState(0);
             const [totalClicksSession, setTotalClicksSession] = useState(0); 
@@ -115,49 +104,27 @@
 
             const triggerBattle = (type) => {
                 const isMega = type === 'mega';
-                let hp;
-                if (isMega) {
-                    hp = 200 + (megaBossCount * 150) + Math.floor(gold / 100);
-                } else {
-                    hp = 50 + (normalBossCount * 25) + Math.floor(gold / 250);
-                }
-                
+                let hp = isMega ? 200 + (megaBossCount * 150) + Math.floor(gold / 100) : 50 + (normalBossCount * 25) + Math.floor(gold / 250);
                 setBattleType(type);
                 setBattleHP(hp);
                 setMaxBattleHP(hp);
                 setBattleTimer(isMega ? 40 : 20);
                 setIsBattleActive(true);
-                setNotification({ 
-                    title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", 
-                    message: isMega ? `Mega Boss #${megaBossCount + 1} is here! Defeat it in 40s!` : `Gubby Boss #${normalBossCount + 1} appears! 20s left!`, 
-                    type: "warning" 
-                });
+                setNotification({ title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", message: isMega ? `Mega Boss #${megaBossCount + 1} is here!` : `Gubby Boss #${normalBossCount + 1} appears!`, type: "warning" });
             };
 
             useEffect(() => {
                 const interval = setInterval(() => {
-                    if (activeBuff) {
-                        setActiveBuff(prev => (!prev || prev.timeLeft <= 1) ? null : { ...prev, timeLeft: prev.timeLeft - 1 });
-                    }
-                    if (isBattleActive) {
-                        setBattleTimer(prev => (prev <= 1) ? (endBattle(false), 0) : prev - 1);
-                    }
+                    if (activeBuff) setActiveBuff(prev => (!prev || prev.timeLeft <= 1) ? null : { ...prev, timeLeft: prev.timeLeft - 1 });
+                    if (isBattleActive) setBattleTimer(prev => (prev <= 1) ? (endBattle(false), 0) : prev - 1);
                 }, 1000);
-
                 const skyInterval = setInterval(() => {
                     if (Math.random() > 0.4) {
-                        const newGubby = {
-                            id: Date.now() + Math.random(),
-                            left: Math.random() * 100,
-                            size: 15 + Math.random() * 50,
-                            duration: 2 + Math.random() * 4,
-                            rotation: (Math.random() - 0.5) * 1000
-                        };
+                        const newGubby = { id: Date.now() + Math.random(), left: Math.random() * 100, size: 15 + Math.random() * 50, duration: 2 + Math.random() * 4, rotation: (Math.random() - 0.5) * 1000 };
                         setSkyGubbies(prev => [...prev, newGubby]);
                         setTimeout(() => setSkyGubbies(prev => prev.filter(g => g.id !== newGubby.id)), newGubby.duration * 1000);
                     }
                 }, 400);
-
                 return () => { clearInterval(interval); clearInterval(skyInterval); };
             }, [activeBuff, isBattleActive]);
 
@@ -166,12 +133,11 @@
                 if (won) {
                     if (battleType === 'mega') setMegaBossCount(c => c + 1);
                     else setNormalBossCount(c => c + 1);
-
                     const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 15 : 5));
                     setGold(prev => prev + reward);
-                    setNotification({ title: "VICTORY!", message: `Boss defeated! Reward: ${reward} Gold. Next one will be stronger.`, type: "success" });
+                    setNotification({ title: "VICTORY!", message: `Reward: ${reward} Gold.`, type: "success" });
                 } else {
-                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped! Try upgrading your power.`, type: "error" });
+                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" });
                 }
             };
 
@@ -179,33 +145,26 @@
                 if (gold >= currentPrestigeCost) {
                     setNotification({
                         title: "Confirm Ascension?",
-                        message: `Reset progress to gain a permanent +1x Power multiplier!`,
+                        message: `Reset to gain permanent +1x Power!`,
                         confirmAction: () => {
                             setPrestigeLevel(prev => prev + 1);
-                            setGold(0);
-                            setClicks(0);
-                            setAutoclickers(0);
-                            setAutoclickerCost(150);
-                            setNormalBossCount(0);
-                            setMegaBossCount(0);
+                            setGold(0); setClicks(0); setAutoclickers(0); setAutoclickerCost(150);
+                            setNormalBossCount(0); setMegaBossCount(0);
                             setInventory({ rainbow: 0, mega: 0, omega: 0, godly: 0 });
-                            setNotification({ title: "ASCENDED!", message: `Prestige Level ${prestigeLevel + 1} reached!`, type: "success" });
-                            window._lastNormalTriggered = 0;
-                            window._lastMegaTriggered = 0;
+                            setNotification({ title: "ASCENDED!", message: `Prestige Level ${prestigeLevel + 1}!`, type: "success" });
+                            window._lastNormalTriggered = 0; window._lastMegaTriggered = 0;
                         }
                     });
                 } else {
-                    setNotification({ title: "Locked", message: `Need ${currentPrestigeCost.toLocaleString()} Gold to Ascend.`, type: "error" });
+                    setNotification({ title: "Locked", message: `Need ${currentPrestigeCost.toLocaleString()} Gold.`, type: "error" });
                 }
             };
 
             const handleMainClick = (e) => {
                 const basePower = (prestigeLevel + 1);
-                const gain = activeBuff ? activeBuff.multiplier * basePower : basePower;
                 const rect = e.currentTarget.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - rect.width / 2;
                 const clickY = e.clientY - rect.top - rect.height / 2;
-
                 setIsSquishing(true);
                 setTimeout(() => setIsSquishing(false), 200);
 
@@ -216,13 +175,17 @@
                         if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
                         return next;
                     });
+                    spawnParticle(clickX, clickY, "HIT!", "text-black");
                 } else {
-                    setClicks(prev => prev + gain);
-                    setTotalClicksSession(prev => prev + gain); 
+                    setClicks(prev => prev + basePower);
+                    setTotalClicksSession(prev => prev + basePower);
+                    spawnParticle(clickX, clickY, `+${basePower}`, "text-black");
                 }
+            };
 
+            const spawnParticle = (x, y, text) => {
                 const textId = Date.now() + Math.random();
-                setTextParticles(prev => [...prev, { id: textId, x: clickX, y: clickY, popX: (Math.random() - 0.5) * 40, value: isBattleActive ? "HIT!" : `+${gain}` }]);
+                setTextParticles(prev => [...prev, { id: textId, x: x, y: y, popX: (Math.random() - 0.5) * 40, value: text }]);
                 setTimeout(() => setTextParticles(prev => prev.filter(p => p.id !== textId)), 800);
             };
 
@@ -230,23 +193,23 @@
                 <div className="min-h-screen flex flex-col items-center px-4 py-2 select-none relative bg-slate-50 overflow-x-hidden">
                     <div className="fixed inset-0 pointer-events-none z-0">
                         {skyGubbies.map(g => (
-                            <img key={g.id} src={gubbyImgUrl} className="absolute animate-sky-fall grayscale brightness-110" style={{ left: `${g.left}%`, width: `${g.size}px`, '--sky-rotation': `${g.rotation}deg`, animationDuration: `${g.duration}s` }} />
+                            <img key={g.id} src={gubbyImgUrl} className="absolute animate-sky-fall grayscale opacity-40" style={{ left: `${g.left}%`, width: `${g.size}px`, '--sky-rotation': `${g.rotation}deg`, animationDuration: `${g.duration}s` }} />
                         ))}
                     </div>
 
                     {notification && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
                             <div className="bg-white p-8 rounded-[2.5rem] max-w-sm w-full shadow-2xl border-4 border-slate-100">
-                                <h4 className="font-black text-2xl text-center mb-2 uppercase tracking-tight">{notification.title}</h4>
+                                <h4 className="font-black text-2xl text-center mb-2 uppercase">{notification.title}</h4>
                                 <p className="text-slate-500 text-center mb-6 font-medium leading-snug">{notification.message}</p>
                                 <div className="flex flex-col gap-2">
                                     {notification.confirmAction ? (
                                         <>
-                                            <button onClick={() => { notification.confirmAction(); setNotification(null); }} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase hover:bg-indigo-700 transition-colors">Ascend</button>
+                                            <button onClick={() => { notification.confirmAction(); setNotification(null); }} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase hover:bg-indigo-700">Ascend</button>
                                             <button onClick={() => setNotification(null)} className="w-full bg-slate-100 text-slate-500 py-4 rounded-2xl font-black uppercase">Not yet</button>
                                         </>
                                     ) : (
-                                        <button onClick={() => setNotification(null)} className="w-full bg-black text-white py-4 rounded-2xl font-black uppercase hover:scale-[1.02] transition-transform">Okay</button>
+                                        <button onClick={() => setNotification(null)} className="w-full bg-black text-white py-4 rounded-2xl font-black uppercase">Okay</button>
                                     )}
                                 </div>
                             </div>
@@ -256,17 +219,17 @@
                     <header className="z-20 w-full max-w-2xl flex flex-col items-center gap-3 mt-4 mb-2">
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-black text-black tracking-[0.1em] uppercase">Gubby Clicker</h1>
-                            {prestigeLevel > 0 && <div className="bg-yellow-400 text-black px-3 py-1 rounded-full font-black text-xs border-2 border-white shadow-sm">P{prestigeLevel}</div>}
+                            {prestigeLevel > 0 && <div className="bg-yellow-400 text-black px-3 py-1 rounded-full font-black text-xs border-2 border-white">P{prestigeLevel}</div>}
                         </div>
                         <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex items-center justify-between">
                             <div className="flex items-center gap-2 sm:gap-6 flex-1 text-center">
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Session</p><span className="text-xl font-black">{totalClicksSession.toLocaleString()}</span></div>
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Clicks</p><span className="text-xl font-black">{clicks.toLocaleString()}</span></div>
-                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Gold</p><div className="flex items-center justify-center gap-1"><img src={goldCoinUrl} className="w-4 h-4"/><span className="text-xl font-black">{gold.toLocaleString()}</span></div></div>
+                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Session</p><span className="text-xl font-black">{totalClicksSession.toLocaleString()}</span></div>
+                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span className="text-xl font-black">{clicks.toLocaleString()}</span></div>
+                                <div className="flex-1"><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div className="flex items-center justify-center gap-1"><img src={goldCoinUrl} className="w-4 h-4"/><span className="text-xl font-black">{gold.toLocaleString()}</span></div></div>
                             </div>
                             <div className="flex items-center gap-2 ml-4">
                                 <button onClick={tryAscend} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase ${gold >= currentPrestigeCost ? 'bg-indigo-600 text-white animate-pulse' : 'bg-slate-100 text-slate-400'}`}>Ascend</button>
-                                <button onClick={() => { if (!isBattleActive && clicks > 0) { setGold(g => g + clicks); setClicks(0); } }} disabled={isBattleActive} className="bg-yellow-400 text-black px-5 py-2 rounded-xl font-black uppercase text-[10px] hover:bg-yellow-300 disabled:opacity-30 shadow-md">Sell</button>
+                                <button onClick={() => { if (!isBattleActive && clicks > 0) { const mult = activeBuff ? activeBuff.multiplier : 1; setGold(g => g + (clicks * mult)); setClicks(0); } }} disabled={isBattleActive} className="bg-yellow-400 text-black px-5 py-2 rounded-xl font-black uppercase text-[10px] disabled:opacity-30">Sell</button>
                             </div>
                         </div>
                     </header>
@@ -276,11 +239,11 @@
                             {isBattleActive && (
                                 <div className="flex flex-col items-center w-full max-w-xs">
                                     <div className="flex justify-between w-full mb-1">
-                                        <span className={`text-xs font-black uppercase ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleType === 'mega' ? `Mega Boss #${megaBossCount+1}` : `Normal Boss #${normalBossCount+1}`}</span>
-                                        <span className={`text-xs font-black ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleTimer}s</span>
+                                        <span className={`text-xs font-black uppercase ${battleType === 'mega' ? 'text-purple-600' : 'text-red-600'}`}>{battleType === 'mega' ? `Mega Boss` : `Boss`}</span>
+                                        <span className={`text-xs font-black`}>{battleTimer}s</span>
                                     </div>
-                                    <div className={`w-full h-3 bg-slate-200 rounded-full overflow-hidden border ${battleType === 'mega' ? 'border-purple-300' : 'border-red-300'}`}>
-                                        <div className={`h-full transition-all duration-300 ${battleType === 'mega' ? 'bg-gradient-to-r from-purple-600 to-indigo-600' : 'bg-gradient-to-r from-red-600 to-orange-600'}`} style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
+                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border">
+                                        <div className={`h-full transition-all duration-300 ${battleType === 'mega' ? 'bg-indigo-600' : 'bg-red-600'}`} style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
                                     </div>
                                 </div>
                             )}
@@ -288,55 +251,79 @@
 
                         <div className="relative">
                             {activeBuff && (
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full border shadow-sm z-30 whitespace-nowrap">
-                                    <span className="text-[9px] font-black uppercase text-indigo-600">{activeBuff.name}: {activeBuff.timeLeft}s</span>
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white px-4 py-1.5 rounded-full border-2 border-indigo-100 shadow-md z-30 whitespace-nowrap">
+                                    <span className="text-xs font-black uppercase text-indigo-600 tracking-wider">{activeBuff.name}: {activeBuff.timeLeft}s</span>
                                 </div>
                             )}
                             <div className="absolute inset-0 pointer-events-none z-40">
                                 {textParticles.map(p => (
-                                    <span key={p.id} className="absolute font-black text-2xl text-black animate-text-pop drop-shadow-sm" style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
+                                    <span key={p.id} className="absolute font-black text-3xl text-black animate-text-pop" style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
                                 ))}
                             </div>
                             <button onClick={handleMainClick} className={`relative outline-none group ${battleType === 'mega' && isBattleActive ? 'w-64 h-64 sm:w-80 sm:h-80' : 'w-48 h-48 sm:w-64 sm:h-64'} ${isBattleActive ? 'animate-shake' : ''} ${isSquishing ? 'animate-squish' : ''}`}>
-                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl transition-all ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 brightness-110' : ''}`} />
+                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl transition-all ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200' : ''}`} />
                             </button>
                         </div>
                     </main>
 
-                    <div className="z-20 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 mb-4">
-                        <section className="bg-white p-5 rounded-[2rem] shadow-lg border border-slate-100">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Shop</h3>
-                            <div className="flex flex-col gap-2">
-                                <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex items-center justify-between p-3 rounded-2xl bg-indigo-50/50 hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-all">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white rounded-xl p-1 border shadow-sm"><img src={friendImgUrl} className="w-full h-full object-contain"/></div>
-                                        <div className="text-left"><p className="font-black text-xs uppercase">Gubby Friend</p><p className="text-[8px] font-bold text-slate-400">+{prestigeLevel + 1} Passive Click/sec</p></div>
-                                    </div>
-                                    <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{autoclickerCost} Gold</div>
-                                </button>
-                                {SHOP_ITEMS.map(item => (
-                                    <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white rounded-xl p-1.5 border shadow-sm"><img src={item.img} className="w-full h-full object-contain"/></div>
-                                            <div className="text-left"><p className="font-black text-xs uppercase">{item.name}</p><p className="text-[8px] font-bold text-slate-400">{item.power}x Power · {item.duration}s</p></div>
+                    <div className="z-20 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 mb-8">
+                        {/* Marketplace */}
+                        <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Marketplace</h3>
+                            <div className="flex flex-col gap-3">
+                                {/* Autoclicker - Scaled down to match other small items */}
+                                <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-sm border border-slate-100">
+                                            <img src={friendImgUrl} className="w-full h-full object-contain"/>
                                         </div>
-                                        <div className="bg-black text-white px-3 py-1 rounded-lg text-xs font-black">{item.cost} Gold</div>
+                                        <div className="text-left">
+                                            <p className="font-black text-xs uppercase text-slate-800">Gubby Friend</p>
+                                            <p className="text-[9px] font-bold text-slate-500 tracking-tight">+{prestigeLevel + 1} Passive Click/sec</p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-black text-white px-3 py-1.5 rounded-lg text-[10px] font-black">{autoclickerCost} Gold</div>
+                                </button>
+
+                                {SHOP_ITEMS.map(item => (
+                                    <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 hover:bg-slate-100 border-2 border-slate-100 transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-sm border border-slate-100"><img src={item.img} className="w-full h-full object-contain"/></div>
+                                            <div className="text-left"><p className="font-black text-xs uppercase text-slate-800">{item.name}</p><p className="text-[9px] font-bold text-slate-500">{item.power}x Power · {item.duration}s</p></div>
+                                        </div>
+                                        <div className="bg-black text-white px-3 py-1.5 rounded-lg text-[10px] font-black">{item.cost} Gold</div>
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        <section className="bg-white p-5 rounded-[2rem] shadow-lg border border-slate-100">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Inventory</h3>
-                            <div className="grid grid-cols-2 gap-2">
+                        {/* Inventory - Vertical List, 1 per row */}
+                        <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Player Inventory</h3>
+                            <div className="flex flex-col gap-2">
                                 {SHOP_ITEMS.map(item => (
-                                    <button key={`inv-${item.id}`} onClick={() => { if (inventory[item.id] > 0 && !activeBuff) { setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 })); setActiveBuff({ ...item, multiplier: item.power, timeLeft: item.duration }); } }} disabled={inventory[item.id] === 0 || activeBuff !== null} className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${inventory[item.id] > 0 ? `bg-gradient-to-br ${item.color} ${item.borderColor}` : 'bg-slate-50 border-slate-100 opacity-50 grayscale'}`}>
-                                        <img src={item.img} className="w-8 h-8 mb-1 object-contain"/>
-                                        <span className="text-[8px] font-black uppercase">{item.name.split(' ')[0]}</span>
-                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-black text-white rounded-full flex items-center justify-center text-[8px] font-black border-2 border-white">{inventory[item.id]}</span>
+                                    <button 
+                                        key={`inv-${item.id}`} 
+                                        onClick={() => { if (inventory[item.id] > 0 && !activeBuff) { setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 })); setActiveBuff({ ...item, multiplier: item.power, timeLeft: item.duration }); } }} 
+                                        disabled={inventory[item.id] === 0 || activeBuff !== null} 
+                                        className={`relative group flex items-center gap-4 p-3 rounded-2xl border-2 transition-all duration-200 ${inventory[item.id] > 0 ? `bg-white ${item.borderColor} shadow-md scale-100 hover:scale-[1.02] active:scale-95 cursor-pointer` : 'bg-slate-50 border-slate-100 opacity-40 grayscale pointer-events-none'}`}
+                                    >
+                                        <div className={`w-12 h-12 flex-shrink-0 rounded-xl p-2 bg-gradient-to-br ${item.color} shadow-inner`}>
+                                            <img src={item.img} className="w-full h-full object-contain drop-shadow-sm"/>
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-black uppercase text-slate-800">{item.name}</span>
+                                                <div className="bg-black text-white px-2 py-0.5 rounded-lg text-[10px] font-black">
+                                                    x{inventory[item.id]}
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Click to activate {item.power}x boost</p>
+                                        </div>
                                     </button>
                                 ))}
                             </div>
+                            <p className="text-[9px] text-center text-slate-400 mt-4 uppercase font-bold tracking-widest italic">Use charges to defeat bosses faster!</p>
                         </section>
                     </div>
                 </div>
