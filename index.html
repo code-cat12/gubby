@@ -125,7 +125,7 @@
 
             const currentPrestigeCost = Math.floor(10000 * Math.pow(1.5, prestigeLevel));
 
-            // Logic update: Passive income now increases session total as well
+            // Passive Income
             useEffect(() => {
                 if (autoclickers > 0) {
                     const interval = setInterval(() => {
@@ -138,26 +138,25 @@
             }, [autoclickers, prestigeLevel]);
 
             useEffect(() => {
-                // Battle triggering checks based on total session clicks
                 if (totalClicksSession > 0 && !isBattleActive) {
-                    // Check triggers using logic that accounts for the gap between thresholds
                     const lastProcessed = window._lastBattleTriggered || 0;
-                    if (totalClicksSession >= lastProcessed + 100) {
-                        if (Math.floor(totalClicksSession / 500) > Math.floor(lastProcessed / 500)) {
+                    if (totalClicksSession >= lastProcessed + 150) { // Increased gap between battles
+                        if (Math.floor(totalClicksSession / 1000) > Math.floor(lastProcessed / 1000)) {
                             triggerBattle('mega');
                         } else {
                             triggerBattle('normal');
                         }
-                        window._lastBattleTriggered = Math.floor(totalClicksSession / 100) * 100;
+                        window._lastBattleTriggered = Math.floor(totalClicksSession / 150) * 150;
                     }
                 }
             }, [totalClicksSession]);
 
             const triggerBattle = (type) => {
                 const isMega = type === 'mega';
+                // REBALANCED HP: Reduced base and significantly reduced scaling
                 const hp = isMega 
-                    ? 500 + Math.floor(gold / 10) 
-                    : 40 + Math.floor(gold / 100);
+                    ? 150 + Math.floor(gold / 40) // Was 500 + gold/10
+                    : 30 + Math.floor(gold / 250); // Was 40 + gold/100
                 
                 setBattleType(type);
                 setBattleHP(hp);
@@ -166,7 +165,7 @@
                 setIsBattleActive(true);
                 setNotification({ 
                     title: isMega ? "MEGA BOSS DETECTED!" : "GUBBY BATTLE!", 
-                    message: isMega ? "A COLOSSAL MEGA GUBBY HAS ARRIVED!" : "A Corrupted Gubby has appeared!", 
+                    message: isMega ? "A Mega Gubby appears! Defeat it for massive gold!" : "A Corrupted Gubby has appeared!", 
                     type: "warning" 
                 });
             };
@@ -204,7 +203,7 @@
             const endBattle = (won) => {
                 setIsBattleActive(false);
                 if (won) {
-                    const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 15 : 2));
+                    const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 20 : 3));
                     setGold(prev => prev + reward);
                     setNotification({ title: "VICTORY!", message: `Boss defeated! Reward: ${reward} Gold.`, type: "success" });
                 } else {
@@ -248,7 +247,8 @@
                 setTimeout(() => setIsSquishing(false), 200);
 
                 if (isBattleActive) {
-                    const damage = activeBuff ? Math.ceil(activeBuff.multiplier / 2) : 1;
+                    // Damage is based on your current power
+                    const damage = activeBuff ? Math.ceil(activeBuff.multiplier * basePower / 2) : basePower;
                     setBattleHP(prev => {
                         const next = prev - damage;
                         if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
