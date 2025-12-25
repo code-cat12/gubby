@@ -12,12 +12,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
-        @keyframes sky-fall {
-            0% { transform: translateY(-20vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(120vh) rotate(var(--sky-rotation)); opacity: 0; }
-        }
         @keyframes text-pop {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
             20% { opacity: 1; transform: translate(var(--pop-x), -40px) scale(1.3); }
@@ -25,8 +19,6 @@
         }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes squish { 0% { transform: scale(1, 1); } 30% { transform: scale(1.2, 0.8); } 100% { transform: scale(1, 1); } }
-        
-        .animate-sky-fall { animation-name: sky-fall; animation-timing-function: linear; animation-fill-mode: forwards; }
         .animate-text-pop { animation: text-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .animate-shake { animation: shake 0.2s ease-in-out infinite; }
         .animate-squish { animation: squish 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -44,7 +36,7 @@
             const [activeBuff, setActiveBuff] = useState(null);
             const [inventory, setInventory] = useState({ 
                 rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, 
-                fever: 0, rain: 0, warp: 0 
+                rain: 0, warp: 0 
             });
             const [textParticles, setTextParticles] = useState([]);
             const [notification, setNotification] = useState(null);
@@ -70,7 +62,6 @@
                 { id: 'rainbow', name: 'Rainbow', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
                 { id: 'mega', name: 'Mega', cost: 800, power: 25, duration: 12, img: 'https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png' },
                 { id: 'omega', name: 'Omega', cost: 2000, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
-                { id: 'fever', name: 'Fever', cost: 3200, power: 100, duration: 7, description: '4 Helpers', img: 'https://static.wikitide.net/cafewiki/thumb/0/01/GubbyModel.png/400px-GubbyModel.png' },
                 { id: 'rain', name: 'Rain', cost: 7500, power: 1000, duration: 18, description: '300 Gold/s', img: 'https://static.vecteezy.com/system/resources/previews/035/715/093/non_2x/3d-gold-coin-rain-png.png' },
                 { id: 'warp', name: 'Time Warp', cost: 12000, power: 1, duration: 1, description: '+30s Battle', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' },
                 { id: 'legendary', name: 'Legendary', cost: 15000, power: 1000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq4n27KnKRQhJ1i15VvpRCuRtb9sBxjU48hA&s' },
@@ -92,35 +83,20 @@
                 return () => clearInterval(interval);
             }, [autoclickers, prestigeLevel]);
 
-            useEffect(() => {
-                const interval = setInterval(() => {
-                    if (activeBuff && activeBuff.id === 'fever') {
-                        const prestigeMult = (prestigeLevel + 1);
-                        const feverPower = 400 * prestigeMult;
-                        if (isBattleActive) {
-                            setBattleHP(prev => {
-                                const next = prev - feverPower;
-                                if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
-                                return next;
-                            });
-                        } else {
-                            setClicks(prev => prev + feverPower);
-                            setTotalClicksSession(prev => prev + feverPower);
-                        }
-                    }
-                }, 750);
-                return () => clearInterval(interval);
-            }, [activeBuff, prestigeLevel, isBattleActive]);
-
+            // Logic to trigger battles at specific click thresholds
             useEffect(() => {
                 if (totalClicksSession > 0 && !isBattleActive && !peaceTreatyActive) {
                     const lastProcessedMega = window._lastMegaTriggered || 0;
                     const lastProcessedNormal = window._lastNormalTriggered || 0;
+
+                    // Mega Boss every 750 clicks (e.g., 750, 1500, 2250)
                     if (totalClicksSession >= lastProcessedMega + 750) {
                         triggerBattle('mega');
                         window._lastMegaTriggered = Math.floor(totalClicksSession / 750) * 750;
-                        window._lastNormalTriggered = totalClicksSession; 
-                    } else if (totalClicksSession >= lastProcessedNormal + 250) {
+                        window._lastNormalTriggered = totalClicksSession; // Mark normal as "handled" for this milestone
+                    } 
+                    // Normal Boss every 250 clicks, skipping the 750 milestones
+                    else if (totalClicksSession >= lastProcessedNormal + 250) {
                         triggerBattle('normal');
                         window._lastNormalTriggered = Math.floor(totalClicksSession / 250) * 250;
                     }
@@ -129,7 +105,11 @@
 
             const triggerBattle = (type) => {
                 const isMega = type === 'mega';
-                let hp = isMega ? 50 + (megaBossCount * 800) : 20 + (normalBossCount * 80);
+                // Scaling: Normal (20, 30, 40...) | Mega (45, 55, 65...)
+                let hp = isMega 
+                    ? 45 + (megaBossCount * 10) 
+                    : 20 + (normalBossCount * 10);
+                
                 setBattleType(type);
                 setBattleHP(hp);
                 setMaxBattleHP(hp);
@@ -174,7 +154,7 @@
                 if (gold >= 1000000 && !peaceTreatyActive) {
                     setGold(prev => prev - 1000000);
                     setPeaceTreatyActive(true);
-                    setNotification({ title: "DIPLOMACY!", message: "Bosses disabled for this session!", type: "success" });
+                    setNotification({ title: "PERMANENT PEACE!", message: "Bosses have been retired forever!", type: "success" });
                 }
             };
 
@@ -189,18 +169,21 @@
             const ascend = () => {
                 if (gold >= currentPrestigeCost) {
                     setPrestigeLevel(p => p + 1);
-                    setGold(0); setClicks(0); setAutoclickers(0); setAutoclickerCost(150);
-                    setInventory({ rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, fever: 0, rain: 0, warp: 0 });
+                    setGold(0); 
+                    setClicks(0); 
+                    setAutoclickers(0); 
+                    setAutoclickerCost(150);
+                    setInventory({ rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, rain: 0, warp: 0 });
                     setTotalClicksSession(0);
                     window._lastMegaTriggered = 0;
                     window._lastNormalTriggered = 0;
-                    setActiveBuff(null); setPeaceTreatyActive(false);
+                    setActiveBuff(null); 
                     setNotification({ title: "ASCENDED!", message: `Prestige ${prestigeLevel + 1} reached!`, type: "success" });
                 }
             };
 
             const handleMainClick = (e) => {
-                const currentPower = (prestigeLevel + 1) * (activeBuff && !['fever', 'rain', 'warp'].includes(activeBuff.id) ? activeBuff.power : 1);
+                const currentPower = (prestigeLevel + 1) * (activeBuff && !['rain', 'warp'].includes(activeBuff.id) ? activeBuff.power : 1);
                 const rect = e.currentTarget.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - rect.width / 2;
                 const clickY = e.clientY - rect.top - rect.height / 2;
@@ -259,7 +242,7 @@
                         <div className="flex items-center gap-4">
                             <h1 className="text-3xl font-black text-black tracking-[0.1em] uppercase">Gubby Clicker</h1>
                             {prestigeLevel > 0 && <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige {prestigeLevel}</span>}
-                            {peaceTreatyActive && <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Diplomat</span>}
+                            {peaceTreatyActive && <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Diplomat (Locked)</span>}
                         </div>
                         
                         <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
@@ -279,8 +262,14 @@
                         <div className="h-16 mb-4">
                             {isBattleActive ? (
                                 <div className="flex flex-col items-center w-64">
-                                    <div className="flex justify-between w-full mb-1"><span className="text-[10px] font-black uppercase text-red-600">BOSS {battleTimer}s</span></div>
-                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border"><div className="h-full bg-red-600 transition-all duration-300" style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} /></div>
+                                    <div className="flex justify-between w-full mb-1">
+                                        <span className="text-[10px] font-black uppercase text-red-600">
+                                            {battleType === 'mega' ? 'MEGA BOSS' : 'BOSS'} {battleTimer}s
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border">
+                                        <div className="h-full bg-red-600 transition-all duration-300" style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
+                                    </div>
                                 </div>
                             ) : activeBuff && (
                                 <div className="bg-white px-6 py-2 rounded-full border-2 border-indigo-100 shadow-md animate-bounce text-center">
@@ -297,7 +286,7 @@
                                 ))}
                             </div>
                             <button onClick={handleMainClick} className={`relative active:scale-95 w-56 h-56 ${isBattleActive ? 'animate-shake' : ''} ${isSquishing ? 'animate-squish' : ''}`}>
-                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200' : ''}`} />
+                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 scale-110' : ''}`} />
                             </button>
                         </div>
                     </main>
@@ -306,11 +295,9 @@
                         <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex-1">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Marketplace</h3>
-                                {!peaceTreatyActive && (
-                                    <button onClick={buyPeaceTreaty} className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg transition-all ${gold >= 1000000 ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
-                                        Peace (1M)
-                                    </button>
-                                )}
+                                <button onClick={buyPeaceTreaty} disabled={peaceTreatyActive} className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg transition-all ${peaceTreatyActive ? 'bg-emerald-100 text-emerald-600' : gold >= 1000000 ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                                    {peaceTreatyActive ? 'Permanent Peace Active' : 'Peace (1M)'}
+                                </button>
                             </div>
                             <div className="grid grid-cols-3 gap-3">
                                 <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex flex-col items-center p-3 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-slate-300 transition-all text-center">
