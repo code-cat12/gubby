@@ -66,7 +66,6 @@
             const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
             const friendImgUrl = "https://static.vecteezy.com/system/resources/thumbnails/012/026/493/small/add-new-friend-user-group-icon-3d-render-png.png";
 
-            // Items sorted by cost ascending
             const SHOP_ITEMS = [
                 { id: 'rainbow', name: 'Rainbow', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
                 { id: 'mega', name: 'Mega', cost: 800, power: 25, duration: 12, img: 'https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png' },
@@ -192,6 +191,9 @@
                     setPrestigeLevel(p => p + 1);
                     setGold(0); setClicks(0); setAutoclickers(0); setAutoclickerCost(150);
                     setInventory({ rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, fever: 0, rain: 0, warp: 0 });
+                    setTotalClicksSession(0);
+                    window._lastMegaTriggered = 0;
+                    window._lastNormalTriggered = 0;
                     setActiveBuff(null); setPeaceTreatyActive(false);
                     setNotification({ title: "ASCENDED!", message: `Prestige ${prestigeLevel + 1} reached!`, type: "success" });
                 }
@@ -263,6 +265,7 @@
                         <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
                             <div className="flex items-center gap-4 sm:gap-10 flex-1 flex-wrap justify-center sm:justify-start">
                                 <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span className="text-xl font-black tracking-tight">{Math.floor(clicks).toLocaleString()}</span></div>
+                                <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p><span className="text-xl font-black tracking-tight text-black">{totalClicksSession.toLocaleString()}</span></div>
                                 <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div className="flex items-center gap-1"><img src={goldCoinUrl} className="w-4 h-4"/><span className="text-xl font-black">{gold.toLocaleString()}</span></div></div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -300,7 +303,6 @@
                     </main>
 
                     <div className="z-20 w-full max-w-6xl flex flex-col lg:flex-row gap-6 mt-8">
-                        {/* Marketplace */}
                         <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex-1">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Marketplace</h3>
@@ -326,7 +328,6 @@
                             </div>
                         </section>
 
-                        {/* Inventory */}
                         <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex-1">
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Inventory</h3>
                             <div className="grid grid-cols-3 gap-3">
