@@ -10,21 +10,17 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; color: #1e293b; }
-        
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         @keyframes text-pop {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
             20% { opacity: 1; transform: translate(var(--pop-x), -40px) scale(1.3); }
             100% { opacity: 0; transform: translate(var(--pop-x), -120px) scale(1); }
         }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes squish { 0% { transform: scale(1, 1); } 30% { transform: scale(1.2, 0.8); } 100% { transform: scale(1, 1); } }
-        
         .animate-text-pop { animation: text-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        .animate-squish { animation: squish 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .animate-shake { animation: shake 0.2s ease-in-out infinite; }
+        .animate-squish { animation: squish 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body>
@@ -34,17 +30,28 @@
 
         const App = () => {
             const [clicks, setClicks] = useState(0);
-            const [totalClicks, setTotalClicks] = useState(0);
+            const [totalClicksSession, setTotalClicksSession] = useState(0); 
             const [gold, setGold] = useState(0);
             const [activeBuff, setActiveBuff] = useState(null);
             const [inventory, setInventory] = useState({ 
-                rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, 
-                celestial: 0, void: 0 
+                rainbow: 0, mega: 0, omega: 0, rain: 0, warp: 0,
+                legendary: 0, mythic: 0, divine: 0, celestial: 0, void: 0 
             });
             const [textParticles, setTextParticles] = useState([]);
+            const [notification, setNotification] = useState(null);
             const [isSquishing, setIsSquishing] = useState(false);
             const [autoclickers, setAutoclickers] = useState(0);
             const [autoclickerCost, setAutoclickerCost] = useState(150);
+            const [prestigeLevel, setPrestigeLevel] = useState(0);
+            const [peaceTreatyActive, setPeaceTreatyActive] = useState(false);
+            
+            const [isBattleActive, setIsBattleActive] = useState(false);
+            const [battleType, setBattleType] = useState('normal'); 
+            const [battleHP, setBattleHP] = useState(0);
+            const [maxBattleHP, setMaxBattleHP] = useState(0);
+            const [battleTimer, setBattleTimer] = useState(0);
+            const [normalBossCount, setNormalBossCount] = useState(0);
+            const [megaBossCount, setMegaBossCount] = useState(0);
 
             const gubbyImgUrl = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
             const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
@@ -52,155 +59,268 @@
 
             const SHOP_ITEMS = [
                 { id: 'rainbow', name: 'Rainbow', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
-                { id: 'mega', name: 'Mega', cost: 800, power: 25, duration: 12, img: 'https://static.vecteezy.com/system/resources/previews/018/842/628/non_2x/3d-star-icon-isolated-on-background-customer-rating-feedback-concept-3d-rendering-free-png.png' },
+                { id: 'mega', name: 'Mega', cost: 800, power: 25, duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
                 { id: 'omega', name: 'Omega', cost: 2000, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
-                { id: 'legendary', name: 'Legendary', cost: 15000, power: 1000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq4n27KnKRQhJ1i15VvpRCuRtb9sBxjU48hA&s' },
-                { id: 'mythic', name: 'Mythic', cost: 75000, power: 5000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/magic-wand-3d-icon-png-download-8249313.png' },
+                { id: 'rain', name: 'Rain', cost: 7500, power: 1000, duration: 18, description: '300 Gold/s', img: 'https://static.vecteezy.com/system/resources/previews/035/715/093/non_2x/3d-gold-coin-rain-png.png' },
+                { id: 'warp', name: 'Time Warp', cost: 12000, power: 1, duration: 1, description: '+30s Battle', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' },
+                { id: 'legendary', name: 'Legendary', cost: 15000, power: 1000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
+                { id: 'mythic', name: 'Mythic', cost: 75000, power: 5000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
                 { id: 'divine', name: 'Divine', cost: 250000, power: 25000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
                 { id: 'celestial', name: 'Celestial', cost: 1000000, power: 100000, duration: 8, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/planets-3d-icon-png-download-11683976.png' },
                 { id: 'void', name: 'Void', cost: 5000000, power: 500000, duration: 7, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-station-3d-icon-png-download-6308159.png' }
             ];
 
+            const currentPrestigeCost = Math.floor(10000 * Math.pow(2.5, prestigeLevel));
+
             useEffect(() => {
                 const interval = setInterval(() => {
+                    const prestigeMult = (prestigeLevel + 1);
                     if (autoclickers > 0) {
-                        setClicks(prev => prev + autoclickers);
-                        setTotalClicks(prev => prev + autoclickers);
+                        const gain = autoclickers * prestigeMult;
+                        setClicks(prev => prev + gain);
+                        setTotalClicksSession(prev => prev + gain);
                     }
                 }, 1000);
                 return () => clearInterval(interval);
-            }, [autoclickers]);
+            }, [autoclickers, prestigeLevel]);
+
+            useEffect(() => {
+                if (totalClicksSession > 0 && !isBattleActive && !peaceTreatyActive) {
+                    const lastProcessedMega = window._lastMegaTriggered || 0;
+                    const lastProcessedNormal = window._lastNormalTriggered || 0;
+
+                    if (totalClicksSession >= lastProcessedMega + 750) {
+                        triggerBattle('mega');
+                        window._lastMegaTriggered = Math.floor(totalClicksSession / 750) * 750;
+                        window._lastNormalTriggered = totalClicksSession;
+                    } 
+                    else if (totalClicksSession >= lastProcessedNormal + 250) {
+                        triggerBattle('normal');
+                        window._lastNormalTriggered = Math.floor(totalClicksSession / 250) * 250;
+                    }
+                }
+            }, [totalClicksSession, isBattleActive, peaceTreatyActive]);
+
+            const triggerBattle = (type) => {
+                const isMega = type === 'mega';
+                let hp = isMega ? 45 + (megaBossCount * 10) : 20 + (normalBossCount * 10);
+                setBattleType(type);
+                setBattleHP(hp);
+                setMaxBattleHP(hp);
+                const baseTime = isMega ? 45 : 30;
+                setBattleTimer(baseTime + (isMega ? (megaBossCount * 8) : (normalBossCount * 5)));
+                setIsBattleActive(true);
+            };
+
+            const endBattle = (won) => {
+                setIsBattleActive(false);
+                if (won) {
+                    const reward = Math.floor(maxBattleHP * (battleType === 'mega' ? 6 : 3));
+                    if (battleType === 'mega') setMegaBossCount(c => c + 1);
+                    else setNormalBossCount(c => c + 1);
+                    setGold(prev => prev + reward);
+                    setNotification({ title: "VICTORY!", message: `Reward: ${reward} Gold.`, type: "success" });
+                } else {
+                    setNotification({ title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" });
+                }
+            };
 
             useEffect(() => {
                 const interval = setInterval(() => {
                     if (activeBuff) {
+                        if (activeBuff.id === 'rain') setGold(prev => prev + 300);
                         setActiveBuff(prev => {
                             if (!prev || prev.timeLeft <= 1) return null;
                             return { ...prev, timeLeft: prev.timeLeft - 1 };
                         });
                     }
+                    if (isBattleActive) {
+                        setBattleTimer(prev => {
+                            if (prev <= 1) { endBattle(false); return 0; }
+                            return prev - 1;
+                        });
+                    }
                 }, 1000);
                 return () => clearInterval(interval);
-            }, [activeBuff]);
+            }, [activeBuff, isBattleActive]);
+
+            const buyPeaceTreaty = () => {
+                if (gold >= 1000000 && !peaceTreatyActive) {
+                    setGold(prev => prev - 1000000);
+                    setPeaceTreatyActive(true);
+                    setNotification({ title: "PERMANENT PEACE!", message: "Bosses have been retired forever!", type: "success" });
+                }
+            };
+
+            const sellClicks = () => {
+                if (!isBattleActive && clicks > 0) {
+                    setGold(g => g + Math.floor(clicks));
+                    setClicks(0);
+                    setNotification({ title: "SOLD!", message: `Clicks converted to gold!`, type: "success" });
+                }
+            };
+
+            const ascend = () => {
+                if (gold >= currentPrestigeCost) {
+                    setPrestigeLevel(p => p + 1);
+                    setGold(0); 
+                    setClicks(0); 
+                    setAutoclickers(0); 
+                    setAutoclickerCost(150);
+                    setInventory({ rainbow: 0, mega: 0, omega: 0, legendary: 0, mythic: 0, divine: 0, rain: 0, warp: 0, celestial: 0, void: 0 });
+                    setTotalClicksSession(0);
+                    window._lastMegaTriggered = 0;
+                    window._lastNormalTriggered = 0;
+                    setActiveBuff(null); 
+                    setNotification({ title: "ASCENDED!", message: `Prestige ${prestigeLevel + 1} reached!`, type: "success" });
+                }
+            };
 
             const handleMainClick = (e) => {
-                const power = activeBuff ? activeBuff.power : 1;
-                
-                setIsSquishing(true);
-                setTimeout(() => setIsSquishing(false), 150);
-                
-                setClicks(prev => prev + power);
-                setTotalClicks(prev => prev + power);
-                
+                const currentPower = (prestigeLevel + 1) * (activeBuff && !['rain', 'warp'].includes(activeBuff.id) ? activeBuff.power : 1);
                 const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                spawnParticle(x, y, `+${Math.floor(power)}`, "text-black font-black");
+                const clickX = e.clientX - rect.left - rect.width / 2;
+                const clickY = e.clientY - rect.top - rect.height / 2;
+                setIsSquishing(true);
+                setTimeout(() => setIsSquishing(false), 200);
+                setTotalClicksSession(prev => prev + 1);
+
+                if (isBattleActive) {
+                    setBattleHP(prev => {
+                        const next = prev - currentPower;
+                        if (next <= 0) { setTimeout(() => endBattle(true), 10); return 0; }
+                        return next;
+                    });
+                    spawnParticle(clickX, clickY, "HIT!", "text-red-600 font-black");
+                } else {
+                    setClicks(prev => prev + currentPower);
+                    spawnParticle(clickX, clickY, `+${Math.floor(currentPower)}`, "text-black font-black");
+                }
+            };
+
+            const useItem = (item) => {
+                if (inventory[item.id] > 0 && !activeBuff) {
+                    if (item.id === 'warp') {
+                        if (isBattleActive) {
+                            setBattleTimer(prev => prev + 30);
+                            setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 }));
+                        } else {
+                            setNotification({ title: "WARP FAILED", message: "Only use during battles!", type: "warning" });
+                        }
+                    } else {
+                        setInventory(inv => ({ ...inv, [item.id]: inv[item.id] - 1 }));
+                        setActiveBuff({ ...item, timeLeft: item.duration });
+                    }
+                }
             };
 
             const spawnParticle = (x, y, text, colorClass) => {
-                const id = Date.now() + Math.random();
-                setTextParticles(prev => [...prev, { id, x, y, popX: (Math.random() - 0.5) * 60, value: text, color: colorClass }]);
-                setTimeout(() => setTextParticles(prev => prev.filter(p => p.id !== id)), 800);
-            };
-
-            const buyItem = (item) => {
-                if (gold >= item.cost) {
-                    setGold(prev => prev - item.cost);
-                    setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 }));
-                }
-            };
-
-            const useItem = (id) => {
-                if (inventory[id] > 0 && !activeBuff) {
-                    const item = SHOP_ITEMS.find(i => i.id === id);
-                    setInventory(inv => ({ ...inv, [id]: inv[id] - 1 }));
-                    setActiveBuff({ ...item, timeLeft: item.duration });
-                }
+                const textId = Date.now() + Math.random();
+                setTextParticles(prev => [...prev, { id: textId, x: x, y: y, popX: (Math.random() - 0.5) * 40, value: text, color: colorClass }]);
+                setTimeout(() => setTextParticles(prev => prev.filter(p => p.id !== textId)), 800);
             };
 
             return (
-                <div className="min-h-screen flex flex-col items-center py-8 px-4">
-                    <h1 className="text-4xl font-black uppercase tracking-tighter mb-8 text-slate-800">Gubby Clicker</h1>
-
-                    {/* HUD */}
-                    <div className="w-full max-w-4xl bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-200 flex items-center justify-between mb-8">
-                        <div className="flex gap-10">
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Clicks</p>
-                                <p className="text-3xl font-black">{Math.floor(clicks).toLocaleString()}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Clicks</p>
-                                <p className="text-3xl font-black">{Math.floor(totalClicks).toLocaleString()}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gold</p>
-                                <div className="flex items-center gap-2">
-                                    <img src={goldCoinUrl} className="w-6 h-6"/>
-                                    <p className="text-3xl font-black text-yellow-500">{gold.toLocaleString()}</p>
-                                </div>
+                <div className="min-h-screen flex flex-col items-center px-4 py-2 select-none bg-slate-50 overflow-x-hidden pb-12">
+                    {notification && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border-4 border-slate-100 max-w-sm w-full">
+                                <h4 className="font-black text-2xl text-center mb-2 uppercase">{notification.title}</h4>
+                                <p className="text-slate-500 text-center mb-6 font-medium leading-snug">{notification.message}</p>
+                                <button onClick={() => setNotification(null)} className="w-full bg-black text-white py-4 rounded-2xl font-black uppercase">Okay</button>
                             </div>
                         </div>
-                        <button onClick={() => { setGold(g => g + clicks); setClicks(0); }} className="bg-black text-white px-10 py-4 rounded-2xl font-black uppercase text-xs hover:scale-105 active:scale-95 transition-all">Sell All Clicks</button>
-                    </div>
+                    )}
 
-                    {/* Click Area */}
-                    <main className="relative flex flex-col items-center justify-center mb-12 h-64">
-                        {activeBuff && <div className="absolute -top-12 bg-white border-2 border-black px-4 py-1.5 rounded-full font-black text-xs animate-bounce uppercase shadow-sm z-50">{activeBuff.name} ACTIVE: {activeBuff.timeLeft}s</div>}
+                    <header className="z-20 w-full max-w-5xl flex flex-col items-center gap-3 mt-4 mb-2">
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-3xl font-black text-black tracking-[0.1em] uppercase">Gubby Clicker</h1>
+                            {prestigeLevel > 0 && <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige {prestigeLevel}</span>}
+                            {peaceTreatyActive && <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Diplomat (Locked)</span>}
+                        </div>
+                        
+                        <div className="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 sm:gap-10 flex-1 flex-wrap justify-center sm:justify-start">
+                                <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span className="text-xl font-black tracking-tight">{Math.floor(clicks).toLocaleString()}</span></div>
+                                <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p><span className="text-xl font-black tracking-tight text-black">{totalClicksSession.toLocaleString()}</span></div>
+                                <div><p className="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div className="flex items-center gap-1"><img src={goldCoinUrl} className="w-4 h-4"/><span className="text-xl font-black">{gold.toLocaleString()}</span></div></div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={ascend} disabled={gold < currentPrestigeCost || isBattleActive} className={`px-5 py-2 rounded-xl font-black uppercase text-[10px] ${gold >= currentPrestigeCost ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-300'}`}>Ascend ({currentPrestigeCost.toLocaleString()})</button>
+                                <button onClick={sellClicks} disabled={isBattleActive} className="bg-yellow-400 text-black px-5 py-2 rounded-xl font-black uppercase text-[10px]">Sell</button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="z-10 relative flex flex-col items-center justify-center w-full min-h-[350px]">
+                        <div className="h-16 mb-4">
+                            {isBattleActive ? (
+                                <div className="flex flex-col items-center w-64">
+                                    <div className="flex justify-between w-full mb-1">
+                                        <span className="text-[10px] font-black uppercase text-red-600">
+                                            {battleType === 'mega' ? 'MEGA BOSS' : 'BOSS'} {battleTimer}s
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden border">
+                                        <div className="h-full bg-red-600 transition-all duration-300" style={{ width: `${(battleHP / maxBattleHP) * 100}%` }} />
+                                    </div>
+                                </div>
+                            ) : activeBuff && (
+                                <div className="bg-white px-6 py-2 rounded-full border-2 border-indigo-100 shadow-md animate-bounce text-center">
+                                    <span className="text-xs font-black uppercase text-indigo-600 tracking-wider block">{activeBuff.name}</span>
+                                    <span className="text-[10px] font-bold text-slate-400">{activeBuff.timeLeft}s</span>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="relative">
                             <div className="absolute inset-0 pointer-events-none z-40">
                                 {textParticles.map(p => (
-                                    <span key={p.id} className={`absolute animate-text-pop ${p.color}`} style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
+                                    <span key={p.id} className={`absolute text-3xl animate-text-pop ${p.color}`} style={{ left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`, '--pop-x': `${p.popX}px` }}>{p.value}</span>
                                 ))}
                             </div>
-                            
-                            <button onClick={handleMainClick} className={`relative active:scale-90 transition-transform ${isSquishing ? 'animate-squish' : ''} z-20`}>
-                                <img src={gubbyImgUrl} className="w-56 h-56 object-contain drop-shadow-2xl" />
+                            <button onClick={handleMainClick} className={`relative active:scale-95 w-56 h-56 ${isBattleActive ? 'animate-shake' : ''} ${isSquishing ? 'animate-squish' : ''}`}>
+                                <img src={gubbyImgUrl} className={`w-full h-full object-contain drop-shadow-2xl ${isBattleActive && battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 scale-110' : ''}`} />
                             </button>
                         </div>
                     </main>
 
-                    {/* Grid Section */}
-                    <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                        
-                        {/* Marketplace */}
-                        <section className="bg-white rounded-[3rem] p-8 shadow-2xl border border-slate-100">
-                            <h2 className="text-xl font-black uppercase mb-6 tracking-tighter">Marketplace</h2>
+                    <div className="z-20 w-full max-w-6xl flex flex-col lg:flex-row gap-6 mt-8">
+                        <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex-1">
+                            <div className="flex justify-between items-center mb-6 px-2">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Marketplace</h3>
+                                <button onClick={buyPeaceTreaty} disabled={peaceTreatyActive} className={`text-[8px] font-black uppercase px-3 py-1.5 rounded-lg transition-all ${peaceTreatyActive ? 'bg-emerald-100 text-emerald-600' : gold >= 1000000 ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                                    {peaceTreatyActive ? 'Peace Active' : 'Peace (1M)'}
+                                </button>
+                            </div>
                             <div className="grid grid-cols-4 gap-3">
-                                <button onClick={() => { if(gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="p-3 bg-slate-50 rounded-2xl border-2 border-slate-100 hover:border-black transition-all flex flex-col items-center justify-between min-h-[120px]">
-                                    <img src={friendImgUrl} className="w-8 h-8 object-contain"/>
-                                    <span className="text-[8px] font-black uppercase text-center leading-tight mt-1">Friend</span>
-                                    <span className="bg-black text-white w-full py-1 mt-1 rounded text-[7px] font-black text-center truncate px-1">{autoclickerCost.toLocaleString()}</span>
+                                <button onClick={() => { if (gold >= autoclickerCost) { setGold(g => g - autoclickerCost); setAutoclickers(a => a + 1); setAutoclickerCost(c => Math.floor(c * 1.5)); }}} className="flex flex-col items-center p-3 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-slate-300 transition-all text-center">
+                                    <img src={friendImgUrl} className="w-8 h-8 mb-2 object-contain"/>
+                                    <p className="font-black text-[8px] uppercase leading-tight mb-1">Friend</p>
+                                    <span className="bg-black text-white px-2 py-1 rounded text-[7px] font-black">{autoclickerCost.toLocaleString()}</span>
                                 </button>
                                 {SHOP_ITEMS.map(item => (
-                                    <button key={item.id} onClick={() => buyItem(item)} className="p-3 bg-slate-50 rounded-2xl border-2 border-slate-100 hover:border-black transition-all flex flex-col items-center justify-between min-h-[120px]">
-                                        <img src={item.img} className="w-8 h-8 object-contain"/>
-                                        <span className="text-[8px] font-black uppercase text-center leading-tight mt-1">{item.name}</span>
-                                        <span className="bg-black text-white w-full py-1 mt-1 rounded text-[7px] font-black text-center truncate px-1">{item.cost.toLocaleString()}</span>
+                                    <button key={item.id} onClick={() => { if (gold >= item.cost) { setGold(g => g - item.cost); setInventory(inv => ({ ...inv, [item.id]: inv[item.id] + 1 })); } }} className="flex flex-col items-center p-3 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-slate-300 transition-all text-center">
+                                        <img src={item.img} className="w-8 h-8 mb-2 object-contain"/>
+                                        <p className="font-black text-[8px] uppercase leading-tight mb-1">{item.name}</p>
+                                        <span className="bg-black text-white px-2 py-1 rounded text-[7px] font-black">{item.cost >= 1000000 ? (item.cost/1000000).toFixed(1) + 'M' : item.cost.toLocaleString()}</span>
                                     </button>
                                 ))}
                             </div>
                         </section>
 
-                        {/* Inventory */}
-                        <section className="bg-white rounded-[3rem] p-8 shadow-2xl border border-slate-100">
-                            <h2 className="text-xl font-black uppercase mb-6 tracking-tighter">Inventory</h2>
+                        <section className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex-1">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 px-2">Inventory</h3>
                             <div className="grid grid-cols-4 gap-3">
-                                {SHOP_ITEMS.map(item => {
-                                    const count = inventory[item.id];
-                                    return (
-                                        <button key={item.id} disabled={count === 0 || activeBuff} onClick={() => useItem(item.id)} className={`relative p-3 rounded-2xl border-2 flex flex-col items-center justify-center transition-all min-h-[120px] ${count > 0 ? 'bg-slate-50 border-slate-100 hover:border-black' : 'opacity-10 grayscale'}`}>
-                                            <img src={item.img} className="w-10 h-10 object-contain mb-1"/>
-                                            <span className="text-[8px] font-black uppercase text-center leading-tight">{item.name}</span>
-                                            {count > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] w-6 h-6 rounded-full flex items-center justify-center border-4 border-white shadow-sm font-black">{count}</span>}
-                                        </button>
-                                    );
-                                })}
+                                {SHOP_ITEMS.map(item => (
+                                    <button key={`inv-${item.id}`} onClick={() => useItem(item)} disabled={inventory[item.id] === 0 || (activeBuff !== null && item.id !== 'warp')} className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all relative ${inventory[item.id] > 0 ? 'bg-white border-indigo-100 hover:border-indigo-400 active:scale-95 shadow-sm' : 'bg-slate-50 border-slate-50 opacity-20 grayscale'}`}>
+                                        <img src={item.img} className="w-8 h-8 mb-2 object-contain"/>
+                                        <span className="absolute -top-1 -right-1 bg-black text-white text-[7px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">{inventory[item.id]}</span>
+                                        <p className="text-[8px] font-black uppercase leading-tight">{item.name}</p>
+                                        <p className="text-[7px] font-bold text-indigo-500 uppercase">{item.id === 'warp' ? '+30s' : `${item.duration}s`}</p>
+                                    </button>
+                                ))}
                             </div>
-                            {Object.values(inventory).every(v => v === 0) && (
-                                <div className="h-24 flex items-center justify-center text-slate-300 uppercase font-black text-[10px] tracking-widest">Inventory Empty</div>
-                            )}
                         </section>
                     </div>
                 </div>
