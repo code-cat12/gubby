@@ -12,15 +12,26 @@
             font-family: 'Inter', sans-serif;
             transition: background-color 0.5s ease;
         }
-        .squish { transform: scale(1.1, 0.9); }
+        
+        /* The Squish Animation */
+        .squish { 
+            transform: scale(0.9, 0.9) !important;
+        }
+        
+        .gubby-container {
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(1);
+        }
+
         .particle {
             pointer-events: none;
             position: absolute;
             animation: floatUp 0.8s ease-out forwards;
+            z-index: 50;
         }
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
@@ -172,19 +183,23 @@
 
         function handleMainClick(e) {
             const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && !['warp', 'oracle'].includes(state.activeBuff.id) ? state.activeBuff.power : 1);
-            const rect = e.currentTarget.getBoundingClientRect();
+            
+            // Visual feedback - Add squish class
+            const container = e.currentTarget;
+            container.classList.add('squish');
+            setTimeout(() => container.classList.remove('squish'), 100);
+
+            // Particles
+            const rect = container.getBoundingClientRect();
             const clickX = e.clientX - rect.left - rect.width / 2;
             const clickY = e.clientY - rect.top - rect.height / 2;
-            
-            e.currentTarget.classList.add('squish');
-            setTimeout(() => e.currentTarget.classList.remove('squish'), 200);
 
             const particle = document.createElement('span');
-            particle.className = `particle text-4xl font-black ${state.isBattleActive ? 'text-red-600' : 'text-black'}`;
+            particle.className = `particle text-4xl font-black ${state.isBattleActive ? 'text-red-600' : 'text-slate-900'}`;
             particle.innerText = state.isBattleActive ? 'HIT!' : `+${currentPower}`;
             particle.style.left = `calc(50% + ${clickX}px)`;
             particle.style.top = `calc(50% + ${clickY}px)`;
-            e.currentTarget.parentElement.appendChild(particle);
+            container.parentElement.appendChild(particle);
             setTimeout(() => particle.remove(), 800);
 
             const newTotal = state.totalClicksSession + 1;
@@ -293,6 +308,11 @@
             root.innerHTML = `
                 <div class="min-h-screen flex flex-col items-center px-4 py-2 select-none overflow-x-hidden pb-12 transition-colors duration-500">
                     
+                    <!-- Fixed Travel Button (Smaller Circle version) -->
+                    <button onclick="updateState({showTravelModal: true})" class="fixed top-6 right-6 z-[60] w-12 h-12 bg-white border-2 border-slate-100 text-slate-900 rounded-full shadow-lg hover:border-indigo-400 hover:scale-110 active:scale-95 transition-all flex items-center justify-center group" title="Travel">
+                        <i data-lucide="map" class="text-indigo-500 w-6 h-6 group-hover:rotate-12 transition-transform"></i>
+                    </button>
+
                     ${state.notification ? `
                         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
                             <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full">
@@ -357,10 +377,6 @@
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div class="flex items-center gap-1"><img src="${goldCoinUrl}" class="w-4 h-4"/><span class="text-xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div></div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <button onclick="updateState({showTravelModal: true})" class="p-3 bg-white border-2 border-slate-100 text-slate-900 rounded-2xl shadow-sm hover:border-indigo-200 transition-colors flex items-center gap-2 px-4">
-                                    <i data-lucide="map" class="text-indigo-500 w-4.5 h-4.5"></i>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">Travel</span>
-                                </button>
                                 <button onclick="ascend()" ${state.gold < currentPrestigeCost || state.isBattleActive ? 'disabled' : ''} class="px-5 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${state.gold >= currentPrestigeCost ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-300'}">Ascend (${formatCost(currentPrestigeCost)})</button>
                                 <button onclick="sellClicks()" ${state.isBattleActive ? 'disabled' : ''} class="px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all hover:brightness-105 shadow-md ${state.marketMultiplier >= 1.2 ? 'bg-emerald-400 text-white animate-pulse' : 'bg-yellow-400 text-slate-900'}">Sell</button>
                             </div>
@@ -399,11 +415,11 @@
                         <div class="relative">
                             <button 
                                 onclick="handleMainClick(event)" 
-                                class="relative active:scale-95 w-64 h-64 transition-transform duration-100 ${state.isBattleActive ? 'animate-pulse' : ''}"
+                                class="gubby-container relative active:scale-90 w-64 h-64 flex items-center justify-center ${state.isBattleActive ? 'animate-pulse' : ''}"
                             >
                                 <img 
                                     src="${gubbyImgUrl}" 
-                                    class="w-full h-full object-contain drop-shadow-2xl transition-all duration-500 ${state.isBattleActive && state.battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 scale-110' : ''}" 
+                                    class="w-full h-full object-contain drop-shadow-2xl transition-all duration-500 pointer-events-none ${state.isBattleActive && state.battleType === 'mega' ? 'hue-rotate-[280deg] saturate-200 scale-110' : ''}" 
                                 />
                             </button>
                         </div>
