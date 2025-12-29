@@ -14,44 +14,40 @@
             touch-action: manipulation;
         }
         
-        /* Squish Logic */
         .gubby-container {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             cursor: pointer;
             position: relative;
             transform-origin: bottom center;
-            /* Smooth return to normal state */
-            transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
         }
 
-        /* Active state - instant squish on press */
         .gubby-container:active {
-            transform: scale(1.35, 0.65);
-            transition: transform 0.05s ease-out;
+            transform: scale(1.15, 0.85);
+            transition: transform 0.03s ease-out;
         }
 
-        /* Animation class applied via State for the bounce back */
         .animate-squish {
-            animation: squish-bounce 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            animation: squish-fast 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        @keyframes squish-bounce {
-            0% { transform: scale(1.35, 0.65); }
-            40% { transform: scale(0.85, 1.15); } /* Stretch up */
-            70% { transform: scale(1.05, 0.95); } /* Settle */
+        @keyframes squish-fast {
+            0% { transform: scale(1.15, 0.85); }
+            50% { transform: scale(0.95, 1.05); }
             100% { transform: scale(1, 1); }
         }
 
         .particle {
             pointer-events: none;
-            position: fixed; /* Fixed to persist across renders */
-            animation: floatUp 0.6s ease-out forwards;
+            position: fixed;
+            animation: floatUp 0.5s ease-out forwards;
             z-index: 100;
         }
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-140px) scale(1.4) rotate(10deg); opacity: 0; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
@@ -60,8 +56,13 @@
 
     <script>
         const gubbyImgUrl = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
-        const goldCoinUrl = "https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png";
-        const friendImgUrl = "https://static.vecteezy.com/system/resources/thumbnails/012/026/493/small/add-new-friend-user-group-icon-3d-render-png.png";
+        
+        const CURRENCIES = {
+            plains: { name: 'Gold', icon: 'https://cdn3d.iconscout.com/3d/premium/thumb/star-coin-3d-icon-png-download-11254734.png' },
+            hawaii: { name: 'Seashell', icon: 'https://cdn3d.iconscout.com/3d/premium/thumb/seashell-3d-icon-png-download-9708035.png' },
+            starlight: { name: 'Star', icon: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
+            void: { name: 'Galaxy', icon: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308179.png' }
+        };
 
         const DESTINATIONS = [
             { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
@@ -95,8 +96,6 @@
             theme: 'plains',
             showTravelModal: false,
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
-            autoclickers: 0,
-            autoclickerCost: 150,
             prestigeLevel: 0,
             peaceTreatyActive: false,
             marketMultiplier: 1,
@@ -115,6 +114,13 @@
             isSquishing: false
         };
 
+        const CONVERSION_RATES = {
+            'plains': 1,
+            'hawaii': 25,
+            'starlight': 25 * 25,
+            'void': 25 * 25 * 25
+        };
+
         let lastMegaTriggered = 0;
         let lastNormalTriggered = 0;
         let squishTimeout = null;
@@ -128,7 +134,7 @@
             if (cost >= 1000000000) return (cost / 1000000000).toFixed(1) + 'B';
             if (cost >= 1000000) return (cost / 1000000).toFixed(1) + 'M';
             if (cost >= 1000) return (cost / 1000).toFixed(1) + 'k';
-            return cost.toLocaleString();
+            return cost.toLocaleString(undefined, { maximumFractionDigits: 1 });
         }
 
         function triggerBattle(type) {
@@ -154,7 +160,7 @@
                     gold: state.gold + reward,
                     megaBossCount: state.battleType === 'mega' ? state.megaBossCount + 1 : state.megaBossCount,
                     normalBossCount: state.battleType === 'normal' ? state.normalBossCount + 1 : state.normalBossCount,
-                    notification: { title: "VICTORY!", message: `Reward: ${reward.toFixed(2)} Gold.`, type: "success" }
+                    notification: { title: "VICTORY!", message: `Reward: ${reward.toFixed(2)} ${CURRENCIES[state.theme].name}s.`, type: "success" }
                 });
             } else {
                 updateState({ isBattleActive: false, notification: { title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" } });
@@ -162,9 +168,9 @@
         }
 
         function handleMainClick(e) {
+            if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
             
-            // Logic for next state
             const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && !['warp', 'oracle'].includes(state.activeBuff.id) ? state.activeBuff.power : 1);
             let nextState = { isSquishing: true };
 
@@ -182,9 +188,6 @@
                 nextState.totalClicksSession = state.totalClicksSession + 1;
             }
 
-            // Visual Particles (Fixed position to survive re-render)
-            const container = e.currentTarget;
-            const rect = container.getBoundingClientRect();
             const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
             const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
             
@@ -194,16 +197,14 @@
             particle.style.left = `${clientX}px`;
             particle.style.top = `${clientY}px`;
             document.body.appendChild(particle);
-            setTimeout(() => particle.remove(), 600);
+            setTimeout(() => particle.remove(), 500);
 
-            // Update State (triggers render and creates NEW DOM element with animation class)
             updateState(nextState);
 
-            // Reset squish state
             if (squishTimeout) clearTimeout(squishTimeout);
             squishTimeout = setTimeout(() => {
                 updateState({ isSquishing: false });
-            }, 150);
+            }, 80);
         }
 
         function sellClicks() {
@@ -214,9 +215,27 @@
                 updateState({
                     gold: state.gold + totalGoldEarned,
                     clicks: 0,
-                    notification: { title: "MARKET SOLD!", message: `Sold for ${totalGoldEarned.toFixed(2)} gold!`, type: "success" }
+                    notification: { title: "MARKET SOLD!", message: `Sold for ${totalGoldEarned.toFixed(2)} ${CURRENCIES[state.theme].name}s!`, type: "success" }
                 });
             }
+        }
+
+        function travelTo(destId) {
+            const oldRate = CONVERSION_RATES[state.theme];
+            const newRate = CONVERSION_RATES[destId];
+            const conversionFactor = oldRate / newRate;
+            const newGold = state.gold * conversionFactor;
+
+            updateState({
+                theme: destId,
+                gold: newGold,
+                showTravelModal: false,
+                notification: { 
+                    title: "LOCATION CHANGED", 
+                    message: `Welcome to ${DESTINATIONS.find(d => d.id === destId).name}. Currency converted to ${CURRENCIES[destId].name}s!`, 
+                    type: "info" 
+                }
+            });
         }
 
         function ascend() {
@@ -229,7 +248,7 @@
                     gold: 0,
                     clicks: 0,
                     totalClicksSession: 0,
-                    inventory: { rainbow: 0, mega: 0, omega: 0, oracle: 0, godly: 0, warp: 0, legendary: 0, mythic: 0, divine: 0, celestial: 0, void: 0, titan: 0, eternal: 0, infinite: 0 },
+                    inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
                     activeBuff: null,
                     showOracle: false,
                     notification: { title: "ASCENDED!", message: `Prestige ${state.prestigeLevel + 1} reached!`, type: "success" }
@@ -259,13 +278,6 @@
         }, 7000);
 
         setInterval(() => {
-            if (state.autoclickers > 0) {
-                const gain = state.autoclickers * (state.prestigeLevel + 1);
-                updateState({ clicks: state.clicks + gain, totalClicksSession: state.totalClicksSession + gain });
-            }
-        }, 1000);
-
-        setInterval(() => {
             if (state.activeBuff) {
                 if (state.activeBuff.timeLeft <= 1) updateState({ activeBuff: null, showOracle: false });
                 else updateState({ activeBuff: { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }});
@@ -291,6 +303,7 @@
         function render() {
             const root = document.getElementById('root');
             const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
+            const currentCurrency = CURRENCIES[state.theme];
             const currentPrestigeCost = Math.floor(10000 * Math.pow(2.5, state.prestigeLevel));
             document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4';
 
@@ -320,12 +333,13 @@
                                         return `
                                             <button 
                                                 disabled="${isLocked}"
-                                                onclick="updateState({theme: '${dest.id}', showTravelModal: false})"
+                                                onclick="travelTo('${dest.id}')"
                                                 class="p-6 rounded-[2rem] flex flex-col items-center gap-2 transition-all ${isLocked ? 'opacity-40 grayscale bg-slate-100' : `${dest.color} hover:scale-105 border-4 ${state.theme === dest.id ? 'border-indigo-500' : 'border-transparent'}`}"
                                             >
                                                 <img src="${dest.img}" class="w-16 h-16 object-contain" />
                                                 <span class="font-black text-[10px] uppercase">${dest.name}</span>
                                                 <span class="text-[12px] font-black text-indigo-600">x${dest.mult} Multi</span>
+                                                <span class="text-[8px] font-black text-slate-400 uppercase">${CURRENCIES[dest.id].name}s</span>
                                             </button>
                                         `;
                                     }).join('')}
@@ -338,11 +352,13 @@
                     <header class="z-20 w-full max-w-5xl flex flex-col items-center gap-3 mt-4 mb-2">
                         <h1 class="text-4xl font-black tracking-tighter uppercase text-slate-900">Gubby Clicker</h1>
                         <div class="flex gap-2 items-center">
-                            <span class="${state.peaceTreatyActive ? 'bg-emerald-500' : 'bg-red-500'} text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-                                ${state.peaceTreatyActive ? 'Peaceful' : 'Peace (Locked)'}
-                            </span>
                             <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige ${state.prestigeLevel}</span>
                             <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">${currentWorld?.name}</span>
+                            ${!state.peaceTreatyActive ? `
+                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm">Peace: Locked</span>
+                            ` : `
+                                <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm">Peaceful</span>
+                            `}
                         </div>
                         
                         <div class="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-sm flex flex-wrap items-center justify-between gap-4">
@@ -350,7 +366,7 @@
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span class="text-xl font-black text-slate-900">${state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p><span class="text-xl font-black text-slate-900">${state.totalClicksSession.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Market Rate</p><span class="text-xl font-black ${state.marketMultiplier >= 1.2 ? 'text-emerald-500' : 'text-slate-900'}">${state.marketMultiplier.toFixed(2)}x</span></div>
-                                <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Gold</p><div class="flex items-center gap-1"><img src="${goldCoinUrl}" class="w-4 h-4"/><span class="text-xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span></div></div>
+                                <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">${currentCurrency.name}s</p><div class="flex items-center gap-1"><img src="${currentCurrency.icon}" class="w-4 h-4"/><span class="text-xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span></div></div>
                             </div>
                             <div class="flex items-center gap-3">
                                 <button onclick="ascend()" ${state.gold < currentPrestigeCost || state.isBattleActive ? 'disabled' : ''} class="px-5 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${state.gold >= currentPrestigeCost ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-300'}">Ascend (${formatCost(currentPrestigeCost)})</button>
@@ -393,8 +409,8 @@
                             <div class="flex justify-between items-center mb-8 px-2">
                                 <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Marketplace</h3>
                                 ${!state.peaceTreatyActive ? `
-                                    <button onclick="if(state.gold >= 1000000) { updateState({gold: state.gold - 1000000, peaceTreatyActive: true, notification: {title: 'WORLD PEACE', message: 'No more bosses will ever appear.', type: 'success'}}); }" class="text-[8px] font-black uppercase px-4 py-2 rounded-xl transition-all ${state.gold >= 1000000 ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300 opacity-60'}">
-                                        Peace (1M)
+                                    <button onclick="if(state.gold >= 1000000) { updateState({gold: state.gold - 1000000, peaceTreatyActive: true, notification: {title: 'WORLD PEACE', message: 'No more bosses will ever appear.', type: 'success'}}); }" class="text-[8px] font-black uppercase px-4 py-2 rounded-xl transition-all ${state.gold >= 1000000 ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-300 opacity-60'}">
+                                        Activate Peace (1M ${currentCurrency.name})
                                     </button>
                                 ` : ''}
                             </div>
@@ -448,12 +464,6 @@
             return `
                 <div class="flex flex-col gap-3">
                     <button onclick="updateState({marketCategory: null})" class="w-full text-left text-[10px] font-black uppercase text-slate-400 mb-2 flex items-center gap-1 hover:text-slate-600">← Back to groups</button>
-                    ${state.marketCategory === 'small' ? `
-                         <button onclick="if(state.gold >= state.autoclickerCost){ updateState({gold: state.gold - state.autoclickerCost, autoclickers: state.autoclickers + 1, autoclickerCost: Math.floor(state.autoclickerCost * 1.5)}); }" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm">
-                            <div class="flex items-center gap-4"><img src="${friendImgUrl}" class="w-10 h-10 object-contain"/><p class="font-black text-[10px] uppercase text-slate-900">Gubby Friend</p></div>
-                            <span class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-black">${formatCost(state.autoclickerCost)}</span>
-                        </button>
-                    ` : ''}
                     ${itemsToShow.map(item => `
                         <button onclick="if(state.gold >= ${item.cost}){ updateState({gold: state.gold - ${item.cost}, inventory: {...state.inventory, ${item.id}: state.inventory['${item.id}'] + 1}}); }" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm">
                             <div class="flex items-center gap-4">
@@ -470,7 +480,6 @@
             `;
         }
 
-        // Initial Render
         render();
     </script>
 </body>
