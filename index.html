@@ -61,7 +61,6 @@
             100% { background-color: #fef08a; }
         }
 
-        /* Fixed Chat Bubble: Solid White, Black Text, No Flashing */
         .roblox-chat {
             background: #ffffff;
             color: #000000;
@@ -133,6 +132,7 @@
 
         let state = {
             clicks: 0,
+            lifetimeClicks: 0,
             totalClicksSession: 0,
             gold: 0,
             activeBuff: null,
@@ -207,7 +207,6 @@
                 let changes = {};
                 
                 if (command === '/talk') {
-                    // /talk @user message...
                     const targetUser = parts[1];
                     if (targetUser && targetUser.startsWith('@')) {
                         const talkMsg = parts.slice(2).join(' ');
@@ -318,10 +317,12 @@
                 } else {
                     nextState.battleHP = nextHP;
                     nextState.totalClicksSession = state.totalClicksSession + 1;
+                    nextState.lifetimeClicks = state.lifetimeClicks + 1;
                 }
             } else {
                 nextState.clicks = state.clicks + currentPower;
                 nextState.totalClicksSession = state.totalClicksSession + 1;
+                nextState.lifetimeClicks = state.lifetimeClicks + 1;
             }
 
             const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
@@ -387,6 +388,18 @@
                     activeBuff: null,
                     showOracle: false,
                     notification: { title: "ASCENDED!", message: `Prestige ${state.prestigeLevel + 1} reached!`, type: "success" }
+                });
+            }
+        }
+
+        function buyItem(itemId) {
+            const item = SHOP_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+            const price = getItemPrice(item);
+            if (state.gold >= price) {
+                updateState({
+                    gold: state.gold - price,
+                    inventory: { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + 1 }
                 });
             }
         }
@@ -519,10 +532,7 @@
                                                 <span class="font-black text-[10px] uppercase">${dest.name}</span>
                                                 <div class="flex flex-col items-center">
                                                     <span class="text-[10px] font-black text-indigo-600">x${dest.mult} Profit</span>
-                                                    <span class="text-[8px] font-black text-emerald-600">-${Math.round((1-dest.priceMod)*100)}% Price</span>
-                                                    <span class="text-[8px] font-black text-fuchsia-600">-${Math.round((1-dest.prestigeMod)*100)}% Ascension</span>
                                                 </div>
-                                                <span class="text-[8px] font-black text-slate-400 uppercase">${CURRENCIES[dest.id].name}s</span>
                                             </button>
                                         `;
                                     }).join('')}
@@ -546,7 +556,7 @@
                         <div class="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-sm flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center gap-4 flex-1 flex-wrap justify-center sm:justify-start">
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Clicks</p><span class="text-xl font-black text-slate-900">${state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>
-                                <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p><span class="text-xl font-black text-slate-900">${state.totalClicksSession.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>
+                                <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Total Clicks</p><span class="text-xl font-black text-slate-900">${state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Market Rate</p><span class="text-xl font-black ${state.marketMultiplier >= 1.2 ? 'text-emerald-500' : 'text-slate-900'}">${state.marketMultiplier.toFixed(2)}x</span></div>
                                 <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">${currentCurrency.name}s</p><div class="flex items-center gap-1"><img src="${currentCurrency.icon}" class="w-4 h-4"/><span class="text-xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span></div></div>
                             </div>
@@ -595,13 +605,6 @@
                         <section class="bg-white p-8 rounded-[3rem] shadow-sm flex-1">
                             <div class="flex justify-between items-center mb-8 px-2">
                                 <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Marketplace</h3>
-                                ${!state.peaceTreatyActive ? `
-                                    <button onclick="if(state.gold >= 500000) { updateState({gold: state.gold - 500000, peaceTreatyActive: true, stickyChat: 'Signed World Peace.', stickyChatUser: '@System', stickyChatTimer: 5}); }" class="text-[8px] font-black uppercase px-4 py-2 rounded-xl transition-all ${state.gold >= 500000 ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-300 opacity-60'}">
-                                        Activate Peace (500k ${currentCurrency.name})
-                                    </button>
-                                ` : `
-                                    <span class="text-[8px] font-black uppercase px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">Treaty Signed ✓</span>
-                                `}
                             </div>
                             ${renderMarketContent()}
                         </section>
@@ -665,11 +668,11 @@
             const itemsToShow = SHOP_ITEMS.filter(i => i.category === state.marketCategory);
             return `
                 <div class="flex flex-col gap-3">
-                    <button onclick="updateState({marketCategory: null})" class="w-full text-left text-[10px] font-black uppercase text-slate-400 mb-2 flex items-center gap-1 hover:text-slate-600">← Back to groups</button>
+                    <button onclick="updateState({marketCategory: null})" class="w-full text-left text-[10px] font-black uppercase text-slate-400 mb-2 flex items-center gap-1 hover:text-slate-600">← Back</button>
                     ${itemsToShow.map(item => {
                         const price = getItemPrice(item);
                         return `
-                            <button onclick="if(state.gold >= ${price}){ updateState({gold: state.gold - ${price}, inventory: {...state.inventory, [item.id]: (state.inventory[item.id] || 0) + 1}}); }" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm">
+                            <button onclick="buyItem('${item.id}')" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm ${state.gold < price ? 'opacity-50' : ''}">
                                 <div class="flex items-center gap-4">
                                     <img src="${item.img}" class="w-10 h-10 object-contain"/>
                                     <div>
