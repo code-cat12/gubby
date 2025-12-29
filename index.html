@@ -49,6 +49,42 @@
             0% { transform: translateY(0) scale(1); opacity: 1; }
             100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
         }
+
+        .disco-bg {
+            animation: disco-flash 0.5s infinite;
+        }
+        @keyframes disco-flash {
+            0% { background-color: #fecdd3; }
+            25% { background-color: #ddd6fe; }
+            50% { background-color: #bae6fd; }
+            75% { background-color: #bbf7d0; }
+            100% { background-color: #fef08a; }
+        }
+
+        /* Fixed Chat Bubble: Solid White, Black Text, No Flashing */
+        .roblox-chat {
+            background: #ffffff;
+            color: #000000;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 280px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+            pointer-events: none;
+            word-wrap: break-word;
+        }
+
+        #admin-input {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body class="bg-emerald-50 overflow-x-hidden">
@@ -65,27 +101,34 @@
         };
 
         const DESTINATIONS = [
-            { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
-            { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, color: 'bg-green-100', themeColor: '#dcfce7', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
-            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, color: 'bg-purple-100', themeColor: '#f5f3ff', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void', name: 'The Void', req: 15, mult: 30, color: 'bg-blue-100', themeColor: '#eff6ff', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308179.png' }
+            { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
+            { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
+            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5625, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
+            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.4218, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
         ];
 
+        const CONVERSION_RATES = {
+            'plains': 1,
+            'hawaii': 25,
+            'starlight': 75,
+            'void': 150
+        };
+
         const SHOP_ITEMS = [
-            { id: 'rainbow', name: 'Rainbow', category: 'small', cost: 250, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
-            { id: 'mega', name: 'Mega', category: 'small', cost: 800, power: 25, duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
-            { id: 'omega', name: 'Omega', category: 'small', cost: 2000, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
-            { id: 'oracle', name: 'Oracle', category: 'medium', cost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
-            { id: 'godly', name: 'Godly', category: 'medium', cost: 7500, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
-            { id: 'warp', name: 'Time Warp', category: 'medium', cost: 12000, power: 1, duration: 1, description: '+30s Battle', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' },
-            { id: 'legendary', name: 'Legendary', category: 'medium', cost: 25000, power: 1000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
-            { id: 'mythic', name: 'Mythic', category: 'large', cost: 100000, power: 5000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
-            { id: 'divine', name: 'Divine', category: 'large', cost: 500000, power: 25000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
-            { id: 'celestial', name: 'Celestial', category: 'large', cost: 2500000, power: 100000, duration: 8, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/planets-3d-icon-png-download-11683976.png' },
-            { id: 'void', name: 'Void', category: 'large', cost: 10000000, power: 500000, duration: 7, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-station-3d-icon-png-download-6308159.png' },
-            { id: 'titan', name: 'Titan', category: 'op', cost: 100000000, power: 5000000, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
-            { id: 'eternal', name: 'Eternal', category: 'op', cost: 500000000, power: 50000000, duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
-            { id: 'infinite', name: 'Infinite', category: 'op', cost: 1000000000, power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' }
+            { id: 'rainbow', name: 'Rainbow', category: 'small', baseCost: 100, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
+            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
+            { id: 'omega', name: 'Omega', category: 'small', baseCost: 1200, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
+            { id: 'oracle', name: 'Oracle', category: 'medium', baseCost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
+            { id: 'godly', name: 'Godly', category: 'medium', baseCost: 15000, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
+            { id: 'warp', name: 'Time Warp', category: 'medium', baseCost: 25000, power: 1, duration: 1, description: '+30s Battle', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' },
+            { id: 'legendary', name: 'Legendary', category: 'medium', baseCost: 75000, power: 1000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
+            { id: 'mythic', name: 'Mythic', category: 'large', baseCost: 250000, power: 5000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
+            { id: 'divine', name: 'Divine', category: 'large', baseCost: 1000000, power: 25000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
+            { id: 'celestial', name: 'Celestial', category: 'large', baseCost: 5000000, power: 100000, duration: 8, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/planets-3d-icon-png-download-11683976.png' },
+            { id: 'void', name: 'Void', category: 'large', baseCost: 15000000, power: 500000, duration: 7, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-station-3d-icon-png-download-6308159.png' },
+            { id: 'titan', name: 'Titan', category: 'op', baseCost: 100000000, power: 5000000, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
+            { id: 'eternal', name: 'Eternal', category: 'op', baseCost: 500000000, power: 50000000, duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
+            { id: 'infinite', name: 'Infinite', category: 'op', baseCost: 2500000000, power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' }
         ];
 
         let state = {
@@ -111,23 +154,39 @@
             megaBossCount: 0,
             marketCategory: null,
             notification: null,
-            isSquishing: false
-        };
-
-        const CONVERSION_RATES = {
-            'plains': 1,
-            'hawaii': 25,
-            'starlight': 25 * 25,
-            'void': 25 * 25 * 25
+            stickyChat: null,
+            stickyChatUser: null,
+            stickyChatTimer: 0,
+            isSquishing: false,
+            showAdmin: false,
+            adminLog: [],
+            discoEventTimer: 0
         };
 
         let lastMegaTriggered = 0;
         let lastNormalTriggered = 0;
         let squishTimeout = null;
+        let titleClickCount = 0;
+        let titleClickTimer = null;
 
-        function updateState(newState) {
+        function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
-            render();
+            if (!skipRender) render();
+        }
+
+        function getItemPrice(item) {
+            const world = DESTINATIONS.find(d => d.id === state.theme);
+            const priceMod = world ? world.priceMod : 1;
+            const rate = CONVERSION_RATES[state.theme];
+            return (item.baseCost * priceMod) / rate;
+        }
+
+        function getAscensionCost() {
+            const world = DESTINATIONS.find(d => d.id === state.theme);
+            const prestigeMod = world ? world.prestigeMod : 1;
+            const rate = CONVERSION_RATES[state.theme];
+            const basePrestigeCost = Math.floor(1000 * Math.pow(3, state.prestigeLevel));
+            return (basePrestigeCost * prestigeMod) / rate;
         }
 
         function formatCost(cost) {
@@ -135,6 +194,83 @@
             if (cost >= 1000000) return (cost / 1000000).toFixed(1) + 'M';
             if (cost >= 1000) return (cost / 1000).toFixed(1) + 'k';
             return cost.toLocaleString(undefined, { maximumFractionDigits: 1 });
+        }
+
+        function handleAdminCommand(e) {
+            if (e.key === 'Enter') {
+                const cmdText = e.target.value.trim();
+                if (!cmdText) return;
+                
+                const parts = cmdText.split(' ');
+                const command = parts[0].toLowerCase();
+                let message = "";
+                let changes = {};
+                
+                if (command === '/talk') {
+                    // /talk @user message...
+                    const targetUser = parts[1];
+                    if (targetUser && targetUser.startsWith('@')) {
+                        const talkMsg = parts.slice(2).join(' ');
+                        if (talkMsg) {
+                            changes.stickyChat = talkMsg;
+                            changes.stickyChatUser = targetUser;
+                            changes.stickyChatTimer = 15;
+                            message = `${targetUser}: ${talkMsg}`;
+                        } else {
+                            message = "Error: Missing message content.";
+                        }
+                    } else {
+                        message = "Error: Invalid username. Use /talk <@username> <message>";
+                    }
+                } else if (command === '/money') {
+                    const amt = parseFloat(parts[1]) || 0;
+                    changes.gold = state.gold + amt;
+                    message = `Money added: ${amt}`;
+                } else if (command === '/rebirth') {
+                    const lvl = parseInt(parts[1]) || 0;
+                    changes.prestigeLevel = lvl;
+                    message = `Prestige level set to ${lvl}`;
+                } else if (command === '/give') {
+                    const itemId = parts[1]?.toLowerCase();
+                    const itemExists = SHOP_ITEMS.find(i => i.id === itemId);
+                    if (itemExists) {
+                        changes.inventory = { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + 1 };
+                        message = `Gave 1x ${itemId}`;
+                    } else {
+                        message = `Error: Item '${itemId}' not found`;
+                    }
+                } else if (command === '/event') {
+                    const eventName = parts[1]?.toLowerCase();
+                    if (eventName === 'disco') {
+                        changes.discoEventTimer = 30;
+                        changes.notification = { title: "DISCO PARTY!", message: "Everything is crazy for 30s!", type: "info" };
+                        message = `Started event: DISCO`;
+                    } else {
+                        message = `Error: Event '${eventName}' not available`;
+                    }
+                } else if (command === '/clear') {
+                    updateState({ adminLog: [] });
+                    e.target.value = "";
+                    return;
+                } else {
+                    message = "Usage: /talk <@user> [msg], /money [n], /rebirth [n], /give [id], /event disco";
+                }
+
+                const newLogs = [message, ...state.adminLog].slice(0, 10);
+                updateState({ ...changes, adminLog: newLogs });
+                e.target.value = "";
+            }
+        }
+
+        function triggerTitleClick() {
+            titleClickCount++;
+            clearTimeout(titleClickTimer);
+            if (titleClickCount >= 3) {
+                updateState({ showAdmin: !state.showAdmin });
+                titleClickCount = 0;
+            } else {
+                titleClickTimer = setTimeout(() => { titleClickCount = 0; }, 1000);
+            }
         }
 
         function triggerBattle(type) {
@@ -154,7 +290,7 @@
             const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
             const currentWorldMult = currentWorld ? currentWorld.mult : 1;
             if (won) {
-                const reward = state.maxBattleHP * (state.battleType === 'mega' ? 6 : 3) * currentWorldMult;
+                const reward = (state.maxBattleHP * (state.battleType === 'mega' ? 6 : 3) * currentWorldMult) / CONVERSION_RATES[state.theme];
                 updateState({
                     isBattleActive: false,
                     gold: state.gold + reward,
@@ -211,7 +347,7 @@
             if (!state.isBattleActive && state.clicks > 0) {
                 const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
                 const currentWorldMult = currentWorld ? currentWorld.mult : 1;
-                const totalGoldEarned = state.clicks * state.marketMultiplier * currentWorldMult;
+                const totalGoldEarned = (state.clicks * state.marketMultiplier * currentWorldMult) / CONVERSION_RATES[state.theme];
                 updateState({
                     gold: state.gold + totalGoldEarned,
                     clicks: 0,
@@ -225,7 +361,6 @@
             const newRate = CONVERSION_RATES[destId];
             const conversionFactor = oldRate / newRate;
             const newGold = state.gold * conversionFactor;
-
             updateState({
                 theme: destId,
                 gold: newGold,
@@ -239,8 +374,8 @@
         }
 
         function ascend() {
-            const currentPrestigeCost = Math.floor(10000 * Math.pow(2.5, state.prestigeLevel));
-            if (state.gold >= currentPrestigeCost) {
+            const cost = getAscensionCost();
+            if (state.gold >= cost) {
                 lastMegaTriggered = 0;
                 lastNormalTriggered = 0;
                 updateState({
@@ -270,22 +405,36 @@
         }
 
         setInterval(() => {
+            const baseVal = state.discoEventTimer > 0 ? 2.5 : 0.5;
+            const randVal = state.discoEventTimer > 0 ? (Math.random() * 5.0) : (Math.random() * 1.5);
             updateState({
                 marketMultiplier: state.marketQueue[0],
                 marketTrend: state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down',
-                marketQueue: [...state.marketQueue.slice(1), 0.5 + (Math.random() * 1.5)]
+                marketQueue: [...state.marketQueue.slice(1), baseVal + randVal]
             });
         }, 7000);
 
         setInterval(() => {
+            let nextState = {};
             if (state.activeBuff) {
-                if (state.activeBuff.timeLeft <= 1) updateState({ activeBuff: null, showOracle: false });
-                else updateState({ activeBuff: { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }});
+                if (state.activeBuff.timeLeft <= 1) { nextState.activeBuff = null; nextState.showOracle = false; }
+                else { nextState.activeBuff = { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }; }
             }
             if (state.isBattleActive) {
                 if (state.battleTimer <= 1) endBattle(false);
-                else updateState({ battleTimer: state.battleTimer - 1 });
+                else { nextState.battleTimer = state.battleTimer - 1; }
             }
+            if (state.discoEventTimer > 0) {
+                nextState.discoEventTimer = state.discoEventTimer - 1;
+            }
+            if (state.stickyChatTimer > 0) {
+                nextState.stickyChatTimer = state.stickyChatTimer - 1;
+                if (nextState.stickyChatTimer === 0) {
+                    nextState.stickyChat = null;
+                    nextState.stickyChatUser = null;
+                }
+            }
+            if (Object.keys(nextState).length > 0) updateState(nextState);
         }, 1000);
 
         setInterval(() => {
@@ -304,11 +453,41 @@
             const root = document.getElementById('root');
             const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
             const currentCurrency = CURRENCIES[state.theme];
-            const currentPrestigeCost = Math.floor(10000 * Math.pow(2.5, state.prestigeLevel));
-            document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4';
+            const currentPrestigeCost = getAscensionCost();
+            
+            if (state.discoEventTimer > 0) {
+                document.body.className = "disco-bg overflow-x-hidden";
+            } else {
+                document.body.className = "bg-emerald-50 overflow-x-hidden";
+                document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4';
+            }
+
+            const activeElementId = document.activeElement ? document.activeElement.id : null;
+            const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
 
             root.innerHTML = `
                 <div class="min-h-screen flex flex-col items-center px-4 py-2 select-none overflow-x-hidden pb-12 transition-colors duration-500">
+                    
+                    ${state.showAdmin ? `
+                        <div id="admin-console" class="fixed bottom-24 left-4 right-4 z-[100] bg-slate-900 p-4 rounded-2xl shadow-2xl border border-slate-700 max-w-md mx-auto">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black text-blue-400 uppercase">Admin / Terminal</span>
+                                <button onclick="updateState({showAdmin: false})" class="text-slate-500 hover:text-white">✕</button>
+                            </div>
+                            <div class="mb-3 max-h-32 overflow-y-auto flex flex-col" id="admin-log-list">
+                                ${state.adminLog.map(log => `<p class="text-[10px] font-mono text-emerald-400 py-0.5 border-b border-slate-800">> ${log}</p>`).join('')}
+                            </div>
+                            <input 
+                                id="admin-input"
+                                type="text" 
+                                placeholder="/talk <@user> <msg>..." 
+                                onkeydown="handleAdminCommand(event)"
+                                class="w-full p-3 rounded-xl outline-none text-xs"
+                                autocomplete="off"
+                            />
+                        </div>
+                    ` : ''}
+
                     <button onclick="updateState({showTravelModal: true})" class="fixed top-6 right-6 z-[60] w-12 h-12 bg-white border-2 border-slate-100 rounded-full shadow-lg flex items-center justify-center group">
                         <i data-lucide="map" class="text-indigo-500 w-6 h-6 group-hover:rotate-12 transition-transform"></i>
                     </button>
@@ -332,13 +511,17 @@
                                         const isLocked = state.prestigeLevel < dest.req;
                                         return `
                                             <button 
-                                                disabled="${isLocked}"
+                                                ${isLocked ? 'disabled' : ''}
                                                 onclick="travelTo('${dest.id}')"
                                                 class="p-6 rounded-[2rem] flex flex-col items-center gap-2 transition-all ${isLocked ? 'opacity-40 grayscale bg-slate-100' : `${dest.color} hover:scale-105 border-4 ${state.theme === dest.id ? 'border-indigo-500' : 'border-transparent'}`}"
                                             >
                                                 <img src="${dest.img}" class="w-16 h-16 object-contain" />
                                                 <span class="font-black text-[10px] uppercase">${dest.name}</span>
-                                                <span class="text-[12px] font-black text-indigo-600">x${dest.mult} Multi</span>
+                                                <div class="flex flex-col items-center">
+                                                    <span class="text-[10px] font-black text-indigo-600">x${dest.mult} Profit</span>
+                                                    <span class="text-[8px] font-black text-emerald-600">-${Math.round((1-dest.priceMod)*100)}% Price</span>
+                                                    <span class="text-[8px] font-black text-fuchsia-600">-${Math.round((1-dest.prestigeMod)*100)}% Ascension</span>
+                                                </div>
                                                 <span class="text-[8px] font-black text-slate-400 uppercase">${CURRENCIES[dest.id].name}s</span>
                                             </button>
                                         `;
@@ -350,15 +533,14 @@
                     ` : ''}
 
                     <header class="z-20 w-full max-w-5xl flex flex-col items-center gap-3 mt-4 mb-2">
-                        <h1 class="text-4xl font-black tracking-tighter uppercase text-slate-900">Gubby Clicker</h1>
-                        <div class="flex gap-2 items-center">
+                        <h1 onclick="triggerTitleClick()" class="text-4xl font-black tracking-tighter uppercase text-slate-900 cursor-help active:scale-95 transition-transform">Gubby Clicker</h1>
+                        <div class="flex gap-2 items-center flex-wrap justify-center">
                             <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige ${state.prestigeLevel}</span>
                             <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">${currentWorld?.name}</span>
-                            ${!state.peaceTreatyActive ? `
-                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm">Peace: Locked</span>
-                            ` : `
-                                <span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm">Peaceful</span>
-                            `}
+                            <span class="${state.peaceTreatyActive ? 'bg-emerald-500' : 'bg-red-500'} text-white px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
+                                <i data-lucide="${state.peaceTreatyActive ? 'heart' : 'shield-off'}" class="w-3 h-3"></i>
+                                ${state.peaceTreatyActive ? 'PEACEFUL' : 'PEACE (LOCKED)'}
+                            </span>
                         </div>
                         
                         <div class="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-sm flex flex-wrap items-center justify-between gap-4">
@@ -376,7 +558,12 @@
                     </header>
 
                     <main class="z-10 relative flex flex-col items-center justify-center w-full min-h-[400px]">
-                        <div class="h-20 mb-4 flex flex-col items-center justify-center">
+                        <div class="h-24 mb-4 flex flex-col items-center justify-end">
+                            ${state.stickyChat ? `
+                                <div class="roblox-chat mb-4">
+                                    <span class="text-blue-600">${state.stickyChatUser || '@System'}:</span> ${state.stickyChat}
+                                </div>
+                            ` : ''}
                             ${state.showOracle ? `
                                 <div class="flex gap-2 mb-2">
                                     ${state.marketQueue.map((rate, idx) => `
@@ -409,10 +596,12 @@
                             <div class="flex justify-between items-center mb-8 px-2">
                                 <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Marketplace</h3>
                                 ${!state.peaceTreatyActive ? `
-                                    <button onclick="if(state.gold >= 1000000) { updateState({gold: state.gold - 1000000, peaceTreatyActive: true, notification: {title: 'WORLD PEACE', message: 'No more bosses will ever appear.', type: 'success'}}); }" class="text-[8px] font-black uppercase px-4 py-2 rounded-xl transition-all ${state.gold >= 1000000 ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-300 opacity-60'}">
-                                        Activate Peace (1M ${currentCurrency.name})
+                                    <button onclick="if(state.gold >= 500000) { updateState({gold: state.gold - 500000, peaceTreatyActive: true, stickyChat: 'Signed World Peace.', stickyChatUser: '@System', stickyChatTimer: 5}); }" class="text-[8px] font-black uppercase px-4 py-2 rounded-xl transition-all ${state.gold >= 500000 ? 'bg-emerald-500 text-white shadow-md' : 'bg-slate-100 text-slate-300 opacity-60'}">
+                                        Activate Peace (500k ${currentCurrency.name})
                                     </button>
-                                ` : ''}
+                                ` : `
+                                    <span class="text-[8px] font-black uppercase px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">Treaty Signed ✓</span>
+                                `}
                             </div>
                             ${renderMarketContent()}
                         </section>
@@ -432,7 +621,20 @@
                     </div>
                 </div>
             `;
+            
             lucide.createIcons();
+            
+            if (activeElementId === 'admin-input') {
+                const newInput = document.getElementById('admin-input');
+                if (newInput) {
+                    newInput.focus();
+                    newInput.value = previousValue;
+                    newInput.setSelectionRange(previousValue.length, previousValue.length);
+                }
+            } else if (state.showAdmin && !activeElementId) {
+                const newInput = document.getElementById('admin-input');
+                if (newInput) newInput.focus();
+            }
         }
 
         function renderMarketContent() {
@@ -464,18 +666,21 @@
             return `
                 <div class="flex flex-col gap-3">
                     <button onclick="updateState({marketCategory: null})" class="w-full text-left text-[10px] font-black uppercase text-slate-400 mb-2 flex items-center gap-1 hover:text-slate-600">← Back to groups</button>
-                    ${itemsToShow.map(item => `
-                        <button onclick="if(state.gold >= ${item.cost}){ updateState({gold: state.gold - ${item.cost}, inventory: {...state.inventory, ${item.id}: state.inventory['${item.id}'] + 1}}); }" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm">
-                            <div class="flex items-center gap-4">
-                                <img src="${item.img}" class="w-10 h-10 object-contain"/>
-                                <div>
-                                    <p class="font-black text-[10px] uppercase text-slate-900">${item.name}</p>
-                                    ${item.description ? `<p class="text-[8px] font-medium text-slate-400 uppercase mt-1">${item.description}</p>` : ''}
+                    ${itemsToShow.map(item => {
+                        const price = getItemPrice(item);
+                        return `
+                            <button onclick="if(state.gold >= ${price}){ updateState({gold: state.gold - ${price}, inventory: {...state.inventory, [item.id]: (state.inventory[item.id] || 0) + 1}}); }" class="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <img src="${item.img}" class="w-10 h-10 object-contain"/>
+                                    <div>
+                                        <p class="font-black text-[10px] uppercase text-slate-900">${item.name}</p>
+                                        ${item.description ? `<p class="text-[8px] font-medium text-slate-400 uppercase mt-1">${item.description}</p>` : ''}
+                                    </div>
                                 </div>
-                            </div>
-                            <span class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-black">${formatCost(item.cost)}</span>
-                        </button>
-                    `).join('')}
+                                <span class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-black">${formatCost(price)}</span>
+                            </button>
+                        `;
+                    }).join('')}
                 </div>
             `;
         }
