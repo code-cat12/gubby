@@ -206,7 +206,15 @@
                 let message = "";
                 let changes = {};
                 
-                if (command === '/talk') {
+                if (command === '/multiplier') {
+                    const amt = parseFloat(parts[1]);
+                    if (!isNaN(amt)) {
+                        changes.marketMultiplier = amt;
+                        message = `Market Rate forced to ${amt}x`;
+                    } else {
+                        message = "Error: Use /multiplier <amount>";
+                    }
+                } else if (command === '/talk') {
                     const targetUser = parts[1];
                     if (targetUser && targetUser.startsWith('@')) {
                         const talkMsg = parts.slice(2).join(' ');
@@ -252,7 +260,7 @@
                     e.target.value = "";
                     return;
                 } else {
-                    message = "Usage: /talk <@user> [msg], /money [n], /rebirth [n], /give [id], /event disco";
+                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id]";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -417,13 +425,13 @@
             }
         }
 
+        // Market logic fixed: 0.5x to 1.75x
         setInterval(() => {
-            const baseVal = state.discoEventTimer > 0 ? 2.5 : 0.5;
-            const randVal = state.discoEventTimer > 0 ? (Math.random() * 5.0) : (Math.random() * 1.5);
+            const nextRate = 0.5 + (Math.random() * 1.25);
             updateState({
                 marketMultiplier: state.marketQueue[0],
                 marketTrend: state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down',
-                marketQueue: [...state.marketQueue.slice(1), baseVal + randVal]
+                marketQueue: [...state.marketQueue.slice(1), nextRate]
             });
         }, 7000);
 
@@ -493,7 +501,7 @@
                             <input 
                                 id="admin-input"
                                 type="text" 
-                                placeholder="/talk <@user> <msg>..." 
+                                placeholder="/multiplier 1.5 etc..." 
                                 onkeydown="handleAdminCommand(event)"
                                 class="w-full p-3 rounded-xl outline-none text-xs"
                                 autocomplete="off"
