@@ -260,10 +260,12 @@
                     message = `Prestige level set to ${lvl}`;
                 } else if (command === '/give') {
                     const itemId = parts[1]?.toLowerCase();
+                    const amount = parseInt(parts[2]) || 1;
                     const itemExists = SHOP_ITEMS.find(i => i.id === itemId);
+                    
                     if (itemExists) {
-                        changes.inventory = { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + 1 };
-                        message = `Gave 1x ${itemId}`;
+                        changes.inventory = { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + amount };
+                        message = `Gave ${amount}x ${itemExists.name}`;
                     } else {
                         message = `Error: Item '${itemId}' not found`;
                     }
@@ -281,7 +283,7 @@
                     e.target.value = "";
                     return;
                 } else {
-                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id], /resetpeace";
+                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amount], /resetpeace";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -513,7 +515,7 @@
                 peaceTagColor = "bg-emerald-500";
                 peaceTagText = "Peaceful";
             } else if (state.gold >= PEACE_TREATY_COST) {
-                peaceTagColor = "bg-yellow-500"; // Ready to buy
+                peaceTagColor = "bg-yellow-500"; 
                 peaceTagText = "Peace (Available)";
             }
 
@@ -532,7 +534,7 @@
                             <input 
                                 id="admin-input"
                                 type="text" 
-                                placeholder="/multiplier 1.5 etc..." 
+                                placeholder="/give rainbow 5" 
                                 onkeydown="handleAdminCommand(event)"
                                 class="w-full p-3 rounded-xl outline-none text-xs"
                                 autocomplete="off"
@@ -582,7 +584,7 @@
                     ` : ''}
 
                     <header class="z-20 w-full max-w-5xl flex flex-col items-center gap-3 mt-4 mb-2">
-                        <h1 onclick="triggerTitleClick()" class="text-4xl font-black tracking-tighter uppercase text-slate-900 cursor-help active:scale-95 transition-transform">Gubby Clicker</h1>
+                        <h1 onclick="triggerTitleClick()" class="text-4xl font-black tracking-tighter uppercase text-slate-900 cursor-help active:scale-95 transition-transform text-center">Gubby Clicker</h1>
                         <div class="flex gap-2 items-center flex-wrap justify-center">
                             <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige ${state.prestigeLevel}</span>
                             <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">${currentWorld?.name}</span>
