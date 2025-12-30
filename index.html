@@ -163,15 +163,33 @@
             discoEventTimer: 0
         };
 
-        let lastMegaTriggered = 0;
-        let lastNormalTriggered = 0;
-        let squishTimeout = null;
+        const PEACE_TREATY_COST = 5000000;
         let titleClickCount = 0;
         let titleClickTimer = null;
+        let squishTimeout = null;
+        let lastNormalTriggered = 0;
+        let lastMegaTriggered = 0;
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
             if (!skipRender) render();
+        }
+
+        function buyPeaceTreaty() {
+            if (state.peaceTreatyActive) return;
+            
+            if (state.prestigeLevel < 1) {
+                updateState({ notification: { title: "LOCKED", message: "Reach Prestige 1 to unlock Peace Treaty!", type: "info" } });
+                return;
+            }
+
+            if (state.gold >= PEACE_TREATY_COST) {
+                updateState({ 
+                    peaceTreatyActive: true, 
+                    gold: state.gold - PEACE_TREATY_COST,
+                    notification: { title: "PEACE SIGNED", message: "Peace Treaty activated! No more bosses will appear.", type: "success" }
+                });
+            }
         }
 
         function getItemPrice(item) {
@@ -214,6 +232,9 @@
                     } else {
                         message = "Error: Use /multiplier <amount>";
                     }
+                } else if (command === '/resetpeace') {
+                    changes.peaceTreatyActive = false;
+                    message = "Peace Treaty reset.";
                 } else if (command === '/talk') {
                     const targetUser = parts[1];
                     if (targetUser && targetUser.startsWith('@')) {
@@ -260,7 +281,7 @@
                     e.target.value = "";
                     return;
                 } else {
-                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id]";
+                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id], /resetpeace";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -425,7 +446,6 @@
             }
         }
 
-        // Market logic fixed: 0.5x to 1.75x
         setInterval(() => {
             const nextRate = 0.5 + (Math.random() * 1.25);
             updateState({
@@ -485,6 +505,17 @@
 
             const activeElementId = document.activeElement ? document.activeElement.id : null;
             const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
+
+            // Calculate Peace Tag Status
+            let peaceTagColor = "bg-red-500";
+            let peaceTagText = "Peace (Locked)";
+            if (state.peaceTreatyActive) {
+                peaceTagColor = "bg-emerald-500";
+                peaceTagText = "Peaceful";
+            } else if (state.gold >= PEACE_TREATY_COST) {
+                peaceTagColor = "bg-yellow-500"; // Ready to buy
+                peaceTagText = "Peace (Available)";
+            }
 
             root.innerHTML = `
                 <div class="min-h-screen flex flex-col items-center px-4 py-2 select-none overflow-x-hidden pb-12 transition-colors duration-500">
@@ -555,10 +586,7 @@
                         <div class="flex gap-2 items-center flex-wrap justify-center">
                             <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Prestige ${state.prestigeLevel}</span>
                             <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">${currentWorld?.name}</span>
-                            <span class="${state.peaceTreatyActive ? 'bg-emerald-500' : 'bg-red-500'} text-white px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
-                                <i data-lucide="${state.peaceTreatyActive ? 'heart' : 'shield-off'}" class="w-3 h-3"></i>
-                                ${state.peaceTreatyActive ? 'PEACEFUL' : 'PEACE (LOCKED)'}
-                            </span>
+                            <span class="${peaceTagColor} text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm transition-colors duration-500">${peaceTagText}</span>
                         </div>
                         
                         <div class="w-full bg-white px-8 py-5 rounded-[2.5rem] shadow-sm flex flex-wrap items-center justify-between gap-4">
@@ -613,6 +641,19 @@
                         <section class="bg-white p-8 rounded-[3rem] shadow-sm flex-1">
                             <div class="flex justify-between items-center mb-8 px-2">
                                 <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Marketplace</h3>
+                                
+                                ${state.peaceTreatyActive ? `
+                                    <div class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm">
+                                        PEACEFUL
+                                    </div>
+                                ` : `
+                                    <button 
+                                        onclick="buyPeaceTreaty()" 
+                                        class="${state.gold >= PEACE_TREATY_COST ? 'bg-emerald-500' : 'bg-slate-400'} text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        Peace (5M)
+                                    </button>
+                                `}
                             </div>
                             ${renderMarketContent()}
                         </section>
