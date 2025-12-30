@@ -271,19 +271,21 @@
                     }
                 } else if (command === '/event') {
                     const eventName = parts[1]?.toLowerCase();
+                    const eventTime = parseInt(parts[2]) || 30;
+                    
                     if (eventName === 'disco') {
-                        changes.discoEventTimer = 30;
-                        changes.notification = { title: "DISCO PARTY!", message: "Everything is crazy for 30s!", type: "info" };
-                        message = `Started event: DISCO`;
+                        changes.discoEventTimer = eventTime;
+                        changes.notification = { title: "DISCO PARTY!", message: `Everything is crazy for ${eventTime}s!`, type: "info" };
+                        message = `Started event: DISCO (${eventTime}s)`;
                     } else {
-                        message = `Error: Event '${eventName}' not available`;
+                        message = `Error: Event '${eventName}' not available. Try: disco`;
                     }
                 } else if (command === '/clear') {
                     updateState({ adminLog: [] });
                     e.target.value = "";
                     return;
                 } else {
-                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amount], /resetpeace";
+                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amt], /event [name] [time]";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -508,7 +510,6 @@
             const activeElementId = document.activeElement ? document.activeElement.id : null;
             const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
 
-            // Calculate Peace Tag Status
             let peaceTagColor = "bg-red-500";
             let peaceTagText = "Peace (Locked)";
             if (state.peaceTreatyActive) {
@@ -534,7 +535,7 @@
                             <input 
                                 id="admin-input"
                                 type="text" 
-                                placeholder="/give rainbow 5" 
+                                placeholder="/event disco 60" 
                                 onkeydown="handleAdminCommand(event)"
                                 class="w-full p-3 rounded-xl outline-none text-xs"
                                 autocomplete="off"
@@ -637,6 +638,7 @@
                         >
                             <img src="${gubbyImgUrl}" class="w-full h-full object-contain drop-shadow-2xl pointer-events-none" />
                         </div>
+                        ${state.discoEventTimer > 0 ? `<div class="mt-4 px-4 py-1 bg-white/20 backdrop-blur rounded-full text-[10px] font-black text-white uppercase animate-pulse">Disco Mode Active: ${state.discoEventTimer}s</div>` : ''}
                     </main>
 
                     <div class="z-20 w-full max-w-6xl flex flex-col lg:flex-row gap-6 mt-8">
