@@ -392,8 +392,8 @@
         const DESTINATIONS = [
             { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
             { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
-            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5625, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://i.pinimg.com/originals/df/fd/77/dffd7761d0d86ff0d8ef90e5c285fe96.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.4218, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/11/42/65/114265f662ffeeeb65cf982dc0a54e6a.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
+            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://cdna.artstation.com/p/assets/images/images/060/558/020/original/anna-teather-fantasy-bk-anim.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
+            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://art.ngfiles.com/images/3456000/3456911_prisonercoin_puncture.gif?f1694637413', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
         ];
 
         const CONVERSION_RATES = {
@@ -475,13 +475,19 @@
                 return;
             }
 
-            if (state.gold >= PEACE_TREATY_COST) {
+            const treatyCost = getPeaceTreatyCost();
+            if (state.gold >= treatyCost) {
                 updateState({ 
                     peaceTreatyActive: true, 
-                    gold: state.gold - PEACE_TREATY_COST,
+                    gold: state.gold - treatyCost,
                     notification: { title: "PEACE SIGNED", message: "Peace Treaty activated! No more bosses will appear.", type: "success" }
                 });
             }
+        }
+
+        function getPeaceTreatyCost() {
+            const rate = CONVERSION_RATES[state.theme];
+            return PEACE_TREATY_COST / rate;
         }
 
         function getItemPrice(item) {
@@ -746,25 +752,42 @@
 
         setInterval(() => {
             const nextRate = 0.5 + (Math.random() * 1.25);
-            updateState({
-                marketMultiplier: state.marketQueue[0],
-                marketTrend: state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down',
-                marketQueue: [...state.marketQueue.slice(1), nextRate]
-            });
+            state.marketMultiplier = state.marketQueue[0];
+            state.marketTrend = state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down';
+            state.marketQueue = [...state.marketQueue.slice(1), nextRate];
+            
+            // Only re-render if admin console is not open
+            if (!state.showAdmin) {
+                render();
+            }
         }, 7000);
 
         setInterval(() => {
             let nextState = {};
+            let shouldRender = false;
+            
             if (state.activeBuff) {
-                if (state.activeBuff.timeLeft <= 1) { nextState.activeBuff = null; nextState.showOracle = false; }
-                else { nextState.activeBuff = { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }; }
+                if (state.activeBuff.timeLeft <= 1) { 
+                    nextState.activeBuff = null; 
+                    nextState.showOracle = false; 
+                    shouldRender = true;
+                } else { 
+                    nextState.activeBuff = { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }; 
+                    shouldRender = true;
+                }
             }
             if (state.isBattleActive) {
-                if (state.battleTimer <= 1) endBattle(false);
-                else { nextState.battleTimer = state.battleTimer - 1; }
+                if (state.battleTimer <= 1) {
+                    endBattle(false);
+                    return; // endBattle already calls render
+                } else { 
+                    nextState.battleTimer = state.battleTimer - 1; 
+                    shouldRender = true;
+                }
             }
             if (state.discoEventTimer > 0) {
                 nextState.discoEventTimer = state.discoEventTimer - 1;
+                shouldRender = true;
             }
             if (state.stickyChatTimer > 0) {
                 nextState.stickyChatTimer = state.stickyChatTimer - 1;
@@ -772,8 +795,16 @@
                     nextState.stickyChat = null;
                     nextState.stickyChatUser = null;
                 }
+                shouldRender = true;
             }
-            if (Object.keys(nextState).length > 0) updateState(nextState);
+            
+            if (Object.keys(nextState).length > 0) {
+                Object.assign(state, nextState);
+                // Only render if admin console is not open
+                if (shouldRender && !state.showAdmin) {
+                    render();
+                }
+            }
         }, 1000);
 
         setInterval(() => {
@@ -811,12 +842,13 @@
             const activeElementId = document.activeElement ? document.activeElement.id : null;
             const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
 
+            const peaceTreatyCost = getPeaceTreatyCost();
             let peaceTagColor = "bg-red-500 border-red-700";
             let peaceTagText = "Peace (Locked)";
             if (state.peaceTreatyActive) {
                 peaceTagColor = "bg-emerald-500 border-emerald-700";
                 peaceTagText = "Peaceful";
-            } else if (state.gold >= PEACE_TREATY_COST) {
+            } else if (state.gold >= peaceTreatyCost) {
                 peaceTagColor = "bg-yellow-500 border-yellow-700"; 
                 peaceTagText = "Peace (Available)";
             }
@@ -899,15 +931,15 @@
                                 </div>
                                 
                                 <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-amber-100 border-4 border-amber-500">
-                                    <p class="text-xs sm:text-sm font-black text-amber-900 text-center">⚠️ PEACE TREATY: 10B ${currentCurrency.name}s</p>
+                                    <p class="text-xs sm:text-sm font-black text-amber-900 text-center">⚠️ PEACE TREATY: ${formatCost(peaceTreatyCost)} ${currentCurrency.name}s</p>
                                     ${state.peaceTreatyActive ? `
                                         <p class="text-xs font-bold text-emerald-700 text-center mt-1">✓ Active - No more boss battles!</p>
                                     ` : `
                                         <button 
                                             onclick="buyPeaceTreaty()" 
-                                            class="w-full mt-3 pixel-button ${state.gold >= PEACE_TREATY_COST ? 'bg-emerald-500 border-emerald-700' : 'bg-slate-400 border-slate-600'} text-white px-6 py-3 text-sm font-black uppercase"
+                                            class="w-full mt-3 pixel-button ${state.gold >= peaceTreatyCost ? 'bg-emerald-500 border-emerald-700' : 'bg-slate-400 border-slate-600'} text-white px-6 py-3 text-sm font-black uppercase"
                                         >
-                                            ${state.gold >= PEACE_TREATY_COST ? 'Purchase Peace Treaty' : 'Cannot Afford'}
+                                            ${state.gold >= peaceTreatyCost ? 'Purchase Peace Treaty' : 'Cannot Afford'}
                                         </button>
                                     `}
                                 </div>
@@ -958,10 +990,7 @@
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">${currentCurrency.name}s</p>
-                                    <div class="flex items-center gap-1 sm:gap-2">
-                                        <img src="${currentCurrency.icon}" class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                        <span class="text-lg sm:text-2xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
-                                    </div>
+                                    <span class="text-lg sm:text-2xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center w-full sm:w-auto">
