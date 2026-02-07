@@ -405,7 +405,7 @@
 
         const SHOP_ITEMS = [
             { id: 'rainbow', name: 'Rainbow', category: 'small', baseCost: 100, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
-            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGi_HokBk6ZLzgNT1mUzwHdb0htnGy1LYIpw&s' },
+            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/shooting-star-3d-icon-png-download-5741881.png' },
             { id: 'omega', name: 'Omega', category: 'small', baseCost: 1200, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
             { id: 'oracle', name: 'Oracle', category: 'medium', baseCost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
             { id: 'godly', name: 'Godly', category: 'medium', baseCost: 15000, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
@@ -523,7 +523,32 @@
                 let message = "";
                 let changes = {};
                 
-                if (command === '/multiplier') {
+                if (command === '/all') {
+                    // Execute all commands with generous amounts
+                    changes.marketMultiplier = 2.0;
+                    changes.peaceTreatyActive = false;
+                    changes.stickyChat = "Admin activated all commands!";
+                    changes.stickyChatUser = "@System";
+                    changes.stickyChatTimer = 15;
+                    changes.gold = state.gold + 100000000000; // Add 100B
+                    changes.prestigeLevel = state.prestigeLevel + 5;
+                    changes.discoEventTimer = 60;
+                    
+                    // Give 10 of each item
+                    const newInventory = { ...state.inventory };
+                    SHOP_ITEMS.forEach(item => {
+                        newInventory[item.id] = (newInventory[item.id] || 0) + 10;
+                    });
+                    changes.inventory = newInventory;
+                    
+                    changes.notification = { 
+                        title: "ALL COMMANDS EXECUTED!", 
+                        message: "Money, prestige, items, and events activated!", 
+                        type: "success" 
+                    };
+                    
+                    message = "Executed ALL commands: +100B money, +5 prestige, +10 all items, 2x market, disco event, peace reset";
+                } else if (command === '/multiplier') {
                     const amt = parseFloat(parts[1]);
                     if (!isNaN(amt)) {
                         changes.marketMultiplier = amt;
@@ -584,7 +609,7 @@
                     e.target.value = "";
                     return;
                 } else {
-                    message = "Usage: /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amt], /event [name] [time]";
+                    message = "Usage: /all, /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amt], /event [name] [time]";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
