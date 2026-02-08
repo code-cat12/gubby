@@ -79,23 +79,24 @@
             cursor: pointer;
             position: relative;
             transform-origin: bottom center;
-            transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
             will-change: transform;
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
         }
 
         .gubby-container:active {
-            transform: scale(1.15, 0.85);
-            transition: transform 0.03s ease-out;
+            transform: scale(0.9, 1.1);
         }
 
         .animate-squish {
-            animation: squish-fast 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+            animation: squish-click 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes squish-fast {
-            0% { transform: scale(1.15, 0.85); }
-            50% { transform: scale(0.95, 1.05); }
+        @keyframes squish-click {
+            0% { transform: scale(1, 1); }
+            25% { transform: scale(0.85, 1.15); }
+            50% { transform: scale(1.05, 0.95); }
+            75% { transform: scale(0.98, 1.02); }
             100% { transform: scale(1, 1); }
         }
 
@@ -103,8 +104,9 @@
             pointer-events: none;
             position: fixed;
             animation: floatUp 0.6s ease-out forwards;
-            z-index: 100;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+            font-weight: 900;
         }
         
         @keyframes floatUp {
@@ -255,6 +257,11 @@
 
         .float-animation {
             animation: float 3s ease-in-out infinite;
+            animation-play-state: running;
+        }
+        
+        .float-animation.paused {
+            animation-play-state: paused;
         }
 
         .pixel-shadow {
@@ -368,11 +375,6 @@
             .inventory-slot {
                 padding: 0.75rem !important;
             }
-            
-            .inventory-slot img {
-                width: 2.5rem !important;
-                height: 2.5rem !important;
-            }
         }
     </style>
 </head>
@@ -392,8 +394,8 @@
         const DESTINATIONS = [
             { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
             { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
-            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://cdna.artstation.com/p/assets/images/images/060/558/020/original/anna-teather-fantasy-bk-anim.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://art.ngfiles.com/images/3456000/3456911_prisonercoin_puncture.gif?f1694637413', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
+            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
+            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://64.media.tumblr.com/40e46896f69fd7c2af5e9ec2a678fefb/tumblr_o0vsmjKEtK1ug3suio1_640.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
         ];
 
         const CONVERSION_RATES = {
@@ -405,7 +407,7 @@
 
         const SHOP_ITEMS = [
             { id: 'rainbow', name: 'Rainbow', category: 'small', baseCost: 100, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
-            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/shooting-star-3d-icon-png-download-5741881.png' },
+            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
             { id: 'omega', name: 'Omega', category: 'small', baseCost: 1200, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
             { id: 'oracle', name: 'Oracle', category: 'medium', baseCost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
             { id: 'godly', name: 'Godly', category: 'medium', baseCost: 15000, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
@@ -449,7 +451,6 @@
             stickyChat: null,
             stickyChatUser: null,
             stickyChatTimer: 0,
-            isSquishing: false,
             showAdmin: false,
             adminLog: [],
             discoEventTimer: 0
@@ -664,7 +665,14 @@
             if (e.type === 'mousedown' && e.button !== 0) return;
             
             const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && !['warp', 'oracle'].includes(state.activeBuff.id) ? state.activeBuff.power : 1);
-            let nextState = { isSquishing: true };
+            
+            // Trigger squish animation
+            const gubbyElement = document.querySelector('.gubby-container');
+            if (gubbyElement) {
+                gubbyElement.classList.remove('animate-squish');
+                void gubbyElement.offsetWidth; // Force reflow
+                gubbyElement.classList.add('animate-squish');
+            }
 
             if (state.isBattleActive) {
                 const nextHP = state.battleHP - currentPower;
@@ -672,34 +680,33 @@
                     endBattle(true);
                     return; 
                 } else {
-                    nextState.battleHP = nextHP;
-                    nextState.totalClicksSession = state.totalClicksSession + 1;
-                    nextState.lifetimeClicks = state.lifetimeClicks + 1;
+                    state.battleHP = nextHP;
+                    state.totalClicksSession = state.totalClicksSession + 1;
+                    state.lifetimeClicks = state.lifetimeClicks + 1;
+                    render();
                 }
             } else {
-                nextState.clicks = state.clicks + currentPower;
-                nextState.totalClicksSession = state.totalClicksSession + 1;
-                nextState.lifetimeClicks = state.lifetimeClicks + 1;
+                state.clicks = state.clicks + currentPower;
+                state.totalClicksSession = state.totalClicksSession + 1;
+                state.lifetimeClicks = state.lifetimeClicks + 1;
+                render();
             }
 
             const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
             const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
             
-            const particle = document.createElement('span');
-            particle.className = `particle text-5xl font-black ${state.isBattleActive ? 'text-red-600' : 'text-amber-400'}`;
-            particle.style.textShadow = '3px 3px 0 rgba(0,0,0,0.5)';
-            particle.innerText = state.isBattleActive ? 'HIT!' : `+${currentPower}`;
-            particle.style.left = `${clientX}px`;
-            particle.style.top = `${clientY}px`;
+            const particle = document.createElement('div');
+            particle.className = `particle ${state.isBattleActive ? 'text-red-600' : 'text-amber-400'}`;
+            particle.style.cssText = `
+                left: ${clientX}px;
+                top: ${clientY}px;
+                font-size: 3rem;
+                font-weight: 900;
+                text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+            `;
+            particle.textContent = state.isBattleActive ? 'HIT!' : `+${currentPower}`;
             document.body.appendChild(particle);
             setTimeout(() => particle.remove(), 600);
-
-            updateState(nextState);
-
-            if (squishTimeout) clearTimeout(squishTimeout);
-            squishTimeout = setTimeout(() => {
-                updateState({ isSquishing: false });
-            }, 80);
         }
 
         function sellClicks() {
@@ -766,11 +773,24 @@
             const item = SHOP_ITEMS.find(i => i.id === itemId);
             if (state.inventory[itemId] > 0 && !state.activeBuff) {
                 if (itemId === 'warp' && state.isBattleActive) {
-                    updateState({ battleTimer: state.battleTimer + 30, inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 } });
+                    updateState({ 
+                        battleTimer: state.battleTimer + 30, 
+                        inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 },
+                        showStorageModal: false 
+                    });
                 } else if (itemId === 'oracle') {
-                    updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, activeBuff: { ...item, timeLeft: item.duration }, showOracle: true });
+                    updateState({ 
+                        inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, 
+                        activeBuff: { ...item, timeLeft: item.duration }, 
+                        showOracle: true,
+                        showStorageModal: false 
+                    });
                 } else if (itemId !== 'warp') {
-                    updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, activeBuff: { ...item, timeLeft: item.duration } });
+                    updateState({ 
+                        inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, 
+                        activeBuff: { ...item, timeLeft: item.duration },
+                        showStorageModal: false 
+                    });
                 }
             }
         }
@@ -781,24 +801,27 @@
             state.marketTrend = state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down';
             state.marketQueue = [...state.marketQueue.slice(1), nextRate];
             
-            // Only re-render if admin console is not open
-            if (!state.showAdmin) {
+            // Only re-render if admin console and modals are not open
+            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal) {
                 render();
             }
         }, 7000);
 
         setInterval(() => {
-            let nextState = {};
             let shouldRender = false;
             
             if (state.activeBuff) {
                 if (state.activeBuff.timeLeft <= 1) { 
-                    nextState.activeBuff = null; 
-                    nextState.showOracle = false; 
+                    state.activeBuff = null;
+                    state.showOracle = false;
                     shouldRender = true;
                 } else { 
-                    nextState.activeBuff = { ...state.activeBuff, timeLeft: state.activeBuff.timeLeft - 1 }; 
-                    shouldRender = true;
+                    state.activeBuff.timeLeft = state.activeBuff.timeLeft - 1;
+                    // Update buff timer display without full re-render
+                    const buffDisplay = document.querySelector('.buff-timer-display');
+                    if (buffDisplay) {
+                        buffDisplay.textContent = `${state.activeBuff.name} (${state.activeBuff.timeLeft}s)`;
+                    }
                 }
             }
             if (state.isBattleActive) {
@@ -806,29 +829,36 @@
                     endBattle(false);
                     return; // endBattle already calls render
                 } else { 
-                    nextState.battleTimer = state.battleTimer - 1; 
-                    shouldRender = true;
+                    state.battleTimer = state.battleTimer - 1;
+                    // Update battle timer display without full re-render
+                    const battleTimerDisplay = document.querySelector('.battle-timer-display');
+                    if (battleTimerDisplay) {
+                        battleTimerDisplay.textContent = `BOSS BATTLE - ${state.battleTimer}s`;
+                    }
                 }
             }
             if (state.discoEventTimer > 0) {
-                nextState.discoEventTimer = state.discoEventTimer - 1;
-                shouldRender = true;
+                state.discoEventTimer = state.discoEventTimer - 1;
+                // Update disco timer display without full re-render
+                const discoDisplay = document.querySelector('.disco-timer-display');
+                if (discoDisplay) {
+                    discoDisplay.textContent = `Disco Mode: ${state.discoEventTimer}s`;
+                }
+                if (state.discoEventTimer === 0) {
+                    shouldRender = true; // Re-render to remove disco background
+                }
             }
             if (state.stickyChatTimer > 0) {
-                nextState.stickyChatTimer = state.stickyChatTimer - 1;
-                if (nextState.stickyChatTimer === 0) {
-                    nextState.stickyChat = null;
-                    nextState.stickyChatUser = null;
+                state.stickyChatTimer = state.stickyChatTimer - 1;
+                if (state.stickyChatTimer === 0) {
+                    state.stickyChat = null;
+                    state.stickyChatUser = null;
                 }
-                shouldRender = true;
             }
             
-            if (Object.keys(nextState).length > 0) {
-                Object.assign(state, nextState);
-                // Only render if admin console is not open
-                if (shouldRender && !state.showAdmin) {
-                    render();
-                }
+            // Only render if admin console is not open, no modals are open, and something important changed
+            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal) {
+                render();
             }
         }, 1000);
 
@@ -1027,11 +1057,6 @@
 
                     <main class="z-10 relative flex flex-col items-center justify-center w-full mb-4">
                         <div class="h-16 mb-2 flex flex-col items-center justify-end">
-                            ${state.stickyChat ? `
-                                <div class="roblox-chat mb-4">
-                                    <span class="text-blue-600">${state.stickyChatUser || '@System'}:</span> ${state.stickyChat}
-                                </div>
-                            ` : ''}
                             ${state.showOracle ? `
                                 <div class="flex gap-3 mb-3">
                                     ${state.marketQueue.map((rate, idx) => `
@@ -1044,23 +1069,23 @@
                             ` : ''}
                             ${state.isBattleActive ? `
                                 <div class="flex flex-col items-center w-80">
-                                    <span class="text-sm font-black uppercase text-red-600 mb-2 tracking-wider">BOSS BATTLE - ${state.battleTimer}s</span>
+                                    <span class="battle-timer-display text-sm font-black uppercase text-red-600 mb-2 tracking-wider">BOSS BATTLE - ${state.battleTimer}s</span>
                                     <div class="health-bar w-full">
                                         <div class="health-bar-fill" style="width: ${(state.battleHP / state.maxBattleHP) * 100}%"></div>
                                     </div>
                                     <span class="text-xs font-bold text-slate-600 mt-1">${state.battleHP} / ${state.maxBattleHP} HP</span>
                                 </div>
-                            ` : state.activeBuff ? `<div class="bg-white px-8 py-3 border-4 border-indigo-500" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="text-sm font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
+                            ` : state.activeBuff ? `<div class="bg-white px-8 py-3 border-4 border-indigo-500" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="buff-timer-display text-sm font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
                         </div>
 
                         <div 
                             onmousedown="handleMainClick(event)"
                             ontouchstart="handleMainClick(event)"
-                            class="gubby-container w-72 h-72 flex items-center justify-center ${state.isSquishing ? 'animate-squish' : ''} float-animation"
+                            class="gubby-container w-72 h-72 flex items-center justify-center float-animation"
                         >
                             <img src="${gubbyImgUrl}" class="w-full h-full object-contain pointer-events-none" style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));" />
                         </div>
-                        ${state.discoEventTimer > 0 ? `<div class="mt-6 px-6 py-2 bg-white/90 border-4 border-purple-600 font-black text-purple-600 uppercase animate-pulse" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);">Disco Mode: ${state.discoEventTimer}s</div>` : ''}
+                        ${state.discoEventTimer > 0 ? `<div class="mt-6 px-6 py-2 bg-white/90 border-4 border-purple-600 font-black text-purple-600 uppercase animate-pulse" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="disco-timer-display">Disco Mode: ${state.discoEventTimer}s</span></div>` : ''}
                     </main>
 
                     <div class="z-20 w-full max-w-2xl flex gap-6 justify-center mb-8 px-4 flex-col sm:flex-row">
@@ -1178,10 +1203,9 @@
                                             ${state.activeBuff !== null && item.id !== 'warp' ? 'disabled' : ''} 
                                             class="inventory-slot p-4 has-item ${state.activeBuff !== null && item.id !== 'warp' ? 'disabled' : ''}"
                                         >
-                                            <img src="${item.img}" class="w-16 h-16 object-contain mx-auto mb-2"/>
                                             <span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>
-                                            <p class="text-xs font-black uppercase text-slate-900 text-center leading-tight">${item.name}</p>
-                                            ${item.description ? `<p class="text-[10px] font-bold text-slate-500 text-center mt-1">${item.description}</p>` : `<p class="text-[10px] font-bold text-slate-500 text-center mt-1">${item.power > 1 ? item.power + 'x' : 'Special'}</p>`}
+                                            <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight mt-2">${item.name}</p>
+                                            ${item.description ? `<p class="text-xs font-bold text-slate-500 text-center mt-1">${item.description}</p>` : `<p class="text-xs font-bold text-slate-500 text-center mt-1">${item.power > 1 ? item.power + 'x' : 'Special'}</p>`}
                                         </button>
                                     `).join('')}
                                 </div>
