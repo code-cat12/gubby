@@ -930,13 +930,7 @@
                     ` : ''}
 
                     <header class="z-20 w-full max-w-6xl flex flex-col items-center gap-4 mt-2 mb-4 px-4">
-                        <img 
-                            onclick="triggerTitleClick()" 
-                            src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/HrX8YCyF/download-(2)-(1).png' : 'https://i.postimg.cc/PPB8nqCT/download-(1).png'}"
-                            class="cursor-help active:scale-95 transition-transform w-full max-w-lg sm:max-w-2xl object-contain"
-                            style="image-rendering: pixelated;"
-                            draggable="false"
-                        />
+                        <h1 onclick="triggerTitleClick()" class="text-4xl sm:text-6xl font-black tracking-tight uppercase ${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'text-white' : 'text-slate-900'} cursor-help active:scale-95 transition-transform text-center" style="text-shadow: 4px 4px 0 rgba(0,0,0,0.3);">Gubby Clicker</h1>
                         
                         <div class="flex gap-3 items-center flex-wrap justify-center">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white">Prestige ${state.prestigeLevel}</span>
