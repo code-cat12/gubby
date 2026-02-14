@@ -79,25 +79,23 @@
             cursor: pointer;
             position: relative;
             transform-origin: bottom center;
-            transition: transform 0.05s ease-out;
             will-change: transform;
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
         }
 
-        .gubby-container:active {
-            transform: scale(0.85, 1.2);
+        .gubby-float {
+            animation: float 3s ease-in-out infinite;
         }
 
         .animate-squish {
-            animation: squish-click 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: squish-click 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
         }
 
         @keyframes squish-click {
-            0% { transform: scale(1, 1); }
-            20% { transform: scale(0.75, 1.3); }
-            40% { transform: scale(1.1, 0.9); }
-            60% { transform: scale(0.95, 1.05); }
-            80% { transform: scale(1.02, 0.98); }
+            0%   { transform: scale(1, 1); }
+            25%  { transform: scale(1.05, 0.93); }
+            50%  { transform: scale(0.97, 1.04); }
+            75%  { transform: scale(1.02, 0.98); }
             100% { transform: scale(1, 1); }
         }
 
@@ -258,11 +256,10 @@
 
         .float-animation {
             animation: float 3s ease-in-out infinite;
-            animation-play-state: running;
         }
         
-        .float-animation.paused {
-            animation-play-state: paused;
+        .gubby-float {
+            animation: float 3s ease-in-out infinite;
         }
 
         .pixel-shadow {
@@ -396,7 +393,7 @@
             { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
             { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
             { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/2b/93/c2/2b93c2d26ea042ef05ec0fc6dbac7de6.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
+            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://64.media.tumblr.com/40e46896f69fd7c2af5e9ec2a678fefb/tumblr_o0vsmjKEtK1ug3suio1_640.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
         ];
 
         const CONVERSION_RATES = {
@@ -412,7 +409,6 @@
             { id: 'omega', name: 'Omega', category: 'small', baseCost: 1200, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
             { id: 'oracle', name: 'Oracle', category: 'medium', baseCost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
             { id: 'godly', name: 'Godly', category: 'medium', baseCost: 15000, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
-            { id: 'warp', name: 'Time Warp', category: 'medium', baseCost: 25000, power: 1, duration: 1, description: '+30s Battle', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/time-machine-3d-icon-png-download-8786172.png' },
             { id: 'legendary', name: 'Legendary', category: 'medium', baseCost: 75000, power: 1000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
             { id: 'mythic', name: 'Mythic', category: 'large', baseCost: 250000, power: 5000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
             { id: 'divine', name: 'Divine', category: 'large', baseCost: 1000000, power: 25000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
@@ -435,18 +431,10 @@
             showStorageModal: false,
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
             prestigeLevel: 0,
-            peaceTreatyActive: false,
             marketMultiplier: 1,
             marketTrend: 'stable',
             marketQueue: [1.1, 0.8, 1.4],
             showOracle: false,
-            isBattleActive: false,
-            battleType: 'normal',
-            battleHP: 0,
-            maxBattleHP: 0,
-            battleTimer: 0,
-            normalBossCount: 0,
-            megaBossCount: 0,
             marketCategory: null,
             notification: null,
             stickyChat: null,
@@ -454,49 +442,24 @@
             stickyChatTimer: 0,
             showAdmin: false,
             adminLog: [],
-            discoEventTimer: 0
+            discoEventTimer: 0,
+            showItemPopup: false,
+            itemPopupId: null,
+            itemPopupQty: 1
         };
 
-        const PEACE_TREATY_COST = 10000000000; // 10 billion
         let titleClickCount = 0;
         let titleClickTimer = null;
-        let squishTimeout = null;
-        let lastNormalTriggered = 0;
-        let lastMegaTriggered = 0;
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
             if (!skipRender) render();
         }
 
-        function buyPeaceTreaty() {
-            if (state.peaceTreatyActive) return;
-            
-            if (state.prestigeLevel < 1) {
-                updateState({ notification: { title: "LOCKED", message: "Reach Prestige 1 to unlock Peace Treaty!", type: "info" } });
-                return;
-            }
-
-            const treatyCost = getPeaceTreatyCost();
-            if (state.gold >= treatyCost) {
-                updateState({ 
-                    peaceTreatyActive: true, 
-                    gold: state.gold - treatyCost,
-                    notification: { title: "PEACE SIGNED", message: "Peace Treaty activated! No more bosses will appear.", type: "success" }
-                });
-            }
-        }
-
-        function getPeaceTreatyCost() {
-            const rate = CONVERSION_RATES[state.theme];
-            return PEACE_TREATY_COST / rate;
-        }
-
         function getItemPrice(item) {
             const world = DESTINATIONS.find(d => d.id === state.theme);
             const priceMod = world ? world.priceMod : 1;
             const rate = CONVERSION_RATES[state.theme];
-            // 25% more expensive
             return (item.baseCost * priceMod * 1.25) / rate;
         }
 
@@ -505,7 +468,7 @@
             const prestigeMod = world ? world.prestigeMod : 1;
             const rate = CONVERSION_RATES[state.theme];
             const basePrestigeCost = Math.floor(1000 * Math.pow(3, state.prestigeLevel));
-            return (basePrestigeCost * prestigeMod) / rate;
+            return (basePrestigeCost * prestigeMod * 0.6) / rate; // 40% cheaper
         }
 
         function formatCost(cost) {
@@ -525,93 +488,30 @@
                 let message = "";
                 let changes = {};
                 
-                if (command === '/all') {
-                    // Execute all commands with generous amounts
-                    changes.marketMultiplier = 2.0;
-                    changes.peaceTreatyActive = false;
-                    changes.stickyChat = "Admin activated all commands!";
-                    changes.stickyChatUser = "@System";
-                    changes.stickyChatTimer = 15;
-                    changes.gold = state.gold + 100000000000; // Add 100B
-                    changes.prestigeLevel = state.prestigeLevel + 5;
-                    changes.discoEventTimer = 60;
-                    
-                    // Give 10 of each item
-                    const newInventory = { ...state.inventory };
-                    SHOP_ITEMS.forEach(item => {
-                        newInventory[item.id] = (newInventory[item.id] || 0) + 10;
-                    });
-                    changes.inventory = newInventory;
-                    
-                    changes.notification = { 
-                        title: "ALL COMMANDS EXECUTED!", 
-                        message: "Money, prestige, items, and events activated!", 
-                        type: "success" 
-                    };
-                    
-                    message = "Executed ALL commands: +100B money, +5 prestige, +10 all items, 2x market, disco event, peace reset";
-                } else if (command === '/multiplier') {
-                    const amt = parseFloat(parts[1]);
-                    if (!isNaN(amt)) {
-                        changes.marketMultiplier = amt;
-                        message = `Market Rate forced to ${amt}x`;
-                    } else {
-                        message = "Error: Use /multiplier <amount>";
-                    }
-                } else if (command === '/resetpeace') {
-                    changes.peaceTreatyActive = false;
-                    message = "Peace Treaty reset.";
-                } else if (command === '/talk') {
-                    const targetUser = parts[1];
-                    if (targetUser && targetUser.startsWith('@')) {
-                        const talkMsg = parts.slice(2).join(' ');
-                        if (talkMsg) {
-                            changes.stickyChat = talkMsg;
-                            changes.stickyChatUser = targetUser;
-                            changes.stickyChatTimer = 15;
-                            message = `${targetUser}: ${talkMsg}`;
-                        } else {
-                            message = "Error: Missing message content.";
-                        }
-                    } else {
-                        message = "Error: Invalid username. Use /talk <@username> <message>";
-                    }
-                } else if (command === '/money') {
+                if (command === '/money') {
                     const amt = parseFloat(parts[1]) || 0;
                     changes.gold = state.gold + amt;
                     message = `Money added: ${amt}`;
                 } else if (command === '/rebirth') {
-                    const lvl = parseInt(parts[1]) || 0;
-                    changes.prestigeLevel = lvl;
-                    message = `Prestige level set to ${lvl}`;
+                    const lvl = parseInt(parts[1]);
+                    if (!isNaN(lvl)) {
+                        changes.prestigeLevel = lvl;
+                        message = "Prestige level set to " + lvl;
+                    } else {
+                        message = "Usage: /rebirth [n]";
+                    }
                 } else if (command === '/give') {
                     const itemId = parts[1]?.toLowerCase();
                     const amount = parseInt(parts[2]) || 1;
                     const itemExists = SHOP_ITEMS.find(i => i.id === itemId);
-                    
                     if (itemExists) {
                         changes.inventory = { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + amount };
                         message = `Gave ${amount}x ${itemExists.name}`;
                     } else {
                         message = `Error: Item '${itemId}' not found`;
                     }
-                } else if (command === '/event') {
-                    const eventName = parts[1]?.toLowerCase();
-                    const eventTime = parseInt(parts[2]) || 30;
-                    
-                    if (eventName === 'disco') {
-                        changes.discoEventTimer = eventTime;
-                        changes.notification = { title: "DISCO PARTY!", message: `Everything is crazy for ${eventTime}s!`, type: "info" };
-                        message = `Started event: DISCO (${eventTime}s)`;
-                    } else {
-                        message = `Error: Event '${eventName}' not available. Try: disco`;
-                    }
-                } else if (command === '/clear') {
-                    updateState({ adminLog: [] });
-                    e.target.value = "";
-                    return;
                 } else {
-                    message = "Usage: /all, /multiplier [n], /talk <@user> [msg], /money [n], /rebirth [n], /give [id] [amt], /event [name] [time]";
+                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt]";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -631,87 +531,45 @@
             }
         }
 
-        function triggerBattle(type) {
-            const isMega = type === 'mega';
-            let hp = isMega ? 45 + (state.megaBossCount * 10) : 20 + (state.normalBossCount * 10);
-            const baseTime = isMega ? 45 : 30;
-            updateState({
-                battleType: type,
-                battleHP: hp,
-                maxBattleHP: hp,
-                battleTimer: baseTime + (isMega ? (state.megaBossCount * 8) : (state.normalBossCount * 5)),
-                isBattleActive: true
-            });
-        }
-
-        function endBattle(won) {
-            const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
-            const currentWorldMult = currentWorld ? currentWorld.mult : 1;
-            if (won) {
-                const reward = (state.maxBattleHP * (state.battleType === 'mega' ? 6 : 3) * currentWorldMult) / CONVERSION_RATES[state.theme];
-                updateState({
-                    isBattleActive: false,
-                    gold: state.gold + reward,
-                    megaBossCount: state.battleType === 'mega' ? state.megaBossCount + 1 : state.megaBossCount,
-                    normalBossCount: state.battleType === 'normal' ? state.normalBossCount + 1 : state.normalBossCount,
-                    notification: { title: "VICTORY!", message: `Reward: ${reward.toFixed(2)} ${CURRENCIES[state.theme].name}s.`, type: "success" }
-                });
-            } else {
-                updateState({ isBattleActive: false, notification: { title: "BATTLE FAILED!", message: `The boss escaped!`, type: "error" } });
-            }
-        }
-
         function handleMainClick(e) {
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
             
-            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && !['warp', 'oracle'].includes(state.activeBuff.id) ? state.activeBuff.power : 1);
+            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && state.activeBuff.id !== 'oracle' ? state.activeBuff.power : 1);
             
-            // Trigger squish animation
+            // Trigger squish animation on the inner container
             const gubbyElement = document.querySelector('.gubby-container');
             if (gubbyElement) {
                 gubbyElement.classList.remove('animate-squish');
-                void gubbyElement.offsetWidth; // Force reflow
+                void gubbyElement.offsetWidth;
                 gubbyElement.classList.add('animate-squish');
+                // Remove after animation to reset
+                setTimeout(() => gubbyElement.classList.remove('animate-squish'), 400);
             }
 
-            if (state.isBattleActive) {
-                const nextHP = state.battleHP - currentPower;
-                if (nextHP <= 0) {
-                    endBattle(true);
-                    return; 
-                } else {
-                    state.battleHP = nextHP;
-                    state.totalClicksSession = state.totalClicksSession + 1;
-                    state.lifetimeClicks = state.lifetimeClicks + 1;
-                    render();
-                }
-            } else {
-                state.clicks = state.clicks + currentPower;
-                state.totalClicksSession = state.totalClicksSession + 1;
-                state.lifetimeClicks = state.lifetimeClicks + 1;
-                render();
-            }
+            state.clicks = state.clicks + currentPower;
+            state.totalClicksSession = state.totalClicksSession + 1;
+            state.lifetimeClicks = state.lifetimeClicks + 1;
+
+            // Update click counter inline to avoid full re-render interrupting float animation
+            const clicksEl = document.querySelector('.clicks-live');
+            if (clicksEl) clicksEl.textContent = state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0});
+            const totalEl = document.querySelector('.total-live');
+            if (totalEl) totalEl.textContent = state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0});
 
             const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
             const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
             
             const particle = document.createElement('div');
-            particle.className = `particle ${state.isBattleActive ? 'text-red-600' : 'text-amber-400'}`;
-            particle.style.cssText = `
-                left: ${clientX}px;
-                top: ${clientY}px;
-                font-size: 3rem;
-                font-weight: 900;
-                text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-            `;
-            particle.textContent = state.isBattleActive ? 'HIT!' : `+${currentPower}`;
+            particle.className = `particle text-amber-400`;
+            particle.style.cssText = `left:${clientX}px;top:${clientY}px;font-size:2.5rem;font-weight:900;text-shadow:3px 3px 0 rgba(0,0,0,0.5);`;
+            particle.textContent = `+${currentPower}`;
             document.body.appendChild(particle);
             setTimeout(() => particle.remove(), 600);
         }
 
         function sellClicks() {
-            if (!state.isBattleActive && state.clicks > 0) {
+            if (state.clicks > 0) {
                 const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
                 const currentWorldMult = currentWorld ? currentWorld.mult : 1;
                 const totalGoldEarned = (state.clicks * state.marketMultiplier * currentWorldMult) / CONVERSION_RATES[state.theme];
@@ -742,30 +600,79 @@
 
         function ascend() {
             const cost = getAscensionCost();
-            if (state.gold >= cost) {
-                lastMegaTriggered = 0;
-                lastNormalTriggered = 0;
-                updateState({
-                    prestigeLevel: state.prestigeLevel + 1,
-                    gold: 0,
-                    clicks: 0,
-                    totalClicksSession: 0,
-                    inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
-                    activeBuff: null,
-                    showOracle: false,
-                    notification: { title: "ASCENDED!", message: `Prestige ${state.prestigeLevel + 1} reached!`, type: "success" }
-                });
+            if (state.gold < cost) return;
+            const nextPrestige = state.prestigeLevel + 1;
+            updateState({
+                prestigeLevel: nextPrestige,
+                gold: 0, clicks: 0, totalClicksSession: 0,
+                inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
+                activeBuff: null, showOracle: false,
+                notification: { title: "ASCENDED!", message: `Prestige ${nextPrestige} reached!`, type: "success" }
+            });
+        }
+
+        function openItemPopup(itemId) {
+            updateState({ showItemPopup: true, itemPopupId: itemId, itemPopupQty: 1, showMarketModal: false });
+        }
+
+        function setItemQty(delta) {
+            const newQty = Math.max(1, Math.min(25, state.itemPopupQty + delta));
+            state.itemPopupQty = newQty;
+            // Update UI directly without full re-render
+            const qtyInput = document.querySelector('.qty-input');
+            if (qtyInput) qtyInput.value = newQty;
+            const totalEl = document.querySelector('.popup-total');
+            const buyBtn = document.querySelector('.popup-buy-btn');
+            const popupItem = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
+            if (popupItem && totalEl) {
+                const unitPrice = getItemPrice(popupItem);
+                const totalPrice = unitPrice * newQty;
+                const canAfford = state.gold >= totalPrice;
+                totalEl.textContent = formatCost(totalPrice);
+                totalEl.className = 'popup-total font-black text-2xl ' + (canAfford ? 'text-slate-900' : 'text-red-500');
+                if (buyBtn) {
+                    buyBtn.disabled = !canAfford;
+                    buyBtn.textContent = canAfford ? ('Purchase' + (newQty > 1 ? ' x' + newQty : '')) : 'Cannot Afford';
+                    buyBtn.className = 'popup-buy-btn w-full py-4 font-black uppercase text-lg pixel-button ' + (canAfford ? 'bg-emerald-500 border-emerald-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed');
+                }
             }
         }
 
-        function buyItem(itemId) {
-            const item = SHOP_ITEMS.find(i => i.id === itemId);
+        function setItemQtyManual(val) {
+            const parsed = parseInt(val);
+            if (!isNaN(parsed)) {
+                const newQty = Math.max(1, Math.min(25, parsed));
+                state.itemPopupQty = newQty;
+                const totalEl = document.querySelector('.popup-total');
+                const buyBtn = document.querySelector('.popup-buy-btn');
+                const popupItem = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
+                if (popupItem && totalEl) {
+                    const unitPrice = getItemPrice(popupItem);
+                    const totalPrice = unitPrice * newQty;
+                    const canAfford = state.gold >= totalPrice;
+                    totalEl.textContent = formatCost(totalPrice);
+                    totalEl.className = 'popup-total font-black text-2xl ' + (canAfford ? 'text-slate-900' : 'text-red-500');
+                    if (buyBtn) {
+                        buyBtn.disabled = !canAfford;
+                        buyBtn.textContent = canAfford ? ('Purchase' + (newQty > 1 ? ' x' + newQty : '')) : 'Cannot Afford';
+                        buyBtn.className = 'popup-buy-btn w-full py-4 font-black uppercase text-lg pixel-button ' + (canAfford ? 'bg-emerald-500 border-emerald-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed');
+                    }
+                }
+            }
+        }
+
+        function buyItemFromPopup() {
+            const item = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
             if (!item) return;
-            const price = getItemPrice(item);
-            if (state.gold >= price) {
+            const unitPrice = getItemPrice(item);
+            const totalPrice = unitPrice * state.itemPopupQty;
+            if (state.gold >= totalPrice) {
                 updateState({
-                    gold: state.gold - price,
-                    inventory: { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + 1 }
+                    gold: state.gold - totalPrice,
+                    inventory: { ...state.inventory, [item.id]: (state.inventory[item.id] || 0) + state.itemPopupQty },
+                    showItemPopup: false,
+                    itemPopupId: null,
+                    itemPopupQty: 1
                 });
             }
         }
@@ -773,20 +680,14 @@
         function useItem(itemId) {
             const item = SHOP_ITEMS.find(i => i.id === itemId);
             if (state.inventory[itemId] > 0 && !state.activeBuff) {
-                if (itemId === 'warp' && state.isBattleActive) {
-                    updateState({ 
-                        battleTimer: state.battleTimer + 30, 
-                        inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 },
-                        showStorageModal: false 
-                    });
-                } else if (itemId === 'oracle') {
+                if (itemId === 'oracle') {
                     updateState({ 
                         inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, 
                         activeBuff: { ...item, timeLeft: item.duration }, 
                         showOracle: true,
                         showStorageModal: false 
                     });
-                } else if (itemId !== 'warp') {
+                } else {
                     updateState({ 
                         inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, 
                         activeBuff: { ...item, timeLeft: item.duration },
@@ -803,7 +704,7 @@
             state.marketQueue = [...state.marketQueue.slice(1), nextRate];
             
             // Only re-render if admin console and modals are not open
-            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal) {
+            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup) {
                 render();
             }
         }, 7000);
@@ -825,19 +726,6 @@
                     }
                 }
             }
-            if (state.isBattleActive) {
-                if (state.battleTimer <= 1) {
-                    endBattle(false);
-                    return; // endBattle already calls render
-                } else { 
-                    state.battleTimer = state.battleTimer - 1;
-                    // Update battle timer display without full re-render
-                    const battleTimerDisplay = document.querySelector('.battle-timer-display');
-                    if (battleTimerDisplay) {
-                        battleTimerDisplay.textContent = `BOSS BATTLE - ${state.battleTimer}s`;
-                    }
-                }
-            }
             if (state.discoEventTimer > 0) {
                 state.discoEventTimer = state.discoEventTimer - 1;
                 // Update disco timer display without full re-render
@@ -849,29 +737,10 @@
                     shouldRender = true; // Re-render to remove disco background
                 }
             }
-            if (state.stickyChatTimer > 0) {
-                state.stickyChatTimer = state.stickyChatTimer - 1;
-                if (state.stickyChatTimer === 0) {
-                    state.stickyChat = null;
-                    state.stickyChatUser = null;
-                }
-            }
             
             // Only render if admin console is not open, no modals are open, and something important changed
-            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal) {
+            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup) {
                 render();
-            }
-        }, 1000);
-
-        setInterval(() => {
-            if (state.totalClicksSession > 0 && !state.isBattleActive && !state.peaceTreatyActive) {
-                if (state.totalClicksSession >= lastMegaTriggered + 750) {
-                    lastMegaTriggered = state.totalClicksSession;
-                    triggerBattle('mega');
-                } else if (state.totalClicksSession >= lastNormalTriggered + 250) {
-                    lastNormalTriggered = state.totalClicksSession;
-                    triggerBattle('normal');
-                }
             }
         }, 1000);
 
@@ -897,17 +766,6 @@
 
             const activeElementId = document.activeElement ? document.activeElement.id : null;
             const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
-
-            const peaceTreatyCost = getPeaceTreatyCost();
-            let peaceTagColor = "bg-red-500 border-red-700";
-            let peaceTagText = "Peace (Locked)";
-            if (state.peaceTreatyActive) {
-                peaceTagColor = "bg-emerald-500 border-emerald-700";
-                peaceTagText = "Peaceful";
-            } else if (state.gold >= peaceTreatyCost) {
-                peaceTagColor = "bg-yellow-500 border-yellow-700"; 
-                peaceTagText = "Peace (Available)";
-            }
 
             // Calculate total items in inventory
             const totalItems = Object.values(state.inventory).reduce((sum, count) => sum + count, 0);
@@ -938,6 +796,70 @@
                     <button onclick="updateState({showTravelModal: true})" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="map" class="text-indigo-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-12 transition-transform"></i>
                     </button>
+
+                    ${state.showItemPopup && state.itemPopupId ? (() => {
+                        const popupItem = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
+                        if (!popupItem) return '';
+                        const unitPrice = getItemPrice(popupItem);
+                        const totalPrice = unitPrice * state.itemPopupQty;
+                        const canAfford = state.gold >= totalPrice;
+                        const tierColors = { small: 'bg-blue-500', medium: 'bg-purple-500', large: 'bg-orange-500', op: 'bg-red-500' };
+                        const tierColor = tierColors[popupItem.category] || 'bg-slate-500';
+                        return `
+                        <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})">
+                            <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+
+                                <!-- Header stripe -->
+                                <div class="${tierColor} px-6 py-4 flex justify-between items-center">
+                                    <div>
+                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">${popupItem.category} boost</p>
+                                        <h3 class="font-black text-2xl uppercase text-white leading-tight">${popupItem.name}</h3>
+                                    </div>
+                                    <button onclick="updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
+                                </div>
+
+                                <div class="p-6">
+                                    <!-- Stats row -->
+                                    <div class="grid grid-cols-2 gap-2 mb-5">
+                                        <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center">
+                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Power</p>
+                                            <p class="font-black text-slate-900 text-sm">${popupItem.power > 1 ? popupItem.power + 'x' : 'Special'}</p>
+                                        </div>
+                                        <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center">
+                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Duration</p>
+                                            <p class="font-black text-slate-900 text-sm">${popupItem.duration}s</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quantity -->
+                                    <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Quantity <span class="text-slate-300">(max 25)</span></p>
+                                    <div class="flex items-stretch gap-0 mb-5 border-4 border-slate-300 overflow-hidden">
+                                        <button onclick="setItemQty(-5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-r-3 border-slate-300 transition-colors">-5</button>
+                                        <button onclick="setItemQty(-1)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-r-3 border-slate-300 transition-colors">-1</button>
+                                        <input 
+                                            type="number" min="1" max="25" 
+                                            value="${state.itemPopupQty}" 
+                                            oninput="setItemQtyManual(this.value)"
+                                            class="qty-input flex-1 text-center font-black text-xl py-3 outline-none bg-white"
+                                            style="border-radius:0; -moz-appearance:textfield;"
+                                        />
+                                        <button onclick="setItemQty(1)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+1</button>
+                                        <button onclick="setItemQty(5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+5</button>
+                                    </div>
+
+                                    <!-- Total + Buy -->
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-black text-slate-500 uppercase text-sm">Total Cost</span>
+                                        <span class="popup-total font-black text-2xl ${canAfford ? 'text-slate-900' : 'text-red-500'}">${formatCost(totalPrice)}</span>
+                                    </div>
+                                    <button onclick="buyItemFromPopup()" ${!canAfford ? 'disabled' : ''} class="popup-buy-btn w-full py-4 font-black uppercase text-lg pixel-button ${canAfford ? 'bg-emerald-500 border-emerald-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed'}">
+                                        ${canAfford ? ('Purchase' + (state.itemPopupQty > 1 ? ' x' + state.itemPopupQty : '')) : 'Cannot Afford'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    })() : ''}
 
                     ${state.notification ? `
                         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop">
@@ -986,20 +908,6 @@
                                     <button onclick="updateState({showMarketModal: false, marketCategory: null})" class="text-slate-500 hover:text-slate-900 text-3xl font-black">✕</button>
                                 </div>
                                 
-                                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-amber-100 border-4 border-amber-500">
-                                    <p class="text-xs sm:text-sm font-black text-amber-900 text-center">⚠️ PEACE TREATY: ${formatCost(peaceTreatyCost)} ${currentCurrency.name}s</p>
-                                    ${state.peaceTreatyActive ? `
-                                        <p class="text-xs font-bold text-emerald-700 text-center mt-1">✓ Active - No more boss battles!</p>
-                                    ` : `
-                                        <button 
-                                            onclick="buyPeaceTreaty()" 
-                                            class="w-full mt-3 pixel-button ${state.gold >= peaceTreatyCost ? 'bg-emerald-500 border-emerald-700' : 'bg-slate-400 border-slate-600'} text-white px-6 py-3 text-sm font-black uppercase"
-                                        >
-                                            ${state.gold >= peaceTreatyCost ? 'Purchase Peace Treaty' : 'Cannot Afford'}
-                                        </button>
-                                    `}
-                                </div>
-
                                 ${renderMarketContent()}
                             </div>
                         </div>
@@ -1022,23 +930,28 @@
                     ` : ''}
 
                     <header class="z-20 w-full max-w-6xl flex flex-col items-center gap-4 mt-2 mb-4 px-4">
-                        <h1 onclick="triggerTitleClick()" class="text-4xl sm:text-6xl font-black tracking-tight uppercase ${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'text-white' : 'text-slate-900'} cursor-help active:scale-95 transition-transform text-center" style="text-shadow: 4px 4px 0 rgba(0,0,0,0.3);">Gubby Clicker</h1>
+                        <img 
+                            onclick="triggerTitleClick()" 
+                            src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/SX4qcBvp/download.png' : 'https://i.postimg.cc/YCL84Ltt/download.png'}"
+                            class="cursor-help active:scale-95 transition-transform max-h-20 sm:max-h-28 object-contain"
+                            style="image-rendering: pixelated;"
+                            draggable="false"
+                        />
                         
                         <div class="flex gap-3 items-center flex-wrap justify-center">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white">Prestige ${state.prestigeLevel}</span>
                             <span class="pixel-badge bg-amber-500 border-amber-700 text-white">${currentWorld?.name}</span>
-                            <span class="pixel-badge ${peaceTagColor} text-white">${peaceTagText}</span>
                         </div>
                         
                         <div class="w-full pixel-card px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start">
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Clicks</p>
-                                    <span class="text-lg sm:text-2xl font-black text-slate-900">${state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+                                    <span class="clicks-live text-lg sm:text-2xl font-black text-slate-900">${state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Total</p>
-                                    <span class="text-lg sm:text-2xl font-black text-slate-900">${state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+                                    <span class="total-live text-lg sm:text-2xl font-black text-slate-900">${state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Market</p>
@@ -1050,8 +963,8 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center w-full sm:w-auto">
-                                <button onclick="ascend()" ${state.gold < currentPrestigeCost || state.isBattleActive ? 'disabled' : ''} class="px-4 sm:px-6 py-2 sm:py-3 font-black uppercase text-xs sm:text-sm tracking-widest transition-all pixel-button ${state.gold >= currentPrestigeCost ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-400 text-slate-400'}">Ascend<br/><span class="text-xs">(${formatCost(currentPrestigeCost)})</span></button>
-                                <button onclick="sellClicks()" ${state.isBattleActive ? 'disabled' : ''} class="px-6 sm:px-8 py-3 sm:py-4 font-black uppercase text-base sm:text-lg tracking-widest transition-all pixel-button ${state.marketMultiplier >= 1.2 ? 'bg-emerald-400 border-emerald-600 text-white animate-pulse' : 'bg-yellow-400 border-yellow-600 text-slate-900'}">Sell!</button>
+                                <button onclick="ascend()" ${state.gold < currentPrestigeCost ? 'disabled' : ''} class="px-4 sm:px-6 py-2 sm:py-3 font-black uppercase text-xs sm:text-sm tracking-widest transition-all pixel-button ${state.gold >= currentPrestigeCost ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-400 text-slate-400'}">Ascend<br/><span class="text-xs">(${formatCost(currentPrestigeCost)})</span></button>
+                                <button onclick="sellClicks()" class="px-6 sm:px-8 py-3 sm:py-4 font-black uppercase text-base sm:text-lg tracking-widest transition-all pixel-button ${state.marketMultiplier >= 1.2 ? 'bg-emerald-400 border-emerald-600 text-white animate-pulse' : 'bg-yellow-400 border-yellow-600 text-slate-900'}">Sell!</button>
                             </div>
                         </div>
                     </header>
@@ -1068,23 +981,17 @@
                                     `).join('')}
                                 </div>
                             ` : ''}
-                            ${state.isBattleActive ? `
-                                <div class="flex flex-col items-center w-80">
-                                    <span class="battle-timer-display text-sm font-black uppercase text-red-600 mb-2 tracking-wider">BOSS BATTLE - ${state.battleTimer}s</span>
-                                    <div class="health-bar w-full">
-                                        <div class="health-bar-fill" style="width: ${(state.battleHP / state.maxBattleHP) * 100}%"></div>
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-600 mt-1">${state.battleHP} / ${state.maxBattleHP} HP</span>
-                                </div>
-                            ` : state.activeBuff ? `<div class="bg-white px-8 py-3 border-4 border-indigo-500" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="buff-timer-display text-sm font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
+                            ${state.activeBuff ? `<div class="bg-white px-8 py-3 border-4 border-indigo-500" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="buff-timer-display text-sm font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
                         </div>
 
-                        <div 
-                            onmousedown="handleMainClick(event)"
-                            ontouchstart="handleMainClick(event)"
-                            class="gubby-container w-72 h-72 flex items-center justify-center float-animation"
-                        >
-                            <img src="${gubbyImgUrl}" class="w-full h-full object-contain pointer-events-none" style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));" />
+                        <div class="gubby-float">
+                            <div 
+                                onmousedown="handleMainClick(event)"
+                                ontouchstart="handleMainClick(event)"
+                                class="gubby-container w-72 h-72 flex items-center justify-center"
+                            >
+                                <img src="${gubbyImgUrl}" class="w-full h-full object-contain pointer-events-none" style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));" />
+                            </div>
                         </div>
                         ${state.discoEventTimer > 0 ? `<div class="mt-6 px-6 py-2 bg-white/90 border-4 border-purple-600 font-black text-purple-600 uppercase animate-pulse" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="disco-timer-display">Disco Mode: ${state.discoEventTimer}s</span></div>` : ''}
                     </main>
@@ -1146,22 +1053,21 @@
 
             const itemsToShow = SHOP_ITEMS.filter(i => i.category === state.marketCategory);
             return `
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-3">
                     <button onclick="updateState({marketCategory: null})" class="w-full text-left text-xs font-black uppercase text-slate-500 mb-2 flex items-center gap-2 hover:text-slate-700 tracking-wider">← Back to Categories</button>
                     ${itemsToShow.map(item => {
                         const price = getItemPrice(item);
                         const canAfford = state.gold >= price;
                         return `
-                            <button onclick="buyItem('${item.id}')" class="market-item flex items-center justify-between p-4 sm:p-5 bg-white ${canAfford ? 'border-slate-600' : 'disabled border-slate-400'} ${canAfford ? '' : 'opacity-50'}">
-                                <div class="flex items-center gap-3 sm:gap-4">
-                                    <div class="text-left">
-                                        <p class="font-black text-sm sm:text-lg uppercase text-slate-900">${item.name}</p>
-                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">Power: ${item.power > 1 ? item.power + 'x' : 'Special'} | ${item.duration}s</p>
-                                        ${item.description ? `<p class="text-xs font-bold text-indigo-600 uppercase mt-1">${item.description}</p>` : ''}
-                                    </div>
+                            <div class="flex items-center justify-between p-4 border-4 bg-white ${canAfford ? 'border-slate-300' : 'border-slate-200 opacity-50'}">
+                                <div class="text-left flex-1 mr-3">
+                                    <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-400 mt-0.5">${item.power > 1 ? item.power + 'x power' : 'Special'} · ${item.duration}s${item.description ? ' · ' + item.description : ''}</p>
                                 </div>
-                                <span class="bg-slate-900 border-3 border-slate-700 text-white px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-black whitespace-nowrap" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.2);">${formatCost(price)}</span>
-                            </button>
+                                <button onclick="event.stopPropagation(); openItemPopup('${item.id}')" class="pixel-button shrink-0 ${canAfford ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
+                                    BUY
+                                </button>
+                            </div>
                         `;
                     }).join('')}
                 </div>
@@ -1201,8 +1107,8 @@
                                     ${catData.items.map(item => `
                                         <button 
                                             onclick="useItem('${item.id}')" 
-                                            ${state.activeBuff !== null && item.id !== 'warp' ? 'disabled' : ''} 
-                                            class="inventory-slot p-4 has-item ${state.activeBuff !== null && item.id !== 'warp' ? 'disabled' : ''}"
+                                            ${state.activeBuff !== null ? 'disabled' : ''} 
+                                            class="inventory-slot p-4 has-item ${state.activeBuff !== null ? 'disabled' : ''}"
                                         >
                                             <span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>
                                             <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight mt-2">${item.name}</p>
