@@ -512,11 +512,12 @@
         }
 
         function getAscensionCost() {
-            const world = DESTINATIONS.find(d => d.id === state.theme);
-            const prestigeMod = world ? world.prestigeMod : 1;
             const rate = CONVERSION_RATES[state.theme];
-            const basePrestigeCost = Math.floor(5000 * Math.pow(2.5, state.prestigeLevel));
-            return (basePrestigeCost * prestigeMod) / rate;
+            const isBattleWorld = state.theme === 'battle';
+            const baseCost = 600;
+            const multiplier = isBattleWorld ? 1.275 : 1.2;
+            const basePrestigeCost = Math.floor(baseCost * Math.pow(multiplier, state.prestigeLevel));
+            return basePrestigeCost / rate;
         }
 
         function formatCost(cost) {
