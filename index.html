@@ -125,30 +125,6 @@
             100% { background-color: #fef08a; }
         }
 
-        .bbc-snow {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            background-image: url('https://static.wikia.nocookie.net/the-battle-bricks/images/9/92/BBC.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            pointer-events: none;
-            z-index: 9999;
-            animation: snowfall linear infinite;
-            image-rendering: pixelated;
-        }
-
-        @keyframes snowfall {
-            0% {
-                transform: translateY(-10vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(110vh) rotate(360deg);
-                opacity: 0.8;
-            }
-        }
-
         .floating-star {
             position: fixed;
             pointer-events: none;
@@ -1022,31 +998,6 @@
                 render();
             }
         }, 1000);
-
-        function manageBBCSnow() {
-            const existingSnow = document.querySelectorAll('.bbc-snow');
-            
-            if (state.equippedItem && ['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(state.equippedItem)) {
-                // Only create snow if there's less than 15 BBC items
-                if (existingSnow.length < 15) {
-                    const snow = document.createElement('div');
-                    snow.className = 'bbc-snow';
-                    snow.style.left = Math.random() * 100 + 'vw';
-                    snow.style.animationDuration = (Math.random() * 3 + 4) + 's';
-                    snow.style.animationDelay = Math.random() * 2 + 's';
-                    document.body.appendChild(snow);
-                    
-                    setTimeout(() => {
-                        snow.remove();
-                    }, 8000);
-                }
-            } else {
-                // Remove all BBC snow if nothing is equipped
-                existingSnow.forEach(snow => snow.remove());
-            }
-        }
-
-        setInterval(manageBBCSnow, 500);
 
         function createFloatingStars() {
             const starCount = 8;
