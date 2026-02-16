@@ -149,6 +149,31 @@
             }
         }
 
+        .floating-star {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatStar linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes floatStar {
+            0% {
+                transform: translateY(-100px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--drift)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         .roblox-chat {
             background: #ffffff;
             color: #000000;
@@ -219,14 +244,37 @@
 
         .pixel-badge {
             border: 3px solid;
-            padding: 6px 14px;
+            padding: 10px 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            border-radius: 0;
+        }
+
+        .pixel-badge-large {
+            border: 3px solid;
+            padding: 8px 16px;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 11px;
             letter-spacing: 1px;
             box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
             border-radius: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
         }
+
+        @media (max-width: 768px) {
+            .pixel-badge-large {
+                min-height: 42px;
+                padding: 6px 12px;
+            }
+        }
+
 
         .health-bar {
             background: #cbd5e1;
@@ -818,11 +866,18 @@
         }
 
         function toggleEquip(itemId) {
+            const wasEquipped = state.equippedItem === itemId;
             if (state.equippedItem === itemId) {
                 updateState({ equippedItem: null });
             } else {
                 updateState({ equippedItem: itemId });
             }
+            
+            // Clear all existing falling particles
+            document.querySelectorAll('.floating-star').forEach(star => star.remove());
+            
+            // Restart particle generation with correct image
+            createFloatingStars();
         }
 
         function generateQuest() {
@@ -992,6 +1047,55 @@
         }
 
         setInterval(manageBBCSnow, 500);
+
+        function createFloatingStars() {
+            const starCount = 8;
+            // Check if a Battle Brick item is equipped
+            const isBattleBrickEquipped = state.equippedItem && ['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(state.equippedItem);
+            const imageUrl = isBattleBrickEquipped 
+                ? 'https://static.wikia.nocookie.net/the-battle-bricks/images/9/92/BBC.png/revision/latest?cb=20230625223244'
+                : 'https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png';
+            
+            for (let i = 0; i < starCount; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('img');
+                    star.src = imageUrl;
+                    star.className = 'floating-star';
+                    star.style.imageRendering = 'pixelated';
+                    
+                    const size = 30 + Math.random() * 40;
+                    star.style.width = size + 'px';
+                    star.style.height = size + 'px';
+                    
+                    // Spawn on sides: either 0-30% or 70-100%
+                    let leftPosition;
+                    if (Math.random() < 0.5) {
+                        // Left side (0-30%)
+                        leftPosition = Math.random() * 30;
+                    } else {
+                        // Right side (70-100%)
+                        leftPosition = 70 + Math.random() * 30;
+                    }
+                    star.style.left = leftPosition + 'vw';
+                    star.style.top = '-100px';
+                    
+                    const drift = (Math.random() - 0.5) * 150; // More drift for variety
+                    star.style.setProperty('--drift', drift + 'px');
+                    
+                    const duration = 12 + Math.random() * 6; // Slower fall (12-18 seconds)
+                    star.style.animationDuration = duration + 's';
+                    
+                    document.body.appendChild(star);
+                    
+                    setTimeout(() => {
+                        star.remove();
+                    }, duration * 1000);
+                }, i * 2000);
+            }
+        }
+
+        setInterval(createFloatingStars, 16000);
+        createFloatingStars();
 
         function render() {
             const root = document.getElementById('root');
@@ -1292,13 +1396,26 @@
                     `})() : ''}
 
                     <header class="z-20 w-full max-w-6xl flex flex-col items-center gap-4 mt-2 mb-4 px-4">
-                        <h1 onclick="triggerTitleClick()" class="text-4xl sm:text-6xl font-black tracking-tight uppercase ${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'text-white' : 'text-slate-900'} cursor-help active:scale-95 transition-transform text-center" style="text-shadow: 4px 4px 0 rgba(0,0,0,0.3);">Gubby Clicker</h1>
+                        <div class="flex gap-6 items-center justify-center">
+                            <!-- Left star (flipped) -->
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated; transform: scaleX(-1);" />
+                            
+                            <!-- Center logo -->
+                            <img 
+                                onclick="triggerTitleClick()"
+                                src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/T3PjmLGL/download-(1).png' : 'https://i.postimg.cc/jSkHhxdq/download-(2)-(1).png'}" 
+                                alt="" 
+                                class="h-20 sm:h-28 pixelated cursor-help active:scale-95 transition-transform" 
+                                style="image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges;" 
+                            />
+                            
+                            <!-- Right star (normal) -->
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated;" />
+                        </div>
                         
-                        <img src="https://static.wikia.nocookie.net/the-battle-bricks/images/0/03/TBB_current_logo.png" alt="" class="h-12 sm:h-16 pixelated" style="image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges;" />
-                        
-                        <div class="flex gap-3 items-center flex-wrap justify-center">
-                            <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white">Prestige ${state.prestigeLevel}</span>
-                            <span class="pixel-badge bg-amber-500 border-amber-700 text-white">${currentWorld?.name}</span>
+                        <div class="w-full max-w-6xl flex gap-3">
+                            <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">Prestige ${state.prestigeLevel}</span>
+                            <span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>
                         </div>
                         
                         <div class="w-full pixel-card px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
@@ -1435,12 +1552,8 @@
                         const price = getItemPrice(item);
                         const canAfford = state.gold >= price;
                         const alreadyOwned = item.permanent && state.inventory[item.id] > 0;
-                        const isSpecial = item.category === 'special';
                         return `
                             <div class="flex items-center justify-between p-4 border-4 bg-white ${alreadyOwned ? 'border-emerald-500 bg-emerald-50' : canAfford ? 'border-slate-300' : 'border-slate-200 opacity-50'}">
-                                ${isSpecial && item.img ? `
-                                    <img src="${item.img}" class="w-12 h-12 object-contain mr-3 pixelated" style="image-rendering: pixelated;" />
-                                ` : ''}
                                 <div class="text-left flex-1 mr-3">
                                     <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}${alreadyOwned ? ' ✓' : ''}</p>
                                     <p class="text-xs font-bold text-slate-400 mt-0.5">${item.permanent ? 'Permanent' : item.power > 1 ? item.power + 'x power' : 'Special'}${item.duration > 0 ? ' · ' + item.duration + 's' : ''}${item.description ? ' · ' + item.description : ''}</p>
