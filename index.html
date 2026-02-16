@@ -429,7 +429,6 @@
             { id: 'buy_and_use', name: 'Power Boost', description: 'Buy and use any boost item', type: 'buy_and_use', target: 1, reward: 3000 },
             { id: 'use_5_boosts', name: 'Boost Master', description: 'Buy and use 5 boost items', type: 'use', target: 5, reward: 15000 },
             { id: 'buy_10_items', name: 'Shopping Spree', description: 'Buy and use 10 boost items total', type: 'buy', target: 10, reward: 20000 },
-            { id: 'prestige_1', name: 'First Ascension', description: 'Prestige for the first time', type: 'prestige', target: 1, reward: 25000 },
         ];
 
         let state = {
@@ -819,7 +818,13 @@
                         break;
                 }
                 
-                const isComplete = progress >= quest.target;
+                // For gold quests, convert the target to current currency
+                let targetToCheck = quest.target;
+                if (quest.type === 'gold') {
+                    targetToCheck = quest.target / CONVERSION_RATES[state.theme];
+                }
+                
+                const isComplete = progress >= targetToCheck;
                 if (isComplete && !quest.completed) {
                     updated = true;
                     return { ...quest, progress, completed: true };
@@ -1112,21 +1117,24 @@
                                         ${state.activeQuests.map(quest => {
                                             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
                                             const progress = quest.progress || 0;
+                                            // Convert target for gold quests to current currency
+                                            const displayTarget = quest.type === 'gold' ? quest.target / CONVERSION_RATES[state.theme] : quest.target;
+                                            const displayProgress = progress;
                                             return `
                                             <div class="border-4 ${quest.completed ? 'border-emerald-500 bg-emerald-50' : 'border-amber-500 bg-amber-50'} p-6">
                                                 <div class="flex items-start justify-between mb-4">
                                                     <div>
                                                         <h5 class="font-black text-xl uppercase text-slate-900">${quest.name}</h5>
-                                                        <p class="text-sm font-bold text-slate-600 mt-1">${quest.description}</p>
+                                                        <p class="text-sm font-bold text-slate-600 mt-1">${quest.type === 'gold' ? `Earn ${formatCost(quest.target / CONVERSION_RATES[state.theme])} ${CURRENCIES[state.theme].name}${quest.target / CONVERSION_RATES[state.theme] !== 1 ? 's' : ''} total` : quest.description}</p>
                                                     </div>
                                                     <span class="pixel-badge ${quest.completed ? 'bg-emerald-500 border-emerald-700' : 'bg-amber-500 border-amber-700'} text-white text-xs">${quest.completed ? 'Complete!' : 'Active'}</span>
                                                 </div>
                                                 
                                                 <div class="mb-4">
                                                     <div class="w-full h-6 bg-slate-200 border-4 border-slate-900 overflow-hidden">
-                                                        <div class="h-full ${quest.completed ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (progress / quest.target) * 100)}%; transition: width 0.3s ease;"></div>
+                                                        <div class="h-full ${quest.completed ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (displayProgress / displayTarget) * 100)}%; transition: width 0.3s ease;"></div>
                                                     </div>
-                                                    <p class="text-xs font-black text-slate-700 mt-2">${formatCost(progress)} / ${formatCost(quest.target)}</p>
+                                                    <p class="text-xs font-black text-slate-700 mt-2">${formatCost(displayProgress)} / ${formatCost(displayTarget)}</p>
                                                 </div>
                                                 
                                                 <div class="flex items-center justify-between">
@@ -1157,12 +1165,13 @@
                                             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
                                             const isActive = state.activeQuests.some(aq => aq.id === quest.id);
                                             const isCompleted = state.completedQuestIds.includes(quest.id);
+                                            const dynamicDescription = quest.type === 'gold' ? `Earn ${formatCost(quest.target / CONVERSION_RATES[state.theme])} ${CURRENCIES[state.theme].name}${quest.target / CONVERSION_RATES[state.theme] !== 1 ? 's' : ''} total` : quest.description;
                                             return `
                                             <div class="border-3 border-slate-300 bg-slate-50 p-4 ${isActive ? 'opacity-50' : ''} ${isCompleted ? 'opacity-40' : ''}">
                                                 <div class="flex items-start justify-between">
                                                     <div class="flex-1">
                                                         <h6 class="font-black text-sm uppercase text-slate-900 ${isCompleted ? 'line-through' : ''}">${quest.name}</h6>
-                                                        <p class="text-xs font-bold text-slate-600 mt-1 ${isCompleted ? 'line-through' : ''}">${quest.description}</p>
+                                                        <p class="text-xs font-bold text-slate-600 mt-1 ${isCompleted ? 'line-through' : ''}">${dynamicDescription}</p>
                                                         <div class="flex items-center gap-1 mt-2">
                                                             <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
                                                             <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
