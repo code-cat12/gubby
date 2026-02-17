@@ -453,6 +453,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(90deg); }
         }
+
+        #save-popup {
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            backdrop-filter: blur(6px);
+        }
+
+        #save-popup.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-emerald-50 overflow-x-hidden">
@@ -463,6 +479,38 @@
         <div class="flex flex-col items-center gap-2 text-center px-8">
             <p class="text-white font-black text-2xl uppercase tracking-widest">Rotate Your Phone</p>
             <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">This game requires landscape mode</p>
+        </div>
+    </div>
+
+    <!-- Continue / Restart popup -->
+    <div id="save-popup" class="hidden">
+        <div style="background:#fff; border: 4px solid #1e293b; box-shadow: 8px 8px 0 rgba(0,0,0,0.3); max-width: 400px; width: 100%; padding: 0; overflow: hidden;">
+            <div style="background:#1e293b; padding: 20px 24px;">
+                <p style="color:rgba(255,255,255,0.6); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin:0 0 4px;">Welcome Back!</p>
+                <p style="color:#fff; font-size:22px; font-weight:900; text-transform:uppercase; margin:0;">Gubby Clicker</p>
+            </div>
+            <div style="padding: 24px;">
+                <p style="font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin:0 0 6px;">Last Saved</p>
+                <p id="save-date" style="font-size:16px; font-weight:900; color:#1e293b; margin:0 0 20px;"></p>
+                <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">Prestige</span>
+                        <span id="save-prestige" style="font-size:13px; font-weight:900; color:#4f46e5;"></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">World</span>
+                        <span id="save-world" style="font-size:13px; font-weight:900; color:#d97706;"></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">Total Clicks</span>
+                        <span id="save-clicks" style="font-size:13px; font-weight:900; color:#1e293b;"></span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button onclick="handleContinue()" style="flex:1; padding:14px; background:#4f46e5; border:3px solid #3730a3; color:#fff; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.2);">Continue</button>
+                    <button onclick="handleRestart()" style="flex:1; padding:14px; background:#f1f5f9; border:3px solid #cbd5e1; color:#64748b; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.1);">Restart</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -563,6 +611,175 @@
 
         let titleClickCount = 0;
         let titleClickTimer = null;
+
+        const SAVE_KEY = 'gubby_clicker_save';
+
+        function saveGame() {
+            const saveData = {
+                clicks: state.clicks,
+                lifetimeClicks: state.lifetimeClicks,
+                totalClicksSession: state.totalClicksSession,
+                gold: state.gold,
+                theme: state.theme,
+                inventory: state.inventory,
+                prestigeLevel: state.prestigeLevel,
+                marketMultiplier: state.marketMultiplier,
+                marketTrend: state.marketTrend,
+                marketQueue: state.marketQueue,
+                activeQuests: state.activeQuests,
+                completedQuests: state.completedQuests,
+                completedQuestIds: state.completedQuestIds,
+                equippedItem: state.equippedItem,
+                activeBuff: state.activeBuff,
+                savedAt: Date.now()
+            };
+            localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+        }
+
+        // Called separately whenever a TBB item is purchased
+        function savePermanent() {
+            const tbbItems = ['hyperbike', 'vulcan', 'ivory', 'crimson'];
+            const permanentData = {};
+            tbbItems.forEach(id => {
+                permanentData[id] = state.inventory[id] ?? 0;
+            });
+            localStorage.setItem('gubby_permanent', JSON.stringify(permanentData));
+        }
+
+        function loadGame() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function loadPermanent() {
+            try {
+                const raw = localStorage.getItem('gubby_permanent');
+                if (!raw) return {};
+                return JSON.parse(raw);
+            } catch(e) {
+                return {};
+            }
+        }
+
+        function mergePermanentItems(inventory) {
+            const permanent = loadPermanent();
+            const merged = { ...inventory };
+            ['hyperbike', 'vulcan', 'ivory', 'crimson'].forEach(id => {
+                if ((permanent[id] ?? 0) > 0) merged[id] = permanent[id];
+            });
+            return merged;
+        }
+
+        function applyLoad(saveData) {
+            const baseInventory = SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {});
+            const mergedInventory = mergePermanentItems({ ...baseInventory, ...(saveData.inventory ?? {}) });
+
+            state = {
+                ...state,
+                clicks: saveData.clicks ?? 0,
+                lifetimeClicks: saveData.lifetimeClicks ?? 0,
+                totalClicksSession: saveData.totalClicksSession ?? 0,
+                gold: saveData.gold ?? 0,
+                theme: saveData.theme ?? 'plains',
+                inventory: mergedInventory,
+                prestigeLevel: saveData.prestigeLevel ?? 0,
+                marketMultiplier: saveData.marketMultiplier ?? 1,
+                marketTrend: saveData.marketTrend ?? 'stable',
+                marketQueue: saveData.marketQueue ?? [1.1, 0.8, 1.4],
+                activeQuests: saveData.activeQuests ?? [],
+                completedQuests: saveData.completedQuests ?? 0,
+                completedQuestIds: saveData.completedQuestIds ?? [],
+                equippedItem: saveData.equippedItem ?? null,
+                activeBuff: null,
+            };
+        }
+
+        function deleteSave() {
+            localStorage.removeItem(SAVE_KEY);
+            // gubby_permanent is NEVER deleted
+        }
+
+        // Auto-save every 10 seconds
+        setInterval(saveGame, 10000);
+
+        // Save on tab close/refresh
+        window.addEventListener('beforeunload', saveGame);
+
+        function handleContinue() {
+            document.getElementById('save-popup').classList.add('hidden');
+            render();
+            createFloatingStars();
+        }
+
+        function handleRestart() {
+            if (!confirm('Are you sure? All progress will be lost!')) return;
+            deleteSave();
+            state = {
+                clicks: 0,
+                lifetimeClicks: 0,
+                totalClicksSession: 0,
+                gold: 0,
+                activeBuff: null,
+                theme: 'plains',
+                showTravelModal: false,
+                showMarketModal: false,
+                showStorageModal: false,
+                showQuestModal: false,
+                inventory: mergePermanentItems(SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {})),
+                prestigeLevel: 0,
+                marketMultiplier: 1,
+                marketTrend: 'stable',
+                marketQueue: [1.1, 0.8, 1.4],
+                showOracle: false,
+                marketCategory: null,
+                notification: null,
+                stickyChat: null,
+                stickyChatUser: null,
+                stickyChatTimer: 0,
+                showAdmin: false,
+                adminLog: [],
+                discoEventTimer: 0,
+                showItemPopup: false,
+                itemPopupId: null,
+                itemPopupQty: 1,
+                activeQuests: [],
+                completedQuests: 0,
+                completedQuestIds: [],
+                equippedItem: null,
+            };
+            document.getElementById('save-popup').classList.add('hidden');
+            document.querySelectorAll('.floating-star').forEach(s => s.remove());
+            render();
+            createFloatingStars();
+        }
+
+        // Show popup on load if save exists
+        window.addEventListener('DOMContentLoaded', () => {
+            const saveData = loadGame();
+            if (saveData) {
+                applyLoad(saveData);
+
+                const popup = document.getElementById('save-popup');
+                popup.classList.remove('hidden');
+
+                const date = new Date(saveData.savedAt);
+                document.getElementById('save-date').textContent = date.toLocaleString();
+                document.getElementById('save-prestige').textContent = 'Prestige ' + (saveData.prestigeLevel ?? 0);
+                const worldName = DESTINATIONS.find(d => d.id === saveData.theme)?.name ?? 'Gubby Plains';
+                document.getElementById('save-world').textContent = worldName;
+                document.getElementById('save-clicks').textContent = (saveData.lifetimeClicks ?? 0).toLocaleString();
+            } else {
+                // Even on fresh start, restore permanent TBB items if they exist
+                state.inventory = mergePermanentItems(state.inventory);
+                render();
+                createFloatingStars();
+            }
+        });
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
@@ -846,6 +1063,11 @@
                     activeQuests: updatedQuests
                 });
                 checkQuestProgress();
+
+                // Immediately write permanent save if a TBB item was just bought
+                if (['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(item.id)) {
+                    savePermanent();
+                }
             }
         }
 
@@ -1087,7 +1309,7 @@
         }
 
         setInterval(createFloatingStars, 16000);
-        createFloatingStars();
+        // createFloatingStars and render are now called from DOMContentLoaded
 
         function render() {
             const root = document.getElementById('root');
@@ -1389,7 +1611,7 @@
                             <!-- Center logo -->
                             <img 
                                 onclick="triggerTitleClick()"
-                                src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/T3PjmLGL/download-(1).png' : 'https://i.postimg.cc/jSkHhxdq/download-(2)-(1).png'}" 
+                                src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/bNLK4bMV/imageedit-19-3911960984.png' : 'https://i.postimg.cc/jSkHhxdq/download-(2)-(1).png'}" 
                                 alt="" 
                                 class="h-20 sm:h-28 pixelated cursor-help active:scale-95 transition-transform" 
                                 style="image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges;" 
@@ -1616,7 +1838,7 @@
             `;
         }
 
-        render();
+        // Render is called from DOMContentLoaded
     </script>
 </body>
 </html>
