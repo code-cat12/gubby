@@ -423,8 +423,49 @@
             }
         }
     </style>
+
+    <style>
+        /* Landscape overlay - only shows on phones in portrait mode */
+        #landscape-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #0f172a;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        /* Only trigger on actual phones (max-width 768px) in portrait */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            #landscape-overlay {
+                display: flex;
+            }
+        }
+
+        .rotate-phone {
+            animation: rotatePhone 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(90deg); }
+        }
+    </style>
 </head>
 <body class="bg-emerald-50 overflow-x-hidden">
+
+    <!-- Landscape overlay for phones in portrait mode -->
+    <div id="landscape-overlay">
+        <div class="rotate-phone text-white" style="font-size: 80px; line-height: 1;">📱</div>
+        <div class="flex flex-col items-center gap-2 text-center px-8">
+            <p class="text-white font-black text-2xl uppercase tracking-widest">Rotate Your Phone</p>
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">This game requires landscape mode</p>
+        </div>
+    </div>
+
     <div id="root"></div>
 
     <script>
