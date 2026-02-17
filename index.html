@@ -438,12 +438,7 @@
             gap: 24px;
         }
 
-        /* Only trigger on actual phones (max-width 768px) in portrait */
-        @media screen and (max-width: 768px) and (orientation: portrait) {
-            #landscape-overlay {
-                display: flex;
-            }
-        }
+        /* Landscape overlay is shown/hidden via JS only */
 
         .rotate-phone {
             animation: rotatePhone 1.5s ease-in-out infinite alternate;
@@ -454,19 +449,55 @@
             100% { transform: rotate(90deg); }
         }
 
-        #save-popup {
+        #welcome-screen {
             position: fixed;
             inset: 0;
             z-index: 99998;
-            background: transparent;
+            background: #0f172a;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 24px;
+            overflow-y: auto;
         }
 
-        #save-popup.hidden {
+        #welcome-screen.hidden {
             display: none;
+        }
+
+        #welcome-inner {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-start-btn {
+            width: 100%;
+            padding: 16px;
+            background: #f97316;
+            border: 4px solid #c2410c;
+            color: #fff;
+            font-weight: 900;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+            transition: transform 0.1s, box-shadow 0.1s;
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+
+        .welcome-start-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+
+        .welcome-start-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -481,34 +512,17 @@
         </div>
     </div>
 
-    <!-- Continue / Restart popup -->
-    <div id="save-popup" class="hidden">
-        <div style="background:#fff; border: 4px solid #1e293b; box-shadow: 8px 8px 0 rgba(0,0,0,0.3); max-width: 400px; width: 100%; padding: 0; overflow: hidden;">
-            <div style="background:#f97316; padding: 20px 24px;">
-                <p style="color:rgba(255,255,255,0.6); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin:0 0 4px;">Welcome Back!</p>
-                <p style="color:#fff; font-size:22px; font-weight:900; text-transform:uppercase; margin:0;">Gubby Clicker</p>
+    <!-- Welcome screen (first visit & returning) -->
+    <div id="welcome-screen">
+        <div id="welcome-inner">
+            <!-- Header -->
+            <div style="width:100%; background:#f97316; border:4px solid #c2410c; border-bottom:none; padding:20px 24px; box-shadow:4px 4px 0 rgba(0,0,0,0.3);">
+                <p id="welcome-subtitle" style="color:rgba(255,255,255,0.75); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin:0 0 4px; font-family:'Pixelify Sans',sans-serif;">Welcome!</p>
+                <p style="color:#fff; font-size:26px; font-weight:900; text-transform:uppercase; margin:0; font-family:'Pixelify Sans',sans-serif;">Gubby Clicker</p>
             </div>
-            <div style="padding: 24px;">
-                <p style="font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin:0 0 6px;">Last Saved</p>
-                <p id="save-date" style="font-size:16px; font-weight:900; color:#1e293b; margin:0 0 20px;"></p>
-                <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">Prestige</span>
-                        <span id="save-prestige" style="font-size:13px; font-weight:900; color:#4f46e5;"></span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">World</span>
-                        <span id="save-world" style="font-size:13px; font-weight:900; color:#d97706;"></span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8;">Total Clicks</span>
-                        <span id="save-clicks" style="font-size:13px; font-weight:900; color:#1e293b;"></span>
-                    </div>
-                </div>
-                <div style="display:flex; gap:12px;">
-                    <button onclick="handleContinue()" style="flex:1; padding:14px; background:#4f46e5; border:3px solid #3730a3; color:#fff; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.2);">Continue</button>
-                    <button onclick="handleRestart()" style="flex:1; padding:14px; background:#f1f5f9; border:3px solid #cbd5e1; color:#64748b; font-weight:900; font-size:14px; text-transform:uppercase; letter-spacing:1px; cursor:pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.1);">Restart</button>
-                </div>
+            <!-- Body -->
+            <div id="welcome-body" style="width:100%; background:#fff; border:4px solid #c2410c; border-top:none; padding:24px; box-shadow:4px 4px 0 rgba(0,0,0,0.3);">
+                <!-- Filled by JS -->
             </div>
         </div>
     </div>
@@ -709,10 +723,34 @@
         // Save on tab close/refresh
         window.addEventListener('beforeunload', saveGame);
 
-        function handleContinue() {
-            document.getElementById('save-popup').classList.add('hidden');
+        function isMobilePortrait() {
+            return window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+        }
+
+        function dismissWelcome() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            // On mobile portrait, show the landscape overlay after dismissing welcome
+            if (isMobilePortrait()) {
+                document.getElementById('landscape-overlay').style.display = 'flex';
+            }
+            // Listen for orientation change to hide landscape overlay when rotated
+            window.addEventListener('orientationchange', checkOrientation);
+            window.addEventListener('resize', checkOrientation);
+        }
+
+        function checkOrientation() {
+            const overlay = document.getElementById('landscape-overlay');
+            if (window.innerWidth > window.innerHeight || window.innerWidth > 768) {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function handleStart() {
             render();
             createFloatingStars();
+            dismissWelcome();
         }
 
         function handleRestart() {
@@ -751,34 +789,69 @@
                 completedQuestIds: [],
                 equippedItem: null,
             };
-            document.getElementById('save-popup').classList.add('hidden');
             document.querySelectorAll('.floating-star').forEach(s => s.remove());
             render();
             createFloatingStars();
         }
 
-        // Show popup on load if save exists
+        // Show welcome screen on load
         window.addEventListener('DOMContentLoaded', () => {
             const saveData = loadGame();
+            const screen = document.getElementById('welcome-screen');
+            const subtitle = document.getElementById('welcome-subtitle');
+            const body = document.getElementById('welcome-body');
+
             if (saveData) {
                 applyLoad(saveData);
+                // Pre-render the game in background
                 render();
                 createFloatingStars();
 
-                const popup = document.getElementById('save-popup');
-                popup.classList.remove('hidden');
-
+                subtitle.textContent = 'Welcome Back!';
                 const date = new Date(saveData.savedAt);
-                document.getElementById('save-date').textContent = date.toLocaleString();
-                document.getElementById('save-prestige').textContent = 'Prestige ' + (saveData.prestigeLevel ?? 0);
                 const worldName = DESTINATIONS.find(d => d.id === saveData.theme)?.name ?? 'Gubby Plains';
-                document.getElementById('save-world').textContent = worldName;
-                document.getElementById('save-clicks').textContent = (saveData.lifetimeClicks ?? 0).toLocaleString();
+                body.innerHTML = `
+                    <p style="font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin:0 0 6px; font-family:'Pixelify Sans',sans-serif;">Last Saved</p>
+                    <p style="font-size:16px; font-weight:900; color:#1e293b; margin:0 0 20px; font-family:'Pixelify Sans',sans-serif;">${date.toLocaleString()}</p>
+                    <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">Prestige</span>
+                            <span style="font-size:13px; font-weight:900; color:#4f46e5; font-family:'Pixelify Sans',sans-serif;">Prestige ${saveData.prestigeLevel ?? 0}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">World</span>
+                            <span style="font-size:13px; font-weight:900; color:#d97706; font-family:'Pixelify Sans',sans-serif;">${worldName}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">Total Clicks</span>
+                            <span style="font-size:13px; font-weight:900; color:#1e293b; font-family:'Pixelify Sans',sans-serif;">${(saveData.lifetimeClicks ?? 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <button class="welcome-start-btn" onclick="dismissWelcome()">▶ Continue</button>
+                    <p style="text-align:center; margin:16px 0 0; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-family:'Pixelify Sans',sans-serif;">🔒 Your progress auto-saves every 10 seconds</p>
+                `;
             } else {
-                // Even on fresh start, restore permanent TBB items if they exist
                 state.inventory = mergePermanentItems(state.inventory);
-                render();
-                createFloatingStars();
+                subtitle.textContent = 'Welcome!';
+                body.innerHTML = `
+                    <p style="font-size:15px; font-weight:700; color:#475569; margin:0 0 20px; line-height:1.6; font-family:'Pixelify Sans',sans-serif;">Click Gubby as fast as you can, earn gold, buy boosts, and travel to new worlds!</p>
+                    <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:18px;">🖱️</span>
+                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Click Gubby to earn currency</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <span style="font-size:18px;">🛒</span>
+                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Buy boosts from the Marketplace</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:18px;">🌍</span>
+                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Travel to unlock new worlds</span>
+                        </div>
+                    </div>
+                    <button class="welcome-start-btn" onclick="handleStart()">▶ Start Game</button>
+                    <p style="text-align:center; margin:16px 0 0; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-family:'Pixelify Sans',sans-serif;">🔒 Progress auto-saves every 10 seconds</p>
+                `;
             }
         });
 
@@ -1712,8 +1785,14 @@
                         </button>
                     </div>
                 </div>
-            `;
-            
+                <!-- Footer -->
+                <footer style="width:100%; text-align:center; padding: 24px 16px 32px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                    <p style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin:0; font-family:'Pixelify Sans',sans-serif;">🔒 Progress auto-saves every 10 seconds</p>
+                    <button onclick="handleRestart()" style="background:none; border:none; cursor:pointer; font-size:11px; font-weight:900; color:#cbd5e1; text-transform:uppercase; letter-spacing:1px; text-decoration:underline; font-family:'Pixelify Sans',sans-serif; padding:4px 8px;">Restart Game</button>
+                </footer>
+            </div>
+        </div>
+    `;            
             lucide.createIcons();
             
             if (activeElementId === 'admin-input') {
