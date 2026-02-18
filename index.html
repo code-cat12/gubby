@@ -449,81 +449,16 @@
             100% { transform: rotate(90deg); }
         }
 
-        #welcome-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 99998;
-            background: #0f172a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            overflow-y: auto;
-        }
-
-        #welcome-screen.hidden {
-            display: none;
-        }
-
-        #welcome-inner {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .welcome-start-btn {
-            width: 100%;
-            padding: 16px;
-            background: #f97316;
-            border: 4px solid #c2410c;
-            color: #fff;
-            font-weight: 900;
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-            transition: transform 0.1s, box-shadow 0.1s;
-            font-family: 'Pixelify Sans', sans-serif;
-        }
-
-        .welcome-start-btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-        }
-
-        .welcome-start-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.3);
-        }
     </style>
 </head>
 <body class="bg-emerald-50 overflow-x-hidden">
 
     <!-- Landscape overlay for phones in portrait mode -->
     <div id="landscape-overlay">
-        <div class="rotate-phone text-white" style="font-size: 80px; line-height: 1;">📱</div>
+        <div class="rotate-phone text-white" style="font-size: 80px; line-height: 1;">↻</div>
         <div class="flex flex-col items-center gap-2 text-center px-8">
             <p class="text-white font-black text-2xl uppercase tracking-widest">Rotate Your Phone</p>
             <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">This game requires landscape mode</p>
-        </div>
-    </div>
-
-    <!-- Welcome screen (first visit & returning) -->
-    <div id="welcome-screen">
-        <div id="welcome-inner">
-            <!-- Header -->
-            <div style="width:100%; background:#f97316; border:4px solid #c2410c; border-bottom:none; padding:20px 24px; box-shadow:4px 4px 0 rgba(0,0,0,0.3);">
-                <p id="welcome-subtitle" style="color:rgba(255,255,255,0.75); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin:0 0 4px; font-family:'Pixelify Sans',sans-serif;">Welcome!</p>
-                <p style="color:#fff; font-size:26px; font-weight:900; text-transform:uppercase; margin:0; font-family:'Pixelify Sans',sans-serif;">Gubby Clicker</p>
-            </div>
-            <!-- Body -->
-            <div id="welcome-body" style="width:100%; background:#fff; border:4px solid #c2410c; border-top:none; padding:24px; box-shadow:4px 4px 0 rgba(0,0,0,0.3);">
-                <!-- Filled by JS -->
-            </div>
         </div>
     </div>
 
@@ -620,240 +555,121 @@
             completedQuests: 0,
             completedQuestIds: [],
             equippedItem: null,
+            showRanked: false,
+            rankedState: 'idle',
+            rankedClicks: 0,
+            rankedTimeLeft: 30,
+            rankedCountdown: 3,
         };
 
         let titleClickCount = 0;
         let titleClickTimer = null;
 
-        const SAVE_KEY = 'gubby_clicker_save';
+        const ADMIN_PASSWORD = 'icygubby';
+        const ADMIN_AUTH_KEY = 'gubby_admin_auth';
 
-        function saveGame() {
-            const saveData = {
-                clicks: state.clicks,
-                lifetimeClicks: state.lifetimeClicks,
-                totalClicksSession: state.totalClicksSession,
-                gold: state.gold,
-                theme: state.theme,
-                inventory: state.inventory,
-                prestigeLevel: state.prestigeLevel,
-                marketMultiplier: state.marketMultiplier,
-                marketTrend: state.marketTrend,
-                marketQueue: state.marketQueue,
-                activeQuests: state.activeQuests,
-                completedQuests: state.completedQuests,
-                completedQuestIds: state.completedQuestIds,
-                equippedItem: state.equippedItem,
-                activeBuff: state.activeBuff,
-                savedAt: Date.now()
-            };
-            localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+        function isAdminAuthed() {
+            return localStorage.getItem(ADMIN_AUTH_KEY) === '1';
         }
 
-        // Called separately whenever a TBB item is purchased
-        function savePermanent() {
-            const tbbItems = ['hyperbike', 'vulcan', 'ivory', 'crimson'];
-            const permanentData = {};
-            tbbItems.forEach(id => {
-                permanentData[id] = state.inventory[id] ?? 0;
-            });
-            localStorage.setItem('gubby_permanent', JSON.stringify(permanentData));
-        }
-
-        function loadGame() {
-            try {
-                const raw = localStorage.getItem(SAVE_KEY);
-                if (!raw) return null;
-                return JSON.parse(raw);
-            } catch(e) {
-                return null;
+        function tryAdminPassword(input) {
+            if (input === ADMIN_PASSWORD) {
+                localStorage.setItem(ADMIN_AUTH_KEY, '1');
+                return true;
             }
+            return false;
         }
 
-        function loadPermanent() {
-            try {
-                const raw = localStorage.getItem('gubby_permanent');
-                if (!raw) return {};
-                return JSON.parse(raw);
-            } catch(e) {
-                return {};
-            }
-        }
-
-        function mergePermanentItems(inventory) {
-            const permanent = loadPermanent();
-            const merged = { ...inventory };
-            ['hyperbike', 'vulcan', 'ivory', 'crimson'].forEach(id => {
-                if ((permanent[id] ?? 0) > 0) merged[id] = permanent[id];
-            });
-            return merged;
-        }
-
-        function applyLoad(saveData) {
-            const baseInventory = SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {});
-            const mergedInventory = mergePermanentItems({ ...baseInventory, ...(saveData.inventory ?? {}) });
-
-            state = {
-                ...state,
-                clicks: saveData.clicks ?? 0,
-                lifetimeClicks: saveData.lifetimeClicks ?? 0,
-                totalClicksSession: saveData.totalClicksSession ?? 0,
-                gold: saveData.gold ?? 0,
-                theme: saveData.theme ?? 'plains',
-                inventory: mergedInventory,
-                prestigeLevel: saveData.prestigeLevel ?? 0,
-                marketMultiplier: saveData.marketMultiplier ?? 1,
-                marketTrend: saveData.marketTrend ?? 'stable',
-                marketQueue: saveData.marketQueue ?? [1.1, 0.8, 1.4],
-                activeQuests: saveData.activeQuests ?? [],
-                completedQuests: saveData.completedQuests ?? 0,
-                completedQuestIds: saveData.completedQuestIds ?? [],
-                equippedItem: saveData.equippedItem ?? null,
-                activeBuff: null,
-            };
-        }
-
-        function deleteSave() {
-            localStorage.removeItem(SAVE_KEY);
-            // gubby_permanent is NEVER deleted
-        }
-
-        // Auto-save every 10 seconds
-        setInterval(saveGame, 10000);
-
-        // Save on tab close/refresh
-        window.addEventListener('beforeunload', saveGame);
+        // Auto-save removed. Admin auth persists via localStorage only.
 
         function isMobilePortrait() {
             return window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
         }
 
-        function dismissWelcome() {
-            document.getElementById('welcome-screen').classList.add('hidden');
-            // On mobile portrait, show the landscape overlay after dismissing welcome
+        function checkOrientation() {
+            const overlay = document.getElementById('landscape-overlay');
+            if (overlay) {
+                if (window.innerWidth > window.innerHeight || window.innerWidth > 768) {
+                    overlay.style.display = 'none';
+                } else {
+                    overlay.style.display = 'flex';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            render();
+            createFloatingStars();
             if (isMobilePortrait()) {
                 document.getElementById('landscape-overlay').style.display = 'flex';
             }
-            // Listen for orientation change to hide landscape overlay when rotated
             window.addEventListener('orientationchange', checkOrientation);
             window.addEventListener('resize', checkOrientation);
-        }
-
-        function checkOrientation() {
-            const overlay = document.getElementById('landscape-overlay');
-            if (window.innerWidth > window.innerHeight || window.innerWidth > 768) {
-                overlay.style.display = 'none';
-            } else {
-                overlay.style.display = 'flex';
-            }
-        }
-
-        function handleStart() {
-            render();
-            createFloatingStars();
-            dismissWelcome();
-        }
-
-        function handleRestart() {
-            if (!confirm('Are you sure? All progress will be lost!')) return;
-            deleteSave();
-            state = {
-                clicks: 0,
-                lifetimeClicks: 0,
-                totalClicksSession: 0,
-                gold: 0,
-                activeBuff: null,
-                theme: 'plains',
-                showTravelModal: false,
-                showMarketModal: false,
-                showStorageModal: false,
-                showQuestModal: false,
-                inventory: mergePermanentItems(SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {})),
-                prestigeLevel: 0,
-                marketMultiplier: 1,
-                marketTrend: 'stable',
-                marketQueue: [1.1, 0.8, 1.4],
-                showOracle: false,
-                marketCategory: null,
-                notification: null,
-                stickyChat: null,
-                stickyChatUser: null,
-                stickyChatTimer: 0,
-                showAdmin: false,
-                adminLog: [],
-                discoEventTimer: 0,
-                showItemPopup: false,
-                itemPopupId: null,
-                itemPopupQty: 1,
-                activeQuests: [],
-                completedQuests: 0,
-                completedQuestIds: [],
-                equippedItem: null,
-            };
-            document.querySelectorAll('.floating-star').forEach(s => s.remove());
-            render();
-            createFloatingStars();
-        }
-
-        // Show welcome screen on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const saveData = loadGame();
-            const screen = document.getElementById('welcome-screen');
-            const subtitle = document.getElementById('welcome-subtitle');
-            const body = document.getElementById('welcome-body');
-
-            if (saveData) {
-                applyLoad(saveData);
-                // Pre-render the game in background
-                render();
-                createFloatingStars();
-
-                subtitle.textContent = 'Welcome Back!';
-                const date = new Date(saveData.savedAt);
-                const worldName = DESTINATIONS.find(d => d.id === saveData.theme)?.name ?? 'Gubby Plains';
-                body.innerHTML = `
-                    <p style="font-size:13px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin:0 0 6px; font-family:'Pixelify Sans',sans-serif;">Last Saved</p>
-                    <p style="font-size:16px; font-weight:900; color:#1e293b; margin:0 0 20px; font-family:'Pixelify Sans',sans-serif;">${date.toLocaleString()}</p>
-                    <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">Prestige</span>
-                            <span style="font-size:13px; font-weight:900; color:#4f46e5; font-family:'Pixelify Sans',sans-serif;">Prestige ${saveData.prestigeLevel ?? 0}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">World</span>
-                            <span style="font-size:13px; font-weight:900; color:#d97706; font-family:'Pixelify Sans',sans-serif;">${worldName}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#94a3b8; font-family:'Pixelify Sans',sans-serif;">Total Clicks</span>
-                            <span style="font-size:13px; font-weight:900; color:#1e293b; font-family:'Pixelify Sans',sans-serif;">${(saveData.lifetimeClicks ?? 0).toLocaleString()}</span>
-                        </div>
-                    </div>
-                    <button class="welcome-start-btn" onclick="dismissWelcome()">▶ Continue</button>
-                    <p style="text-align:center; margin:16px 0 0; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-family:'Pixelify Sans',sans-serif;">🔒 Your progress auto-saves every 10 seconds</p>
-                `;
-            } else {
-                state.inventory = mergePermanentItems(state.inventory);
-                subtitle.textContent = 'Welcome!';
-                body.innerHTML = `
-                    <p style="font-size:15px; font-weight:700; color:#475569; margin:0 0 20px; line-height:1.6; font-family:'Pixelify Sans',sans-serif;">Click Gubby as fast as you can, earn gold, buy boosts, and travel to new worlds!</p>
-                    <div style="background:#f8fafc; border:3px solid #e2e8f0; padding:14px; margin-bottom:20px;">
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                            <span style="font-size:18px;">🖱️</span>
-                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Click Gubby to earn currency</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                            <span style="font-size:18px;">🛒</span>
-                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Buy boosts from the Marketplace</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-size:18px;">🌍</span>
-                            <span style="font-size:12px; font-weight:900; text-transform:uppercase; color:#475569; font-family:'Pixelify Sans',sans-serif;">Travel to unlock new worlds</span>
-                        </div>
-                    </div>
-                    <button class="welcome-start-btn" onclick="handleStart()">▶ Start Game</button>
-                    <p style="text-align:center; margin:16px 0 0; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-family:'Pixelify Sans',sans-serif;">🔒 Progress auto-saves every 10 seconds</p>
-                `;
-            }
         });
+
+        // ---- RANKED MODE ----
+        let rankedCountdownInterval = null;
+        let rankedGameInterval = null;
+        let rankedResultTimer = null;
+
+        function openRanked() {
+            clearInterval(rankedCountdownInterval);
+            clearInterval(rankedGameInterval);
+            clearTimeout(rankedResultTimer);
+            updateState({ showRanked: true, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 30, rankedCountdown: 3 });
+        }
+
+        function startRankedCountdown() {
+            clearInterval(rankedCountdownInterval);
+            clearInterval(rankedGameInterval);
+            state.rankedCountdown = 3;
+            state.rankedState = 'countdown';
+            render();
+            rankedCountdownInterval = setInterval(() => {
+                state.rankedCountdown--;
+                if (state.rankedCountdown <= 0) {
+                    clearInterval(rankedCountdownInterval);
+                    startRankedGame();
+                } else {
+                    render();
+                }
+            }, 1000);
+        }
+
+        function startRankedGame() {
+            state.rankedState = 'playing';
+            state.rankedClicks = 0;
+            state.rankedTimeLeft = 30;
+            render();
+            rankedGameInterval = setInterval(() => {
+                state.rankedTimeLeft--;
+                if (state.rankedTimeLeft <= 0) {
+                    clearInterval(rankedGameInterval);
+                    state.rankedTimeLeft = 0;
+                    state.rankedState = 'results';
+                    render();
+                    clearTimeout(rankedResultTimer);
+                    rankedResultTimer = setTimeout(() => {
+                        updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 30, rankedCountdown: 3 });
+                    }, 5000);
+                } else {
+                    // Update timer display inline
+                    const timerEl = document.querySelector('.ranked-timer');
+                    if (timerEl) timerEl.textContent = state.rankedTimeLeft + 's remaining';
+                    const barEl = document.querySelector('.ranked-bar');
+                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / 30) * 100) + '%';
+                }
+            }, 1000);
+        }
+
+        function rankedClick(e) {
+            if (e.cancelable) e.preventDefault();
+            if (state.rankedState !== 'playing') return;
+            state.rankedClicks++;
+            const el = document.querySelector('.ranked-clicks');
+            if (el) el.textContent = state.rankedClicks;
+        }
+        // ---- END RANKED MODE ----
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
@@ -937,6 +753,15 @@
             titleClickCount++;
             clearTimeout(titleClickTimer);
             if (titleClickCount >= 3) {
+                if (!isAdminAuthed()) {
+                    const pw = prompt('Enter admin password:');
+                    if (pw === null) { titleClickCount = 0; return; }
+                    if (!tryAdminPassword(pw)) {
+                        alert('Wrong password.');
+                        titleClickCount = 0;
+                        return;
+                    }
+                }
                 updateState({ showAdmin: !state.showAdmin });
                 titleClickCount = 0;
             } else {
@@ -1137,11 +962,6 @@
                     activeQuests: updatedQuests
                 });
                 checkQuestProgress();
-
-                // Immediately write permanent save if a TBB item was just bought
-                if (['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(item.id)) {
-                    savePermanent();
-                }
             }
         }
 
@@ -1296,7 +1116,7 @@
             state.marketQueue = [...state.marketQueue.slice(1), nextRate];
             
             // Only re-render if admin console and modals are not open
-            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal) {
+            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal && !state.showRanked) {
                 render();
             }
         }, 7000);
@@ -1331,7 +1151,7 @@
             }
             
             // Only render if admin console is not open, no modals are open, and something important changed
-            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup) {
+            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked) {
                 render();
             }
         }, 1000);
@@ -1383,7 +1203,7 @@
         }
 
         setInterval(createFloatingStars, 16000);
-        // createFloatingStars and render are now called from DOMContentLoaded
+        
 
         function render() {
             const root = document.getElementById('root');
@@ -1677,7 +1497,88 @@
                         </div>
                     `})() : ''}
 
-                    <header class="z-20 w-full max-w-6xl flex flex-col items-center gap-4 mt-2 mb-4 px-4">
+                    ${state.showRanked ? (() => {
+                        const rs = state.rankedState; // 'idle' | 'countdown' | 'playing' | 'results'
+                        let content = '';
+                        if (rs === 'idle') {
+                            content = `
+                                <div class="text-center">
+                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for 30 seconds!</p>
+                                    <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-6 text-left">
+                                        <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">Rank Tiers</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                                            <span class="text-slate-500">Beginner I</span><span class="text-slate-700">0–34</span>
+                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">35–69</span>
+                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">70–104</span>
+                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">105–119</span>
+                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">120–144</span>
+                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">145–164</span>
+                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">165–189</span>
+                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">190–214</span>
+                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">215–239</span>
+                                            <span class="text-amber-500">Master</span><span class="text-slate-700">240+</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="startRankedCountdown()" class="w-full py-4 bg-rose-600 border-4 border-rose-800 text-white font-black text-lg uppercase pixel-button">Start</button>
+                                </div>`;
+                        } else if (rs === 'countdown') {
+                            content = `<div class="text-center py-8"><p class="text-8xl font-black text-rose-600" id="ranked-countdown-num">${state.rankedCountdown}</p><p class="text-slate-500 font-black uppercase tracking-widest mt-4">Get Ready...</p></div>`;
+                        } else if (rs === 'playing') {
+                            const pct = (state.rankedTimeLeft / 30) * 100;
+                            content = `
+                                <div class="text-center">
+                                    <p class="ranked-clicks text-7xl font-black text-slate-900 mb-1">${state.rankedClicks}</p>
+                                    <p class="text-slate-400 font-bold uppercase text-sm mb-4">clicks</p>
+                                    <div class="w-full bg-slate-200 border-3 border-slate-400 h-5 mb-1">
+                                        <div class="ranked-bar h-full bg-rose-500" style="width:${pct}%; transition: width 0.9s linear;"></div>
+                                    </div>
+                                    <p class="ranked-timer text-slate-600 font-black text-base mb-4">${state.rankedTimeLeft}s remaining</p>
+                                    <div
+                                        onmousedown="rankedClick(event)" ontouchstart="rankedClick(event)"
+                                        class="w-full bg-slate-100 border-4 border-slate-300 select-none cursor-pointer active:bg-rose-100 active:border-rose-400 transition-colors"
+                                        style="height:180px; touch-action:manipulation; user-select:none; display:flex; align-items:center; justify-content:center;"
+                                    >
+                                        <span class="font-black text-slate-300 uppercase text-lg tracking-widest pointer-events-none">tap here</span>
+                                    </div>
+                                </div>`;
+                        } else if (rs === 'results') {
+                            const c = state.rankedClicks;
+                            let rank, color;
+                            if (c >= 240)      { rank = 'Master';       color = 'text-amber-500'; }
+                            else if (c >= 215) { rank = 'Pro III';      color = 'text-purple-500'; }
+                            else if (c >= 190) { rank = 'Pro II';       color = 'text-purple-500'; }
+                            else if (c >= 165) { rank = 'Pro I';        color = 'text-purple-500'; }
+                            else if (c >= 145) { rank = 'Normal III';   color = 'text-blue-500'; }
+                            else if (c >= 120) { rank = 'Normal II';    color = 'text-blue-500'; }
+                            else if (c >= 105) { rank = 'Normal I';     color = 'text-blue-500'; }
+                            else if (c >= 70)  { rank = 'Beginner III'; color = 'text-slate-500'; }
+                            else if (c >= 35)  { rank = 'Beginner II';  color = 'text-slate-500'; }
+                            else               { rank = 'Beginner I';   color = 'text-slate-500'; }
+                            content = `
+                                <div class="text-center">
+                                    <p class="text-slate-500 font-bold uppercase text-xs tracking-widest mb-2">Your Rank</p>
+                                    <p class="font-black text-4xl ${color} mb-1">${rank}</p>
+                                    <p class="text-slate-400 font-bold text-sm mb-6">${c} clicks in 30s</p>
+                                    <button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="w-full py-4 bg-slate-900 border-4 border-slate-700 text-white font-black uppercase pixel-button mb-3">Play Again</button>
+                                    <button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="w-full py-3 bg-slate-100 border-4 border-slate-300 text-slate-600 font-black uppercase pixel-button">Close</button>
+                                </div>`;
+                        }
+                        return `
+                        <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget&&'${rs}'!=='playing'){clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})}">
+                            <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+                                <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
+                                    <div>
+                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
+                                        <h3 class="font-black text-2xl uppercase text-white">Click Battle</h3>
+                                    </div>
+                                    ${rs !== 'playing' ? `<button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>` : ''}
+                                </div>
+                                <div class="p-6">${content}</div>
+                            </div>
+                        </div>`;
+                    })() : ''}
+
+
                         <div class="flex gap-6 items-center justify-center">
                             <!-- Left star (flipped) -->
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated; transform: scaleX(-1);" />
@@ -1695,12 +1596,12 @@
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated;" />
                         </div>
                         
-                        <div class="w-full max-w-6xl flex gap-3">
+                        <div class="w-full max-w-6xl flex gap-3 mb-2">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">Prestige ${state.prestigeLevel}</span>
                             <span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>
                         </div>
                         
-                        <div class="w-full pixel-card px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
+                        <div class="w-full max-w-6xl pixel-card mt-2 px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start">
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Clicks</p>
@@ -1753,14 +1654,14 @@
                         ${state.discoEventTimer > 0 ? `<div class="mt-6 px-6 py-2 bg-white/90 border-4 border-purple-600 font-black text-purple-600 uppercase animate-pulse" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="disco-timer-display">Disco Mode: ${state.discoEventTimer}s</span></div>` : ''}
                     </main>
 
-                    <div class="z-20 w-full max-w-2xl flex gap-6 justify-center mb-8 px-4 flex-col sm:flex-row">
-                        <button onclick="updateState({showMarketModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 max-w-xs">
+                    <div class="z-20 w-full max-w-6xl flex gap-6 justify-center mb-4 px-4 flex-col sm:flex-row">
+                        <button onclick="updateState({showMarketModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1">
                             <i data-lucide="shopping-cart" class="w-12 h-12 text-indigo-600"></i>
                             <span class="font-black text-lg uppercase text-slate-900">Marketplace</span>
                             <span class="text-xs font-bold text-slate-500">Buy Power-Ups</span>
                         </button>
 
-                        <button onclick="updateState({showStorageModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 max-w-xs relative">
+                        <button onclick="updateState({showStorageModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative">
                             <i data-lucide="package" class="w-12 h-12 text-emerald-600"></i>
                             <span class="font-black text-lg uppercase text-slate-900">Storage</span>
                             <span class="text-xs font-bold text-slate-500">${totalItems} Items</span>
@@ -1769,7 +1670,7 @@
                             ` : ''}
                         </button>
 
-                        <button onclick="updateState({showQuestModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 max-w-xs relative">
+                        <button onclick="updateState({showQuestModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative">
                             <i data-lucide="scroll-text" class="w-12 h-12 text-amber-600"></i>
                             <span class="font-black text-lg uppercase text-slate-900">Quests</span>
                             <span class="text-xs font-bold text-slate-500">${state.completedQuests} Completed</span>
@@ -1784,15 +1685,12 @@
                             ` : ''}
                         </button>
                     </div>
+
+                    <div class="z-20 w-full max-w-6xl px-4 mb-8">
+                        <button onclick="openRanked()" class="pixel-badge bg-rose-500 border-rose-700 text-white w-full text-center cursor-pointer hover:bg-rose-400 transition-colors">Ranked Mode</button>
+                    </div>
                 </div>
-                <!-- Footer -->
-                <footer style="width:100%; text-align:center; padding: 24px 16px 32px; display:flex; flex-direction:column; align-items:center; gap:8px;">
-                    <p style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin:0; font-family:'Pixelify Sans',sans-serif;">🔒 Progress auto-saves every 10 seconds</p>
-                    <button onclick="handleRestart()" style="background:none; border:none; cursor:pointer; font-size:11px; font-weight:900; color:#cbd5e1; text-transform:uppercase; letter-spacing:1px; text-decoration:underline; font-family:'Pixelify Sans',sans-serif; padding:4px 8px;">Restart Game</button>
-                </footer>
-            </div>
-        </div>
-    `;            
+            `;            
             lucide.createIcons();
             
             if (activeElementId === 'admin-input') {
@@ -1826,7 +1724,7 @@
                             <span class="font-black text-base sm:text-lg uppercase tracking-widest text-red-600">OP Boosts</span>
                         </button>
                         <button onclick="updateState({marketCategory: 'special'})" class="${catBtnBase} border-amber-500 bg-gradient-to-r from-yellow-50 to-amber-50">
-                            <span class="font-black text-base sm:text-lg uppercase tracking-widest text-amber-600">⭐ Special Items ⭐</span>
+                            <span class="font-black text-base sm:text-lg uppercase tracking-widest text-amber-600">Special Items</span>
                         </button>
                     </div>
                 `;
@@ -1843,7 +1741,7 @@
                         return `
                             <div class="flex items-center justify-between p-4 border-4 bg-white ${alreadyOwned ? 'border-emerald-500 bg-emerald-50' : canAfford ? 'border-slate-300' : 'border-slate-200 opacity-50'}">
                                 <div class="text-left flex-1 mr-3">
-                                    <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}${alreadyOwned ? ' ✓' : ''}</p>
+                                    <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}${alreadyOwned ? ' (Owned)' : ''}</p>
                                     <p class="text-xs font-bold text-slate-400 mt-0.5">${item.permanent ? 'Permanent' : item.power > 1 ? item.power + 'x power' : 'Special'}${item.duration > 0 ? ' · ' + item.duration + 's' : ''}${item.description ? ' · ' + item.description : ''}</p>
                                 </div>
                                 <button onclick="event.stopPropagation(); ${alreadyOwned ? '' : `openItemPopup('${item.id}')`}" class="pixel-button shrink-0 ${alreadyOwned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
@@ -1918,7 +1816,7 @@
             `;
         }
 
-        // Render is called from DOMContentLoaded
+        
     </script>
 </body>
 </html>
