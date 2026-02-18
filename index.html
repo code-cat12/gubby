@@ -558,8 +558,11 @@
             showRanked: false,
             rankedState: 'idle',
             rankedClicks: 0,
-            rankedTimeLeft: 30,
+            rankedTimeLeft: 35,
             rankedCountdown: 3,
+            rankedTier: null,
+            rankedXP: 0,
+            showRankedInfo: false,
         };
 
         let titleClickCount = 0;
@@ -612,11 +615,49 @@
         let rankedGameInterval = null;
         let rankedResultTimer = null;
 
+        const RANKED_TIERS = [
+            { id: 'beginner_1',  name: 'Beginner I',   threshold: 0,   xpNeeded: 85,   icon: 'https://i.postimg.cc/H8QzcTKZ/hexagon-master-1.png'  },
+            { id: 'beginner_2',  name: 'Beginner II',  threshold: 35,  xpNeeded: 170,  icon: 'https://i.postimg.cc/rRSj0qbP/hexagon-master-2.png'  },
+            { id: 'beginner_3',  name: 'Beginner III', threshold: 75,  xpNeeded: 295,  icon: 'https://i.postimg.cc/Pvmypdc6/hexagon-master-3.png'  },
+            { id: 'normal_1',    name: 'Normal I',     threshold: 110, xpNeeded: 420,  icon: 'https://i.postimg.cc/K3nfkmVp/hexagon-master-4.png'  },
+            { id: 'normal_2',    name: 'Normal II',    threshold: 125, xpNeeded: 630,  icon: 'https://i.postimg.cc/N21D9QVn/hexagon-master-5.png'  },
+            { id: 'normal_3',    name: 'Normal III',   threshold: 150, xpNeeded: 840,  icon: 'https://i.postimg.cc/5QwgYfTc/hexagon-master-7.png'  },
+            { id: 'pro_1',       name: 'Pro I',        threshold: 175, xpNeeded: 1260, icon: 'https://i.postimg.cc/V0jgrzT3/hexagon-master-9.png'  },
+            { id: 'pro_2',       name: 'Pro II',       threshold: 200, xpNeeded: 1680, icon: 'https://i.postimg.cc/QKpm9jwZ/hexagon-master-10.png' },
+            { id: 'pro_3',       name: 'Pro III',      threshold: 225, xpNeeded: 2520, icon: 'https://i.postimg.cc/zHn7bq6Z/hexagon-master-11.png' },
+            { id: 'master',      name: 'Master',       threshold: 250, xpNeeded: null, icon: 'https://i.postimg.cc/vxWhgGjk/hexagon-master-12.png' },
+        ];
+
+        // XP awarded per quest claim = Math.floor(quest.reward / 500), min 10
+        function getQuestXP(quest) {
+            return Math.max(10, Math.floor(quest.reward / 500));
+        }
+
+        function getRankedTierByClicks(clicks) {
+            let tier = null;
+            for (const t of RANKED_TIERS) {
+                if (clicks >= t.threshold) tier = t;
+                else break;
+            }
+            return tier;
+        }
+
+        function getRankedTierById(id) {
+            return RANKED_TIERS.find(t => t.id === id) || null;
+        }
+
+        function getNextRankedTier(tierId) {
+            const idx = RANKED_TIERS.findIndex(t => t.id === tierId);
+            return idx >= 0 && idx < RANKED_TIERS.length - 1 ? RANKED_TIERS[idx + 1] : null;
+        }
+
         function openRanked() {
             clearInterval(rankedCountdownInterval);
             clearInterval(rankedGameInterval);
             clearTimeout(rankedResultTimer);
-            updateState({ showRanked: true, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 30, rankedCountdown: 3 });
+            // If already ranked, show profile; otherwise idle
+            const rs = state.rankedTier ? 'profile' : 'idle';
+            updateState({ showRanked: true, rankedState: rs, rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
         }
 
         function startRankedCountdown() {
@@ -639,25 +680,29 @@
         function startRankedGame() {
             state.rankedState = 'playing';
             state.rankedClicks = 0;
-            state.rankedTimeLeft = 30;
+            state.rankedTimeLeft = 35;
             render();
             rankedGameInterval = setInterval(() => {
                 state.rankedTimeLeft--;
                 if (state.rankedTimeLeft <= 0) {
                     clearInterval(rankedGameInterval);
                     state.rankedTimeLeft = 0;
+                    // Award tier based on clicks — only upgrade, never downgrade
+                    const earned = getRankedTierByClicks(state.rankedClicks);
+                    const current = getRankedTierById(state.rankedTier);
+                    const currentIdx = current ? RANKED_TIERS.findIndex(t => t.id === current.id) : -1;
+                    const earnedIdx = earned ? RANKED_TIERS.findIndex(t => t.id === earned.id) : -1;
+                    if (earnedIdx > currentIdx) {
+                        state.rankedTier = earned.id;
+                    }
                     state.rankedState = 'results';
+                    rankedResultLockedUntil = Date.now() + 1500; // block accidental clicks for 1.5s
                     render();
-                    clearTimeout(rankedResultTimer);
-                    rankedResultTimer = setTimeout(() => {
-                        updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 30, rankedCountdown: 3 });
-                    }, 5000);
                 } else {
-                    // Update timer display inline
                     const timerEl = document.querySelector('.ranked-timer');
                     if (timerEl) timerEl.textContent = state.rankedTimeLeft + 's remaining';
                     const barEl = document.querySelector('.ranked-bar');
-                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / 30) * 100) + '%';
+                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / 35) * 100) + '%';
                 }
             }, 1000);
         }
@@ -668,6 +713,31 @@
             state.rankedClicks++;
             const el = document.querySelector('.ranked-clicks');
             if (el) el.textContent = state.rankedClicks;
+        }
+
+        let rankedResultLockedUntil = 0;
+
+        function closeRankedResult() {
+            if (Date.now() < rankedResultLockedUntil) return; // block accidental clicks
+            clearTimeout(rankedResultTimer);
+            clearInterval(rankedCountdownInterval);
+            clearInterval(rankedGameInterval);
+            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
+        }
+
+        function playAgainRanked() {
+            clearTimeout(rankedResultTimer);
+            clearInterval(rankedCountdownInterval);
+            clearInterval(rankedGameInterval);
+            updateState({ rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
+        }
+
+        function rankedTierColor(id) {
+            if (!id) return 'text-slate-400';
+            if (id === 'master') return 'text-amber-500';
+            if (id.startsWith('pro')) return 'text-purple-500';
+            if (id.startsWith('normal')) return 'text-blue-500';
+            return 'text-slate-500';
         }
         // ---- END RANKED MODE ----
 
@@ -1100,12 +1170,32 @@
             if (!quest || !quest.completed) return;
             
             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
-            
+            const xpGained = state.rankedTier ? getQuestXP(quest) : 0;
+            let newXP = (state.rankedXP || 0) + xpGained;
+            let newTier = state.rankedTier;
+
+            // Check for XP-based tier promotion (chain up if multiple thresholds crossed)
+            if (state.rankedTier) {
+                let promoting = true;
+                while (promoting) {
+                    const tier = getRankedTierById(newTier);
+                    const next = getNextRankedTier(newTier);
+                    if (tier && next && tier.xpNeeded && newXP >= tier.xpNeeded) {
+                        newXP -= tier.xpNeeded;
+                        newTier = next.id;
+                    } else {
+                        promoting = false;
+                    }
+                }
+            }
+
             updateState({ 
                 gold: state.gold + rewardInCurrency,
                 completedQuests: state.completedQuests + 1,
                 activeQuests: state.activeQuests.filter(q => q.id !== questId),
-                completedQuestIds: [...state.completedQuestIds, questId]
+                completedQuestIds: [...state.completedQuestIds, questId],
+                rankedXP: newXP,
+                rankedTier: newTier,
             });
         }
 
@@ -1449,9 +1539,12 @@
                                                 </div>
                                                 
                                                 <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap-2 text-sm font-black text-emerald-600">
-                                                        <i data-lucide="gift" class="w-4 h-4"></i>
-                                                        <span>Reward: ${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</span>
+                                                    <div class="flex items-center gap-3 text-sm font-black text-emerald-600">
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="gift" class="w-4 h-4"></i>
+                                                            <span>Reward: ${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</span>
+                                                        </div>
+                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${Math.max(10, Math.floor(quest.reward/500))} XP</span></div>` : ''}
                                                     </div>
                                                     ${quest.completed ? `
                                                         <button onclick="claimQuest('${quest.id}')" class="pixel-button bg-emerald-500 border-emerald-700 text-white px-6 py-2 font-black uppercase animate-pulse">
@@ -1483,9 +1576,12 @@
                                                     <div class="flex-1">
                                                         <h6 class="font-black text-sm uppercase text-slate-900 ${isCompleted ? 'line-through' : ''}">${quest.name}</h6>
                                                         <p class="text-xs font-bold text-slate-600 mt-1 ${isCompleted ? 'line-through' : ''}">${dynamicDescription}</p>
-                                                        <div class="flex items-center gap-1 mt-2">
-                                                            <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
-                                                            <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
+                                                        <div class="flex items-center gap-3 mt-2">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
+                                                                <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
+                                                            </div>
+                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))} XP</p>` : ''}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1498,25 +1594,50 @@
                     `})() : ''}
 
                     ${state.showRanked ? (() => {
-                        const rs = state.rankedState; // 'idle' | 'countdown' | 'playing' | 'results'
+                        const rs = state.rankedState;
+                        const currentTier = getRankedTierById(state.rankedTier);
+                        const nextTier = state.rankedTier ? getNextRankedTier(state.rankedTier) : null;
+                        const xp = state.rankedXP || 0;
+                        const xpNeeded = currentTier?.xpNeeded || 100;
+                        const xpPct = nextTier ? Math.min(100, (xp / xpNeeded) * 100) : 100;
+
                         let content = '';
-                        if (rs === 'idle') {
+                        if (rs === 'profile') {
                             content = `
                                 <div class="text-center">
-                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for 30 seconds!</p>
+                                    <p class="text-slate-400 font-bold uppercase text-xs tracking-widest mb-2">Current Rank</p>
+                                    <img src="${currentTier?.icon}" class="w-20 h-20 mx-auto mb-2 pixelated" style="image-rendering:pixelated;" />
+                                    <p class="font-black text-3xl ${rankedTierColor(state.rankedTier)} mb-4">${currentTier?.name || 'Unranked'}</p>
+                                    ${nextTier ? `
+                                        <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-3 text-left">
+                                            <div class="flex justify-between mb-2">
+                                                <span class="text-xs font-black uppercase text-slate-400">XP to ${nextTier.name}</span>
+                                                <span class="text-xs font-black text-slate-700">${xp} / ${xpNeeded}</span>
+                                            </div>
+                                            <div class="w-full bg-slate-200 h-4 border-2 border-slate-300">
+                                                <div class="h-full bg-rose-500" style="width:${xpPct}%"></div>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs font-bold text-slate-400">Complete quests to earn XP</p>
+                                    ` : `<p class="text-amber-500 font-black uppercase text-sm">Max Rank Achieved!</p>`}
+                                </div>`;
+                        } else if (rs === 'idle') {
+                            content = `
+                                <div class="text-center">
+                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for 35 seconds!</p>
                                     <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-6 text-left">
                                         <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">Rank Tiers</p>
                                         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
                                             <span class="text-slate-500">Beginner I</span><span class="text-slate-700">0–34</span>
-                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">35–69</span>
-                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">70–104</span>
-                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">105–119</span>
-                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">120–144</span>
-                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">145–164</span>
-                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">165–189</span>
-                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">190–214</span>
-                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">215–239</span>
-                                            <span class="text-amber-500">Master</span><span class="text-slate-700">240+</span>
+                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">35–74</span>
+                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">75–109</span>
+                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">110–124</span>
+                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">125–149</span>
+                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">150–174</span>
+                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">175–199</span>
+                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">200–224</span>
+                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">225–249</span>
+                                            <span class="text-amber-500">Master</span><span class="text-slate-700">250+</span>
                                         </div>
                                     </div>
                                     <button onclick="startRankedCountdown()" class="w-full py-4 bg-rose-600 border-4 border-rose-800 text-white font-black text-lg uppercase pixel-button">Start</button>
@@ -1524,7 +1645,7 @@
                         } else if (rs === 'countdown') {
                             content = `<div class="text-center py-8"><p class="text-8xl font-black text-rose-600" id="ranked-countdown-num">${state.rankedCountdown}</p><p class="text-slate-500 font-black uppercase tracking-widest mt-4">Get Ready...</p></div>`;
                         } else if (rs === 'playing') {
-                            const pct = (state.rankedTimeLeft / 30) * 100;
+                            const pct = (state.rankedTimeLeft / 35) * 100;
                             content = `
                                 <div class="text-center">
                                     <p class="ranked-clicks text-7xl font-black text-slate-900 mb-1">${state.rankedClicks}</p>
@@ -1543,40 +1664,70 @@
                                 </div>`;
                         } else if (rs === 'results') {
                             const c = state.rankedClicks;
-                            let rank, color;
-                            if (c >= 240)      { rank = 'Master';       color = 'text-amber-500'; }
-                            else if (c >= 215) { rank = 'Pro III';      color = 'text-purple-500'; }
-                            else if (c >= 190) { rank = 'Pro II';       color = 'text-purple-500'; }
-                            else if (c >= 165) { rank = 'Pro I';        color = 'text-purple-500'; }
-                            else if (c >= 145) { rank = 'Normal III';   color = 'text-blue-500'; }
-                            else if (c >= 120) { rank = 'Normal II';    color = 'text-blue-500'; }
-                            else if (c >= 105) { rank = 'Normal I';     color = 'text-blue-500'; }
-                            else if (c >= 70)  { rank = 'Beginner III'; color = 'text-slate-500'; }
-                            else if (c >= 35)  { rank = 'Beginner II';  color = 'text-slate-500'; }
-                            else               { rank = 'Beginner I';   color = 'text-slate-500'; }
+                            const earnedTier = getRankedTierByClicks(c);
+                            const rColor = rankedTierColor(earnedTier?.id);
+                            const currentIdx = state.rankedTier ? RANKED_TIERS.findIndex(t => t.id === state.rankedTier) : -1;
+                            const earnedIdx = earnedTier ? RANKED_TIERS.findIndex(t => t.id === earnedTier.id) : 0;
+                            const improved = earnedIdx > currentIdx;
                             content = `
-                                <div class="text-center">
-                                    <p class="text-slate-500 font-bold uppercase text-xs tracking-widest mb-2">Your Rank</p>
-                                    <p class="font-black text-4xl ${color} mb-1">${rank}</p>
-                                    <p class="text-slate-400 font-bold text-sm mb-6">${c} clicks in 30s</p>
-                                    <button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="w-full py-4 bg-slate-900 border-4 border-slate-700 text-white font-black uppercase pixel-button mb-3">Play Again</button>
-                                    <button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="w-full py-3 bg-slate-100 border-4 border-slate-300 text-slate-600 font-black uppercase pixel-button">Close</button>
+                                <div class="text-center py-4">
+                                    <p class="text-slate-500 font-bold uppercase text-xs tracking-widest mb-2">${improved ? 'New Rank!' : 'Result'}</p>
+                                    <img src="${earnedTier?.icon}" class="w-20 h-20 mx-auto mb-2 pixelated" style="image-rendering:pixelated;" />
+                                    <p class="font-black text-4xl ${rColor} mb-1">${earnedTier?.name || 'Beginner I'}</p>
+                                    <p class="text-slate-400 font-bold text-sm mb-3">${c} clicks in 35s</p>
+                                    ${improved ? '<p class="text-emerald-600 font-black text-sm uppercase">Rank Up!</p>' : '<p class="text-slate-400 text-xs font-bold">Complete quests to earn XP and advance</p>'}
                                 </div>`;
                         }
+                        const canClose = rs !== 'playing' && rs !== 'countdown';
                         return `
-                        <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget&&'${rs}'!=='playing'){clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})}">
+                        <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop">
                             <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
                                 <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
                                     <div>
                                         <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
                                         <h3 class="font-black text-2xl uppercase text-white">Click Battle</h3>
                                     </div>
-                                    ${rs !== 'playing' ? `<button onclick="clearTimeout(rankedResultTimer);clearInterval(rankedCountdownInterval);clearInterval(rankedGameInterval);updateState({showRanked:false,rankedState:'idle',rankedClicks:0,rankedTimeLeft:30,rankedCountdown:3})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>` : ''}
+                                    ${canClose ? `<button onclick="closeRankedResult()" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>` : ''}
                                 </div>
                                 <div class="p-6">${content}</div>
                             </div>
                         </div>`;
                     })() : ''}
+
+                    ${state.showRankedInfo ? `
+                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showRankedInfo:false})">
+                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+                            <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
+                                    <h3 class="font-black text-2xl uppercase text-white">How It Works</h3>
+                                </div>
+                                <button onclick="updateState({showRankedInfo:false})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex flex-col gap-4">
+                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
+                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Getting Ranked</p>
+                                        <p class="text-xs font-bold text-slate-500">Play Ranked Mode and click as fast as you can for 30 seconds. Your clicks determine your starting rank.</p>
+                                    </div>
+                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
+                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Earning XP</p>
+                                        <p class="text-xs font-bold text-slate-500">Complete quests to earn XP. Each quest gives XP based on its reward size. XP fills your progress bar toward the next tier.</p>
+                                    </div>
+                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
+                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Advancing Tiers</p>
+                                        <p class="text-xs font-bold text-slate-500">Fill your XP bar to unlock the next tier, OR score high enough in a Ranked match to jump ranks instantly. Ranks never go down.</p>
+                                    </div>
+                                    <div class="bg-rose-50 border-3 border-rose-200 p-4">
+                                        <p class="font-black text-sm uppercase text-rose-700 mb-1">XP per Quest</p>
+                                        ${QUESTS.map(q => `<p class="text-xs font-bold text-slate-500">${q.name}: +${Math.max(10, Math.floor(q.reward/500))} XP</p>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
+
 
 
                         <div class="flex gap-6 items-center justify-center">
@@ -1599,6 +1750,7 @@
                         <div class="w-full max-w-6xl flex gap-3 mb-2">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">Prestige ${state.prestigeLevel}</span>
                             <span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>
+                            <span class="pixel-badge flex-1 text-center ${state.rankedTier ? 'bg-rose-500 border-rose-700' : 'bg-slate-400 border-slate-600'} text-white">${state.rankedTier ? (RANKED_TIERS.find(t=>t.id===state.rankedTier)?.name || 'Unranked') : 'Unranked'}</span>
                         </div>
                         
                         <div class="w-full max-w-6xl pixel-card mt-2 px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
@@ -1686,8 +1838,9 @@
                         </button>
                     </div>
 
-                    <div class="z-20 w-full max-w-6xl px-4 mb-8">
-                        <button onclick="openRanked()" class="pixel-badge bg-rose-500 border-rose-700 text-white w-full text-center cursor-pointer hover:bg-rose-400 transition-colors">Ranked Mode</button>
+                    <div class="z-20 w-full max-w-6xl px-4 mb-8 flex gap-2">
+                        <button onclick="openRanked()" class="pixel-badge bg-rose-500 border-rose-700 text-white flex-1 text-center cursor-pointer hover:bg-rose-400 transition-colors">Ranked Mode</button>
+                        <button onclick="updateState({showRankedInfo:true})" class="pixel-badge bg-rose-500 border-rose-700 text-white cursor-pointer hover:bg-rose-400 transition-colors px-3" style="flex:0 0 auto;">?</button>
                     </div>
                 </div>
             `;            
