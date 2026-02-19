@@ -489,15 +489,13 @@
             hawaii: { name: 'Seashell', icon: 'https://cdn3d.iconscout.com/3d/premium/thumb/seashell-3d-icon-png-download-9708035.png' },
             starlight: { name: 'Star', icon: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
             void: { name: 'Galaxy', icon: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308179.png' },
-            battle: { name: 'Brick', icon: 'https://static.wikia.nocookie.net/the-battle-bricks/images/9/92/BBC.png' }
         };
 
         const DESTINATIONS = [
-            { id: 'battle', name: 'Battle World', req: 0, mult: 50, priceMod: 0.1, prestigeMod: 0.02, color: 'bg-red-100', themeColor: '#fee2e2', bgImage: 'https://preview.redd.it/every-tbb-x-forsaken-collab-full-render-render-not-mine-v0-zfchelw2dmyf1.png?width=1000&format=png&auto=webp&s=19c1c4c400b2971d52311bdd486412ac3bac04b2', img: 'https://i.postimg.cc/zfPJhmpT/image.png', requiresItems: ['hyperbike', 'vulcan', 'ivory', 'crimson'] },
-            { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
-            { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
-            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void', name: 'The Void', req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100', themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/2b/93/c2/2b93c2d26ea042ef05ec0fc6dbac7de6.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' }
+            { id: 'plains',    name: 'Gubby Plains',  req: 0,  mult: 1,  priceMod: 1,    prestigeMod: 1,     color: 'bg-emerald-50',  themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
+            { id: 'hawaii',    name: 'Hawaii',        req: 5,  mult: 5,  priceMod: 0.75, prestigeMod: 0.4,   color: 'bg-green-100',   themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
+            { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5,  prestigeMod: 0.16,  color: 'bg-purple-100',  themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
+            { id: 'void',      name: 'The Void',      req: 15, mult: 30, priceMod: 0.25, prestigeMod: 0.064, color: 'bg-blue-100',    themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/2b/93/c2/2b93c2d26ea042ef05ec0fc6dbac7de6.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' },
         ];
 
         const CONVERSION_RATES = {
@@ -505,27 +503,22 @@
             'hawaii': 25,
             'starlight': 75,
             'void': 150,
-            'battle': 500
         };
 
         const SHOP_ITEMS = [
-            { id: 'rainbow', name: 'Rainbow', category: 'small', baseCost: 100, power: 10, duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
-            { id: 'mega', name: 'Mega', category: 'small', baseCost: 450, power: 25, duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
-            { id: 'omega', name: 'Omega', category: 'small', baseCost: 1200, power: 120, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
-            { id: 'oracle', name: 'Oracle', category: 'medium', baseCost: 5000, power: 0, duration: 25, img: 'https://static.vecteezy.com/system/resources/thumbnails/041/644/156/small/3d-stock-market-ticker-with-upward-trend-arrow-icon-png.png' },
-            { id: 'godly', name: 'Godly', category: 'medium', baseCost: 15000, power: 400, duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
-            { id: 'legendary', name: 'Legendary', category: 'medium', baseCost: 75000, power: 1000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
-            { id: 'mythic', name: 'Mythic', category: 'large', baseCost: 250000, power: 5000, duration: 9, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
-            { id: 'divine', name: 'Divine', category: 'large', baseCost: 1000000, power: 25000, duration: 9, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
-            { id: 'celestial', name: 'Celestial', category: 'large', baseCost: 5000000, power: 100000, duration: 8, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/planets-3d-icon-png-download-11683976.png' },
-            { id: 'void', name: 'Void', category: 'large', baseCost: 15000000, power: 500000, duration: 7, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-station-3d-icon-png-download-6308159.png' },
-            { id: 'titan', name: 'Titan', category: 'op', baseCost: 100000000, power: 5000000, duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
-            { id: 'eternal', name: 'Eternal', category: 'op', baseCost: 500000000, power: 50000000, duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
-            { id: 'infinite', name: 'Infinite', category: 'op', baseCost: 2500000000, power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' },
-            { id: 'hyperbike', name: 'Hyperbike', category: 'special', baseCost: 50000000000, power: 500000000, duration: 0, description: 'Permanent OP Multiplier', permanent: true, img: 'https://i.postimg.cc/TPWGjvnd/image.png' },
-            { id: 'vulcan', name: 'Vulcan', category: 'special', baseCost: 100000000000, power: 1000000000, duration: 0, description: 'Permanent OP Multiplier', permanent: true, img: 'https://i.postimg.cc/qMbd9vLC/image.png' },
-            { id: 'ivory', name: 'Ivory', category: 'special', baseCost: 500000000000, power: 5000000000, duration: 0, description: 'Permanent OP Multiplier', permanent: true, img: 'https://i.postimg.cc/bNv7Hjj5/image.png' },
-            { id: 'crimson', name: 'Crimson', category: 'special', baseCost: 1000000000000, power: 10000000000, duration: 0, description: 'Permanent OP Multiplier', permanent: true, img: 'https://i.postimg.cc/B6syjrp9/image.png' }
+            { id: 'rainbow',  name: 'Rainbow',   category: 'small',  baseCost: 100,         power: 10,        duration: 15, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/rainbow-3d-icon-png-download-4659629.png' },
+            { id: 'mega',     name: 'Mega',      category: 'small',  baseCost: 450,         power: 25,        duration: 12, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Glowing-Star-3d-icon.png' },
+            { id: 'omega',    name: 'Omega',     category: 'small',  baseCost: 1200,        power: 120,       duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/diamond-3d-icon-png-download-8249311.png' },
+            { id: 'xpmult',   name: 'XP Surge',  category: 'medium', baseCost: 5000,        power: 0,         duration: 900, description: '1.3x XP · 15min', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/target-3d-icon-png-download-11149326.png' },
+            { id: 'godly',    name: 'Godly',     category: 'medium', baseCost: 15000,       power: 400,       duration: 20, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/king-crown-3d-icon-png-download-10707831.png' },
+            { id: 'legendary',name: 'Legendary', category: 'medium', baseCost: 75000,       power: 1000,      duration: 9,  img: 'https://cdn3d.iconscout.com/3d/premium/thumb/gold-medal-3d-icon-png-download-11613166.png' },
+            { id: 'mythic',   name: 'Mythic',    category: 'large',  baseCost: 250000,      power: 5000,      duration: 9,  img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghOJb2-ZD1lymQCT1S_dYisQmoX1dIDYzdg&s' },
+            { id: 'divine',   name: 'Divine',    category: 'large',  baseCost: 1000000,     power: 25000,     duration: 9,  img: 'https://cdn3d.iconscout.com/3d/premium/thumb/compass-astrology-3d-icon-png-download-13124447.png' },
+            { id: 'celestial',name: 'Celestial', category: 'large',  baseCost: 5000000,     power: 100000,    duration: 8,  img: 'https://cdn3d.iconscout.com/3d/premium/thumb/planets-3d-icon-png-download-11683976.png' },
+            { id: 'void',     name: 'Void',      category: 'large',  baseCost: 15000000,    power: 500000,    duration: 7,  img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-station-3d-icon-png-download-6308159.png' },
+            { id: 'titan',    name: 'Titan',     category: 'op',     baseCost: 100000000,   power: 5000000,   duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
+            { id: 'eternal',  name: 'Eternal',   category: 'op',     baseCost: 500000000,   power: 50000000,  duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
+            { id: 'infinite', name: 'Infinite',  category: 'op',     baseCost: 2500000000,  power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' },
         ];
 
         const QUESTS = [
@@ -556,7 +549,7 @@
             marketMultiplier: 1,
             marketTrend: 'stable',
             marketQueue: [1.1, 0.8, 1.4],
-            showOracle: false,
+            xpSurgeUntil: 0,
             marketCategory: null,
             notification: null,
             stickyChat: null,
@@ -584,6 +577,9 @@
             rankedGamesPlayed: 0,
             masterXP: 0,
             claimedMasterRewards: [],
+            xpBoostUntil: 0,
+            luckyMultUntil: 0,
+            luckyMultValue: 1,
             showRankUp: false,
             rankUpTier: null,
             pendingRankUp: null,
@@ -657,7 +653,13 @@
 
         // XP awarded per quest claim = Math.floor(quest.reward / 500), min 10
         function getQuestXP(quest) {
-            return Math.max(10, Math.floor(quest.reward / 500));
+            const base = Math.max(10, Math.floor(quest.reward / 500));
+            const rankBoosted = (state.xpBoostUntil || 0) > Date.now();
+            const surgeBoosted = (state.xpSurgeUntil || 0) > Date.now();
+            let mult = 1;
+            if (rankBoosted) mult *= 1.5;
+            if (surgeBoosted) mult *= 1.3;
+            return mult > 1 ? Math.round(base * mult) : base;
         }
 
         function getRankedTierByClicks(clicks) {
@@ -757,7 +759,7 @@
             const pendingTier = state.pendingRankUp;
             updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3, pendingRankUp: null });
             if (pendingTier) {
-                updateState({ showRankUp: true, rankUpTier: pendingTier });
+                updateState({ showRankUp: true, rankUpTier: pendingTier, xpBoostUntil: Date.now() + 20 * 60 * 1000 });
                 setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
             }
         }
@@ -792,9 +794,8 @@
 
         function getAscensionCost() {
             const rate = CONVERSION_RATES[state.theme];
-            const isBattleWorld = state.theme === 'battle';
             const baseCost = 600;
-            const multiplier = isBattleWorld ? 1.275 : 1.2;
+            const multiplier = 1.2;
             const basePrestigeCost = Math.floor(baseCost * Math.pow(multiplier, state.prestigeLevel));
             return basePrestigeCost / rate;
         }
@@ -830,7 +831,12 @@
                     }
                 } else if (command === '/give') {
                     const sub = parts[1]?.toLowerCase();
-                    if (sub === 'all') {
+                    if (sub === 'xpsurge') {
+                        const newInv = { ...state.inventory };
+                        newInv['xpmult'] = (newInv['xpmult'] || 0) + 1;
+                        changes.inventory = newInv;
+                        message = 'Gave 1x XP Surge item. Use it from Storage to activate.';
+                    } else if (sub === 'all') {
                         // Give 1 of every item
                         const newInv = { ...state.inventory };
                         SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
@@ -934,6 +940,7 @@
                         message = "Usage: /rank [tier name] | /rank up";
                     }
                     if (changes.showRankUp) {
+                        changes.xpBoostUntil = Date.now() + 20 * 60 * 1000;
                         setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
                     }
                 } else {
@@ -970,16 +977,7 @@
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
             
-            // Calculate permanent multiplier from equipped special items
-            let permanentMultiplier = 1;
-            if (state.equippedItem && ['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(state.equippedItem)) {
-                const equippedSpecialItem = SHOP_ITEMS.find(i => i.id === state.equippedItem);
-                if (equippedSpecialItem && equippedSpecialItem.power) {
-                    permanentMultiplier = equippedSpecialItem.power;
-                }
-            }
-            
-            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff && state.activeBuff.id !== 'oracle' ? state.activeBuff.power : 1) * permanentMultiplier;
+            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1);
             
             // Trigger squish animation on the inner container
             const gubbyElement = document.querySelector('.gubby-container');
@@ -1018,11 +1016,13 @@
             if (state.clicks > 0) {
                 const currentWorld = DESTINATIONS.find(d => d.id === state.theme);
                 const currentWorldMult = currentWorld ? currentWorld.mult : 1;
-                const totalGoldEarned = (state.clicks * state.marketMultiplier * currentWorldMult) / CONVERSION_RATES[state.theme];
+                const luckyActive = (state.luckyMultUntil || 0) > Date.now();
+                const luckyBonus = luckyActive ? (state.luckyMultValue || 1) : 1;
+                const totalGoldEarned = (state.clicks * state.marketMultiplier * currentWorldMult * luckyBonus) / CONVERSION_RATES[state.theme];
                 updateState({
                     gold: state.gold + totalGoldEarned,
                     clicks: 0,
-                    notification: { title: "MARKET SOLD!", message: `Sold for ${totalGoldEarned.toFixed(2)} ${CURRENCIES[state.theme].name}s!`, type: "success" }
+                    notification: { title: "MARKET SOLD!", message: `Sold for ${totalGoldEarned.toFixed(2)} ${CURRENCIES[state.theme].name}s!${luckyActive ? ` (x${state.luckyMultValue} Lucky!)` : ''}`, type: "success" }
                 });
                 checkQuestProgress();
             }
@@ -1030,21 +1030,6 @@
 
         function travelTo(destId) {
             const destination = DESTINATIONS.find(d => d.id === destId);
-            
-            // Check if destination requires items
-            if (destination.requiresItems) {
-                const hasAllItems = destination.requiresItems.every(itemId => state.inventory[itemId] > 0);
-                if (!hasAllItems) {
-                    updateState({
-                        notification: {
-                            title: "LOCKED!",
-                            message: `You need all 4 Battle Brick items to unlock ${destination.name}!`,
-                            type: "error"
-                        }
-                    });
-                    return;
-                }
-            }
             
             const oldRate = CONVERSION_RATES[state.theme];
             const newRate = CONVERSION_RATES[destId];
@@ -1079,7 +1064,7 @@
                 prestigeLevel: nextPrestige,
                 gold: 0, clicks: 0, totalClicksSession: 0,
                 inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
-                activeBuff: null, showOracle: false,
+                activeBuff: null,
                 notification: { title: "ASCENDED!", message: `Prestige ${nextPrestige} reached!`, type: "success" },
                 activeQuests: updatedQuests
             });
@@ -1175,13 +1160,13 @@
                     return quest;
                 });
                 
-                if (itemId === 'oracle') {
+                if (itemId === 'xpmult') {
                     updateState({ 
                         inventory: { ...state.inventory, [itemId]: state.inventory[itemId] - 1 }, 
-                        activeBuff: { ...item, timeLeft: item.duration }, 
-                        showOracle: true,
+                        xpSurgeUntil: Date.now() + 15 * 60 * 1000,
                         showStorageModal: false,
-                        activeQuests: updatedQuests
+                        activeQuests: updatedQuests,
+                        notification: { title: 'XP Surge!', message: '1.3x XP for 15 minutes!', type: 'success' }
                     });
                 } else {
                     updateState({ 
@@ -1337,6 +1322,7 @@
             if (rankUpTier) {
                 updates.showRankUp = true;
                 updates.rankUpTier = rankUpTier;
+                updates.xpBoostUntil = Date.now() + 20 * 60 * 1000; // 20 min XP boost
             }
             updateState(updates);
 
@@ -1345,51 +1331,32 @@
             }
         }
 
-        function claimMasterReward(rewardIdx) {
-            const reward = MASTER_REWARDS[rewardIdx];
-            if (!reward || state.rankedTier !== 'master') return;
-            if ((state.claimedMasterRewards || []).includes(rewardIdx)) return;
-            if ((state.masterXP || 0) < reward.xp) return;
+        function claimMasterReward(milestoneIdx) {
+            const milestone = MASTER_MILESTONES[milestoneIdx];
+            if (!milestone || state.rankedTier !== 'master') return;
+            if ((state.claimedMasterRewards || []).includes(milestoneIdx)) return;
+            if ((state.masterXP || 0) < milestone.xp) return;
 
-            const rate = CONVERSION_RATES[state.theme];
+            // Pick a random item from the marketplace
+            const randomItem = SHOP_ITEMS[Math.floor(Math.random() * SHOP_ITEMS.length)];
             const newInv = { ...state.inventory };
-            let goldBonus = 0;
-            let gotItems = [];
-            let gotGold = [];
+            newInv[randomItem.id] = (newInv[randomItem.id] || 0) + 1;
 
-            const MIN_GOLD = 1000;
-            const MAX_GOLD = 1500000000000; // 1.5t
-            const MIN_COST = 100;
-            const MAX_COST = 1000000000000; // 1t (crimson baseCost)
+            // Lucky multiplier: 0.05x to 20x (weighted toward lower values)
+            const raw = Math.random();
+            const luckyMult = parseFloat((0.05 + Math.pow(raw, 2) * 19.95).toFixed(2));
 
-            reward.items.forEach(id => {
-                if ((newInv[id] || 0) > 0) {
-                    // Scale gold logarithmically based on item baseCost
-                    const item = SHOP_ITEMS.find(i => i.id === id);
-                    const baseCost = item?.baseCost || MIN_COST;
-                    const t = Math.log(baseCost / MIN_COST) / Math.log(MAX_COST / MIN_COST);
-                    const rawGold = Math.floor(MIN_GOLD * Math.pow(MAX_GOLD / MIN_GOLD, t));
-                    const converted = rawGold / rate;
-                    goldBonus += converted;
-                    gotGold.push(`${formatCost(converted)} ${CURRENCIES[state.theme].name}s`);
-                } else {
-                    newInv[id] = 1;
-                    gotItems.push(id);
-                }
-            });
-
-            const updates = {
+            updateState({
                 inventory: newInv,
-                claimedMasterRewards: [...(state.claimedMasterRewards || []), rewardIdx],
-                gold: state.gold + goldBonus,
-            };
-            if (goldBonus > 0) {
-                const msg = gotItems.length
-                    ? `Got items + ${gotGold.join(', ')} (already owned some)`
-                    : `Already owned all items! Got ${gotGold.join(', ')} instead`;
-                updates.notification = { title: reward.label + ' Claimed!', message: msg };
-            }
-            updateState(updates);
+                claimedMasterRewards: [...(state.claimedMasterRewards || []), milestoneIdx],
+                luckyMultUntil: Date.now() + 20 * 1000,
+                luckyMultValue: luckyMult,
+                notification: {
+                    title: milestone.label + ' Claimed!',
+                    message: `Got 1x ${randomItem.name} + x${luckyMult} Lucky Multiplier for 20s!`,
+                    type: 'success'
+                },
+            });
         }
 
         function resetRank() {
@@ -1421,7 +1388,6 @@
             if (state.activeBuff) {
                 if (state.activeBuff.timeLeft <= 1) { 
                     state.activeBuff = null;
-                    state.showOracle = false;
                     shouldRender = true;
                 } else { 
                     state.activeBuff.timeLeft = state.activeBuff.timeLeft - 1;
@@ -1443,6 +1409,66 @@
                     shouldRender = true; // Re-render to remove disco background
                 }
             }
+
+            // Update XP boost countdown widget
+            const xpBoostWidget = document.querySelector('.xp-boost-widget');
+            if (xpBoostWidget) {
+                if ((state.xpBoostUntil || 0) > Date.now()) {
+                    const secsLeft = Math.ceil((state.xpBoostUntil - Date.now()) / 1000);
+                    const mins = Math.floor(secsLeft / 60);
+                    const secs = secsLeft % 60;
+                    xpBoostWidget.textContent = `1.5x XP ${mins}:${String(secs).padStart(2,'0')}`;
+                    xpBoostWidget.style.display = 'block';
+                } else {
+                    xpBoostWidget.style.display = 'none';
+                }
+            }
+
+            // XP Surge item expiry + widget
+            if ((state.xpSurgeUntil || 0) > 0 && Date.now() >= state.xpSurgeUntil) {
+                state.xpSurgeUntil = 0;
+                shouldRender = true;
+            }
+            const xpSurgeWidget = document.querySelector('.xp-surge-widget');
+            if (xpSurgeWidget) {
+                if ((state.xpSurgeUntil || 0) > Date.now()) {
+                    const secsLeft = Math.ceil((state.xpSurgeUntil - Date.now()) / 1000);
+                    const mins = Math.floor(secsLeft / 60);
+                    const secs = secsLeft % 60;
+                    xpSurgeWidget.textContent = `1.3x XP Surge ${mins}:${String(secs).padStart(2,'0')}`;
+                    xpSurgeWidget.style.display = 'block';
+                } else {
+                    xpSurgeWidget.style.display = 'none';
+                }
+            }
+
+            // Expire lucky multiplier
+            if ((state.luckyMultUntil || 0) > 0 && Date.now() >= state.luckyMultUntil) {
+                state.luckyMultUntil = 0;
+                state.luckyMultValue = 1;
+                shouldRender = true;
+            }
+
+            // Update lucky mult countdown and market stat display
+            const luckyWidget = document.querySelector('.lucky-mult-widget');
+            if (luckyWidget) {
+                if ((state.luckyMultUntil || 0) > Date.now()) {
+                    const secsLeft = Math.ceil((state.luckyMultUntil - Date.now()) / 1000);
+                    luckyWidget.textContent = `x${state.luckyMultValue} Lucky ${secsLeft}s`;
+                    luckyWidget.style.display = 'block';
+                } else {
+                    luckyWidget.style.display = 'none';
+                }
+            }
+            // Keep market stat display in sync with lucky mult
+            const marketStatEl = document.querySelector('.market-rate-live');
+            if (marketStatEl) {
+                const luckyActive = (state.luckyMultUntil || 0) > Date.now();
+                const displayRate = luckyActive ? (state.marketMultiplier * (state.luckyMultValue || 1)).toFixed(2) : state.marketMultiplier.toFixed(2);
+                marketStatEl.innerHTML = luckyActive
+                    ? `<span class="text-amber-500">${displayRate}x <span class="text-xs text-amber-400">(Lucky)</span></span>`
+                    : `<span class="${parseFloat(displayRate) >= 1.2 ? 'text-emerald-600' : 'text-slate-900'}">${displayRate}x</span>`;
+            }
             
             // Only render if admin console is not open, no modals are open, and something important changed
             if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked) {
@@ -1452,11 +1478,7 @@
 
         function createFloatingStars() {
             const starCount = 8;
-            // Check if a Battle Brick item is equipped
-            const isBattleBrickEquipped = state.equippedItem && ['hyperbike', 'vulcan', 'ivory', 'crimson'].includes(state.equippedItem);
-            const imageUrl = isBattleBrickEquipped 
-                ? 'https://i.postimg.cc/zfPJhmpT/image.png'
-                : 'https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png';
+            const imageUrl = 'https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png';
             
             for (let i = 0; i < starCount; i++) {
                 setTimeout(() => {
@@ -1501,18 +1523,17 @@
         const DAILY_REFRESH_MS = 24 * 60 * 60 * 1000; // 24 hours
 
         // Master XP reward tiers — unlocked after reaching Master rank
-        const MASTER_REWARDS = [
-            { xp: 100,  label: 'Bronze Cache',       items: ['rainbow', 'mega', 'omega'] },
-            { xp: 300,  label: 'Silver Cache',       items: ['oracle', 'godly'] },
-            { xp: 600,  label: 'Gold Cache',         items: ['legendary', 'mythic'] },
-            { xp: 1000, label: 'Platinum Cache',     items: ['divine', 'celestial'] },
-            { xp: 1500, label: 'Diamond Cache',      items: ['void', 'titan'] },
-            { xp: 2500, label: 'Master Cache',       items: ['eternal', 'infinite'] },
-            { xp: 4000, label: 'Battle Cache I',     items: ['hyperbike'] },
-            { xp: 6000, label: 'Battle Cache II',    items: ['vulcan'] },
-            { xp: 9000, label: 'Battle Cache III',   items: ['ivory'] },
-            { xp: 13000, label: 'Battle Cache IV',   items: ['crimson'] },
-        ];
+        // Master XP milestone roadmap — each milestone gives a random item + lucky multiplier
+        const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII','XXVIII','XXIX','XXX','XXXI','XXXII','XXXIII','XXXIV','XXXV','XXXVI','XXXVII','XXXVIII','XXXIX','XL','XLI','XLII','XLIII','XLIV','XLV','XLVI','XLVII','XLVIII','XLIX','L'];
+        const MASTER_MILESTONES = (() => {
+            const milestones = [];
+            let xp = 100;
+            for (let i = 0; i < 50; i++) {
+                milestones.push({ xp: Math.round(xp / 5) * 5, label: 'Milestone ' + ROMAN[i] });
+                xp = xp * 1.10;
+            }
+            return milestones;
+        })();
 
         setInterval(() => {
             // Daily quest refresh — clear completed IDs so quests can be re-taken
@@ -1584,9 +1605,8 @@
                         const unitPrice = getItemPrice(popupItem);
                         const totalPrice = unitPrice * state.itemPopupQty;
                         const canAfford = state.gold >= totalPrice;
-                        const tierColors = { small: 'bg-blue-500', medium: 'bg-purple-500', large: 'bg-orange-500', op: 'bg-red-500', special: 'bg-amber-500' };
+                        const tierColors = { small: 'bg-blue-500', medium: 'bg-purple-500', large: 'bg-orange-500', op: 'bg-red-500' };
                         const tierColor = tierColors[popupItem.category] || 'bg-slate-500';
-                        const isSpecial = popupItem.category === 'special';
                         return `
                         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})">
                             <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
@@ -1594,7 +1614,7 @@
                                 <!-- Header stripe -->
                                 <div class="${tierColor} px-6 py-4 flex justify-between items-center">
                                     <div>
-                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">${isSpecial ? 'special item' : popupItem.category + ' boost'}</p>
+                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">${popupItem.category} boost</p>
                                         <h3 class="font-black text-2xl uppercase text-white leading-tight">${popupItem.name}</h3>
                                     </div>
                                     <button onclick="updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
@@ -1609,11 +1629,10 @@
                                         </div>
                                         <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Duration</p>
-                                            <p class="font-black text-slate-900 text-sm">${popupItem.permanent ? 'Permanent' : popupItem.duration + 's'}</p>
+                                            <p class="font-black text-slate-900 text-sm">${popupItem.duration + 's'}</p>
                                         </div>
                                     </div>
 
-                                    ${!isSpecial ? `
                                     <!-- Quantity -->
                                     <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Quantity <span class="text-slate-300">(max 25)</span></p>
                                     <div class="flex items-stretch gap-0 mb-5 border-4 border-slate-300 overflow-hidden">
@@ -1629,15 +1648,14 @@
                                         <button onclick="setItemQty(1)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+1</button>
                                         <button onclick="setItemQty(5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+5</button>
                                     </div>
-                                    ` : '<div class="mb-5"></div>'}
 
                                     <!-- Total + Buy -->
                                     <div class="flex items-center justify-between mb-4">
-                                        <span class="font-black text-slate-500 uppercase text-sm">${isSpecial ? 'Cost' : 'Total Cost'}</span>
-                                        <span class="popup-total font-black text-2xl ${canAfford ? 'text-slate-900' : 'text-red-500'}">${formatCost(isSpecial ? unitPrice : totalPrice)}</span>
+                                        <span class="font-black text-slate-500 uppercase text-sm">Total Cost</span>
+                                        <span class="popup-total font-black text-2xl ${canAfford ? 'text-slate-900' : 'text-red-500'}">${formatCost(totalPrice)}</span>
                                     </div>
                                     <button onclick="buyItemFromPopup()" ${!canAfford ? 'disabled' : ''} class="popup-buy-btn w-full py-4 font-black uppercase text-lg pixel-button ${canAfford ? 'bg-emerald-500 border-emerald-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed'}">
-                                        ${canAfford ? ('Purchase' + (!isSpecial && state.itemPopupQty > 1 ? ' x' + state.itemPopupQty : '')) : 'Cannot Afford'}
+                                        ${canAfford ? ('Purchase' + (state.itemPopupQty > 1 ? ' x' + state.itemPopupQty : '')) : 'Cannot Afford'}
                                     </button>
                                 </div>
                             </div>
@@ -1662,9 +1680,7 @@
                                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                                     ${DESTINATIONS.map(dest => {
                                         const isPrestigeLocked = state.prestigeLevel < dest.req;
-                                        const isBattleWorld = dest.id === 'battle';
-                                        const battleItemsOwned = isBattleWorld && dest.requiresItems ? dest.requiresItems.every(itemId => state.inventory[itemId] > 0) : true;
-                                        const isLocked = isPrestigeLocked || (isBattleWorld && !battleItemsOwned);
+                                        const isLocked = isPrestigeLocked;
                                         const isCurrent = state.theme === dest.id;
                                         return `
                                             <button 
@@ -1677,7 +1693,6 @@
                                                 <div class="flex flex-col items-center gap-1">
                                                     <span class="text-xs sm:text-sm font-black text-indigo-600">x${dest.mult} Profit</span>
                                                     ${isPrestigeLocked ? `<span class="text-xs font-bold text-red-600 mt-1">Prestige ${dest.req}</span>` : ''}
-                                                    ${isBattleWorld && !battleItemsOwned ? `<span class="text-xs font-bold text-amber-600 mt-1">Need All 4 Items</span>` : ''}
                                                 </div>
                                             </button>
                                         `;
@@ -1719,13 +1734,17 @@
 
                     ${state.showQuestModal ? (() => {
                         const questRefreshHours = Math.max(0, Math.ceil((DAILY_REFRESH_MS - (Date.now() - (state.questLastRefresh || Date.now()))) / (1000*60*60)));
+                        const xpBoosted = (state.xpBoostUntil || 0) > Date.now();
+                        const xpSurged = (state.xpSurgeUntil || 0) > Date.now();
+                        const xpBoostMinsLeft = xpBoosted ? Math.ceil(((state.xpBoostUntil || 0) - Date.now()) / 60000) : 0;
+                        const xpSurgeMinsLeft = xpSurged ? Math.ceil(((state.xpSurgeUntil || 0) - Date.now()) / 60000) : 0;
                         return `
                         <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target === event.currentTarget) updateState({showQuestModal: false})">
                             <div class="bg-white p-6 sm:p-10 pixel-card max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content">
                                 <div class="flex justify-between items-center mb-6 sm:mb-8">
                                     <div>
                                         <h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Quests</h4>
-                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active · refreshes in ${questRefreshHours}h</p>
+                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active · refreshes in ${questRefreshHours}h${(xpBoosted && xpSurged) ? ` · <span class="text-purple-500 font-black">1.95x XP Multiplier</span>` : xpBoosted ? ` · <span class="text-rose-500 font-black">1.5x XP Boost</span>` : xpSurged ? ` · <span class="text-purple-500 font-black">1.3x XP Multiplier</span>` : ''}</p>
                                     </div>
                                     <button onclick="updateState({showQuestModal: false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                                 </div>
@@ -1767,7 +1786,7 @@
                                                             <i data-lucide="gift" class="w-4 h-4"></i>
                                                             <span>Reward: ${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</span>
                                                         </div>
-                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${Math.max(10, Math.floor(quest.reward/500))} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}</span></div>` : ''}
+                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${getQuestXP(quest)} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x)' : ''}</span></div>` : ''}
                                                     </div>
                                                     ${quest.completed ? `
                                                         <button onclick="claimQuest('${quest.id}')" class="pixel-button bg-emerald-500 border-emerald-700 text-white px-6 py-2 font-black uppercase animate-pulse">
@@ -1804,7 +1823,7 @@
                                                                 <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
                                                                 <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
                                                             </div>
-                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}</p>` : ''}
+                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))}${(xpBoosted||xpSurged) ? ' → ' + getQuestXP(quest) : ''} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x XP Multiplier)' : ''}</p>` : ''}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1851,22 +1870,23 @@
                                                 <span class="text-xs font-black uppercase text-amber-600">Master XP</span>
                                                 <span class="text-xs font-black text-slate-700">${masterXP} XP earned</span>
                                             </div>
-                                            <p class="text-xs text-slate-500 font-bold mb-3">Earn XP from quests to claim power-up caches!</p>
-                                            <div class="flex flex-col gap-2">
-                                                ${MASTER_REWARDS.map((r, i) => {
+                                            <p class="text-xs text-slate-500 font-bold mb-3">Reach milestones to earn a random item + lucky market multiplier (0.05x–20x)!</p>
+                                            <div class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+                                                ${MASTER_MILESTONES.map((m, i) => {
                                                     const isClaimed = claimed.includes(i);
-                                                    const canClaim = masterXP >= r.xp && !isClaimed;
-                                                    return `<div class="flex items-center justify-between p-2 border-2 ${isClaimed ? 'border-slate-200 bg-slate-50 opacity-50' : canClaim ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}">
-                                                        <div>
-                                                            <p class="text-xs font-black text-slate-800">${r.label}</p>
-                                                            <p class="text-xs text-slate-400 font-bold">${r.xp} XP · ${r.items.join(', ')}</p>
+                                                    const canClaim = masterXP >= m.xp && !isClaimed;
+                                                    const progress = Math.min(100, (masterXP / m.xp) * 100);
+                                                    return `<div class="border-2 p-2 shrink-0 ${isClaimed ? 'border-slate-200 bg-slate-50 opacity-50' : canClaim ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}">
+                                                        <div class="flex items-center justify-between mb-1">
+                                                            <p class="text-xs font-black text-slate-800">${m.label}</p>
+                                                            ${isClaimed ? '<span class="text-xs font-black text-slate-400 uppercase">Claimed</span>' : canClaim ? `<button onclick="claimMasterReward(${i})" class="bg-amber-500 border-2 border-amber-700 text-white px-3 py-1 text-xs font-black uppercase rounded-sm">Claim</button>` : `<span class="text-xs font-bold text-slate-300">${m.xp} XP</span>`}
                                                         </div>
-                                                        ${isClaimed ? '<span class="text-xs font-black text-slate-400 uppercase">Claimed</span>' : canClaim ? `<button onclick="claimMasterReward(${i})" class="pixel-button bg-amber-500 border-amber-700 text-white px-3 py-1 text-xs font-black uppercase">Claim</button>` : `<span class="text-xs font-bold text-slate-300">${r.xp} XP</span>`}
+                                                        ${!isClaimed ? `<div class="w-full bg-slate-200 h-1.5 border border-slate-300"><div class="h-full bg-amber-400" style="width:${progress}%"></div></div>` : ''}
                                                     </div>`;
                                                 }).join('')}
                                             </div>
                                         </div>
-                                        <button onclick="if(confirm('Reset your rank back to Unranked? This clears all Master XP and rewards.')) resetRank()" class="w-full py-3 bg-slate-100 border-3 border-slate-300 text-slate-600 font-black uppercase text-xs pixel-button hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors">Reset Rank</button>
+                                        <button onclick="if(confirm('Reset your rank back to Unranked? This clears all Master XP and milestones.')) resetRank()" class="w-full py-3 bg-slate-100 border-3 border-slate-300 text-slate-600 font-black uppercase text-xs pixel-button hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors">Reset Rank</button>
                                     ` : ''}
                                 </div>`;
                         } else if (rs === 'idle') {
@@ -1933,7 +1953,7 @@
                                 <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
                                     <div>
                                         <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
-                                        <h3 class="font-black text-2xl uppercase text-white">Click Battle</h3>
+                                        <h3 class="font-black text-2xl uppercase text-white">Click Ranked</h3>
                                     </div>
                                     ${canClose ? `<button onclick="closeRankedResult()" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>` : ''}
                                 </div>
@@ -1984,10 +2004,18 @@
                             <div class="text-center">
                                 <img src="${tier?.icon}" class="w-44 h-44 mx-auto mb-5 rankup-icon pixelated" style="image-rendering:pixelated;" />
                                 <p class="font-black text-6xl text-white mb-3" style="text-shadow:4px 4px 0 rgba(0,0,0,0.8);">RANK UP!</p>
-                                <p class="font-black text-3xl mb-1" style="color:${tierColor};text-shadow:3px 3px 0 rgba(0,0,0,0.6);">${tier?.name}</p>
+                                <p class="font-black text-3xl mb-2" style="color:${tierColor};text-shadow:3px 3px 0 rgba(0,0,0,0.6);">${tier?.name}</p>
+                                <p class="font-black text-lg text-amber-300" style="text-shadow:2px 2px 0 rgba(0,0,0,0.8);">1.5x XP Boost for 20 minutes!</p>
                             </div>
                         </div>`;
                     })() : ''}
+
+                    <!-- Bottom-right status widgets -->
+                    <div class="fixed bottom-4 right-4 z-[95] flex flex-col items-end gap-2 pointer-events-none">
+                        <div class="xp-boost-widget bg-rose-600 border-2 border-rose-800 text-white text-xs font-black px-3 py-1.5 uppercase tracking-wide" style="display:${(state.xpBoostUntil||0) > Date.now() ? 'block' : 'none'};">1.5x XP</div>
+                        <div class="xp-surge-widget bg-purple-600 border-2 border-purple-800 text-white text-xs font-black px-3 py-1.5 uppercase tracking-wide" style="display:${(state.xpSurgeUntil||0) > Date.now() ? 'block' : 'none'};">1.3x XP Surge</div>
+                        <div class="lucky-mult-widget bg-amber-500 border-2 border-amber-700 text-white text-xs font-black px-3 py-1.5 uppercase tracking-wide" style="display:${(state.luckyMultUntil||0) > Date.now() ? 'block' : 'none'};">Lucky</div>
+                    </div>
 
 
 
@@ -2030,7 +2058,14 @@
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Market</p>
-                                    <span class="text-lg sm:text-2xl font-black ${state.marketMultiplier >= 1.2 ? 'text-emerald-600' : 'text-slate-900'}">${state.marketMultiplier.toFixed(2)}x</span>
+                                    <span class="market-rate-live text-lg sm:text-2xl font-black">${(() => {
+                                        const luckyActive = (state.luckyMultUntil || 0) > Date.now();
+                                        const displayRate = luckyActive ? (state.marketMultiplier * (state.luckyMultValue || 1)).toFixed(2) : state.marketMultiplier.toFixed(2);
+                                        const isGood = parseFloat(displayRate) >= 1.2;
+                                        return luckyActive
+                                            ? `<span class="text-amber-500">${displayRate}x <span class="text-xs text-amber-400">(Lucky)</span></span>`
+                                            : `<span class="${isGood ? 'text-emerald-600' : 'text-slate-900'}">${displayRate}x</span>`;
+                                    })()}</span>
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">${currentCurrency.name}s</p>
@@ -2046,16 +2081,6 @@
 
                     <main class="z-10 relative flex flex-col items-center justify-center w-full mb-4">
                         <div class="h-16 mb-2 flex flex-col items-center justify-end">
-                            ${state.showOracle ? `
-                                <div class="flex gap-3 mb-3">
-                                    ${state.marketQueue.map((rate, idx) => `
-                                        <div class="bg-slate-900 text-white px-4 py-2 border-3 border-indigo-500 flex flex-col items-center" style="box-shadow: 3px 3px 0 rgba(0,0,0,0.3);">
-                                            <span class="text-xs font-bold uppercase opacity-70">Future ${idx + 1}</span>
-                                            <span class="text-sm font-black ${rate >= 1.2 ? 'text-emerald-400' : rate <= 0.8 ? 'text-red-400' : 'text-white'}">${rate.toFixed(2)}x</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
                             ${state.activeBuff ? `<div class="bg-white px-8 py-3 border-4 border-indigo-500" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="buff-timer-display text-sm font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
                         </div>
 
@@ -2141,9 +2166,6 @@
                         <button onclick="updateState({marketCategory: 'op'})" class="${catBtnBase} border-red-500">
                             <span class="font-black text-base sm:text-lg uppercase tracking-widest text-red-600">OP Boosts</span>
                         </button>
-                        <button onclick="updateState({marketCategory: 'special'})" class="${catBtnBase} border-amber-500 bg-gradient-to-r from-yellow-50 to-amber-50">
-                            <span class="font-black text-base sm:text-lg uppercase tracking-widest text-amber-600">Special Items</span>
-                        </button>
                     </div>
                 `;
             }
@@ -2178,7 +2200,6 @@
                 medium: { name: 'Medium Boosts', color: 'purple', items: [] },
                 large: { name: 'Large Boosts', color: 'orange', items: [] },
                 op: { name: 'OP Boosts', color: 'red', items: [] },
-                special: { name: 'Special Items', color: 'amber', items: [] }
             };
 
             SHOP_ITEMS.forEach(item => {
