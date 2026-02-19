@@ -1350,12 +1350,46 @@
             if (!reward || state.rankedTier !== 'master') return;
             if ((state.claimedMasterRewards || []).includes(rewardIdx)) return;
             if ((state.masterXP || 0) < reward.xp) return;
+
+            const rate = CONVERSION_RATES[state.theme];
             const newInv = { ...state.inventory };
-            reward.items.forEach(id => { newInv[id] = (newInv[id] || 0) + 1; });
-            updateState({
+            let goldBonus = 0;
+            let gotItems = [];
+            let gotGold = [];
+
+            const MIN_GOLD = 1000;
+            const MAX_GOLD = 1500000000000; // 1.5t
+            const MIN_COST = 100;
+            const MAX_COST = 1000000000000; // 1t (crimson baseCost)
+
+            reward.items.forEach(id => {
+                if ((newInv[id] || 0) > 0) {
+                    // Scale gold logarithmically based on item baseCost
+                    const item = SHOP_ITEMS.find(i => i.id === id);
+                    const baseCost = item?.baseCost || MIN_COST;
+                    const t = Math.log(baseCost / MIN_COST) / Math.log(MAX_COST / MIN_COST);
+                    const rawGold = Math.floor(MIN_GOLD * Math.pow(MAX_GOLD / MIN_GOLD, t));
+                    const converted = rawGold / rate;
+                    goldBonus += converted;
+                    gotGold.push(`${formatCost(converted)} ${CURRENCIES[state.theme].name}s`);
+                } else {
+                    newInv[id] = 1;
+                    gotItems.push(id);
+                }
+            });
+
+            const updates = {
                 inventory: newInv,
                 claimedMasterRewards: [...(state.claimedMasterRewards || []), rewardIdx],
-            });
+                gold: state.gold + goldBonus,
+            };
+            if (goldBonus > 0) {
+                const msg = gotItems.length
+                    ? `Got items + ${gotGold.join(', ')} (already owned some)`
+                    : `Already owned all items! Got ${gotGold.join(', ')} instead`;
+                updates.notification = { title: reward.label + ' Claimed!', message: msg };
+            }
+            updateState(updates);
         }
 
         function resetRank() {
@@ -1468,12 +1502,16 @@
 
         // Master XP reward tiers — unlocked after reaching Master rank
         const MASTER_REWARDS = [
-            { xp: 100,  label: 'Bronze Cache',   items: ['rainbow', 'mega', 'omega'] },
-            { xp: 300,  label: 'Silver Cache',   items: ['oracle', 'godly'] },
-            { xp: 600,  label: 'Gold Cache',     items: ['legendary', 'mythic'] },
-            { xp: 1000, label: 'Platinum Cache', items: ['divine', 'celestial'] },
-            { xp: 1500, label: 'Diamond Cache',  items: ['void', 'titan'] },
-            { xp: 2500, label: 'Master Cache',   items: ['eternal', 'infinite'] },
+            { xp: 100,  label: 'Bronze Cache',       items: ['rainbow', 'mega', 'omega'] },
+            { xp: 300,  label: 'Silver Cache',       items: ['oracle', 'godly'] },
+            { xp: 600,  label: 'Gold Cache',         items: ['legendary', 'mythic'] },
+            { xp: 1000, label: 'Platinum Cache',     items: ['divine', 'celestial'] },
+            { xp: 1500, label: 'Diamond Cache',      items: ['void', 'titan'] },
+            { xp: 2500, label: 'Master Cache',       items: ['eternal', 'infinite'] },
+            { xp: 4000, label: 'Battle Cache I',     items: ['hyperbike'] },
+            { xp: 6000, label: 'Battle Cache II',    items: ['vulcan'] },
+            { xp: 9000, label: 'Battle Cache III',   items: ['ivory'] },
+            { xp: 13000, label: 'Battle Cache IV',   items: ['crimson'] },
         ];
 
         setInterval(() => {
