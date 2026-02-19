@@ -351,6 +351,23 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        @keyframes rankUpPop {
+            0%   { transform: scale(0.5); opacity: 0; }
+            60%  { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes rankUpFadeOut {
+            0%   { opacity: 1; }
+            70%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .rankup-overlay {
+            animation: rankUpFadeOut 3s ease forwards;
+        }
+        .rankup-icon {
+            animation: rankUpPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+
         .action-button {
             background: linear-gradient(to bottom, #ffffff, #f1f5f9);
             border: 4px solid #334155;
@@ -476,7 +493,7 @@
         };
 
         const DESTINATIONS = [
-            { id: 'battle', name: 'Battle World', req: 0, mult: 50, priceMod: 0.1, prestigeMod: 0.02, color: 'bg-red-100', themeColor: '#fee2e2', bgImage: 'https://tr.rbxcdn.com/180DAY-74cebd5bca710a7ae16e247ff2ba806e/768/432/Image/Webp/noFilter', img: 'https://i.postimg.cc/zfPJhmpT/image.png', requiresItems: ['hyperbike', 'vulcan', 'ivory', 'crimson'] },
+            { id: 'battle', name: 'Battle World', req: 0, mult: 50, priceMod: 0.1, prestigeMod: 0.02, color: 'bg-red-100', themeColor: '#fee2e2', bgImage: 'https://preview.redd.it/every-tbb-x-forsaken-collab-full-render-render-not-mine-v0-zfchelw2dmyf1.png?width=1000&format=png&auto=webp&s=19c1c4c400b2971d52311bdd486412ac3bac04b2', img: 'https://i.postimg.cc/zfPJhmpT/image.png', requiresItems: ['hyperbike', 'vulcan', 'ivory', 'crimson'] },
             { id: 'plains', name: 'Gubby Plains', req: 0, mult: 1, priceMod: 1, prestigeMod: 1, color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
             { id: 'hawaii', name: 'Hawaii', req: 5, mult: 5, priceMod: 0.75, prestigeMod: 0.4, color: 'bg-green-100', themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
             { id: 'starlight', name: 'Starlight Sky', req: 10, mult: 15, priceMod: 0.5, prestigeMod: 0.16, color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
@@ -512,15 +529,15 @@
         ];
 
         const QUESTS = [
-            { id: 'clicks_100', name: 'Beginner Clicker', description: 'Click Gubby 100 times', type: 'clicks', target: 100, reward: 500 },
-            { id: 'clicks_500', name: 'Dedicated Clicker', description: 'Click Gubby 500 times', type: 'clicks', target: 500, reward: 2500 },
-            { id: 'clicks_1000', name: 'Expert Clicker', description: 'Click Gubby 1,000 times', type: 'clicks', target: 1000, reward: 10000 },
-            { id: 'gold_1000', name: 'First Fortune', description: 'Earn 1,000 gold total', type: 'gold', target: 1000, reward: 1500 },
-            { id: 'gold_10000', name: 'Growing Wealth', description: 'Earn 10,000 gold total', type: 'gold', target: 10000, reward: 15000 },
-            { id: 'gold_100000', name: 'Rich Clicker', description: 'Earn 100,000 gold total', type: 'gold', target: 100000, reward: 150000 },
-            { id: 'buy_and_use', name: 'Power Boost', description: 'Buy and use any boost item', type: 'buy_and_use', target: 1, reward: 3000 },
-            { id: 'use_5_boosts', name: 'Boost Master', description: 'Buy and use 5 boost items', type: 'use', target: 5, reward: 15000 },
-            { id: 'buy_10_items', name: 'Shopping Spree', description: 'Buy and use 10 boost items total', type: 'buy', target: 10, reward: 20000 },
+            { id: 'clicks_100',  name: 'Beginner Clicker',  description: 'Click Gubby 100 times',            type: 'clicks',    target: 100,    reward: 500    },
+            { id: 'clicks_500',  name: 'Dedicated Clicker', description: 'Click Gubby 500 times',            type: 'clicks',    target: 500,    reward: 2500   },
+            { id: 'clicks_1000', name: 'Expert Clicker',    description: 'Click Gubby 1,000 times',          type: 'clicks',    target: 1000,   reward: 10000  },
+            { id: 'gold_1000',   name: 'First Fortune',     description: 'Earn 1,000 gold total',            type: 'gold',      target: 1000,   reward: 1500   },
+            { id: 'gold_10000',  name: 'Growing Wealth',    description: 'Earn 10,000 gold total',           type: 'gold',      target: 10000,  reward: 15000  },
+            { id: 'gold_100000', name: 'Rich Clicker',      description: 'Earn 100,000 gold total',          type: 'gold',      target: 100000, reward: 150000 },
+            { id: 'buy_and_use', name: 'Power Boost',       description: 'Buy and use any boost item',       type: 'buy_and_use', target: 1,   reward: 3000   },
+            { id: 'use_5_boosts',name: 'Boost Master',      description: 'Buy and use 5 boost items',        type: 'use',       target: 5,      reward: 15000  },
+            { id: 'buy_10_items',name: 'Shopping Spree',    description: 'Buy and use 10 boost items total', type: 'buy',       target: 10,     reward: 20000  },
         ];
 
         let state = {
@@ -563,6 +580,16 @@
             rankedTier: null,
             rankedXP: 0,
             showRankedInfo: false,
+            rankedPersonalBest: 0,
+            rankedGamesPlayed: 0,
+            masterXP: 0,
+            claimedMasterRewards: [],
+            showRankUp: false,
+            rankUpTier: null,
+            pendingRankUp: null,
+            earnedBadges: [],
+            showStats: false,
+            questLastRefresh: Date.now(),
         };
 
         let titleClickCount = 0;
@@ -616,15 +643,15 @@
         let rankedResultTimer = null;
 
         const RANKED_TIERS = [
-            { id: 'beginner_1',  name: 'Beginner I',   threshold: 0,   xpNeeded: 85,   icon: 'https://i.postimg.cc/H8QzcTKZ/hexagon-master-1.png'  },
-            { id: 'beginner_2',  name: 'Beginner II',  threshold: 35,  xpNeeded: 170,  icon: 'https://i.postimg.cc/rRSj0qbP/hexagon-master-2.png'  },
-            { id: 'beginner_3',  name: 'Beginner III', threshold: 75,  xpNeeded: 295,  icon: 'https://i.postimg.cc/Pvmypdc6/hexagon-master-3.png'  },
-            { id: 'normal_1',    name: 'Normal I',     threshold: 110, xpNeeded: 420,  icon: 'https://i.postimg.cc/K3nfkmVp/hexagon-master-4.png'  },
-            { id: 'normal_2',    name: 'Normal II',    threshold: 125, xpNeeded: 630,  icon: 'https://i.postimg.cc/N21D9QVn/hexagon-master-5.png'  },
-            { id: 'normal_3',    name: 'Normal III',   threshold: 150, xpNeeded: 840,  icon: 'https://i.postimg.cc/5QwgYfTc/hexagon-master-7.png'  },
-            { id: 'pro_1',       name: 'Pro I',        threshold: 175, xpNeeded: 1260, icon: 'https://i.postimg.cc/V0jgrzT3/hexagon-master-9.png'  },
-            { id: 'pro_2',       name: 'Pro II',       threshold: 200, xpNeeded: 1680, icon: 'https://i.postimg.cc/QKpm9jwZ/hexagon-master-10.png' },
-            { id: 'pro_3',       name: 'Pro III',      threshold: 225, xpNeeded: 2520, icon: 'https://i.postimg.cc/zHn7bq6Z/hexagon-master-11.png' },
+            { id: 'beginner_1',  name: 'Beginner I',   threshold: 0,   xpNeeded: 60,  icon: 'https://i.postimg.cc/H8QzcTKZ/hexagon-master-1.png'  },
+            { id: 'beginner_2',  name: 'Beginner II',  threshold: 35,  xpNeeded: 80,  icon: 'https://i.postimg.cc/rRSj0qbP/hexagon-master-2.png'  },
+            { id: 'beginner_3',  name: 'Beginner III', threshold: 75,  xpNeeded: 100, icon: 'https://i.postimg.cc/Pvmypdc6/hexagon-master-3.png'  },
+            { id: 'normal_1',    name: 'Normal I',     threshold: 110, xpNeeded: 130, icon: 'https://i.postimg.cc/K3nfkmVp/hexagon-master-4.png'  },
+            { id: 'normal_2',    name: 'Normal II',    threshold: 125, xpNeeded: 170, icon: 'https://i.postimg.cc/N21D9QVn/hexagon-master-5.png'  },
+            { id: 'normal_3',    name: 'Normal III',   threshold: 150, xpNeeded: 220, icon: 'https://i.postimg.cc/5QwgYfTc/hexagon-master-7.png'  },
+            { id: 'pro_1',       name: 'Pro I',        threshold: 175, xpNeeded: 290, icon: 'https://i.postimg.cc/V0jgrzT3/hexagon-master-9.png'  },
+            { id: 'pro_2',       name: 'Pro II',       threshold: 200, xpNeeded: 375, icon: 'https://i.postimg.cc/QKpm9jwZ/hexagon-master-10.png' },
+            { id: 'pro_3',       name: 'Pro III',      threshold: 225, xpNeeded: 490, icon: 'https://i.postimg.cc/zHn7bq6Z/hexagon-master-11.png' },
             { id: 'master',      name: 'Master',       threshold: 250, xpNeeded: null, icon: 'https://i.postimg.cc/vxWhgGjk/hexagon-master-12.png' },
         ];
 
@@ -687,16 +714,21 @@
                 if (state.rankedTimeLeft <= 0) {
                     clearInterval(rankedGameInterval);
                     state.rankedTimeLeft = 0;
-                    // Award tier based on clicks — only upgrade, never downgrade
-                    const earned = getRankedTierByClicks(state.rankedClicks);
+                    const c = state.rankedClicks;
+                    const earned = getRankedTierByClicks(c);
+                    const previousTier = state.rankedTier; // null if unranked
                     const current = getRankedTierById(state.rankedTier);
                     const currentIdx = current ? RANKED_TIERS.findIndex(t => t.id === current.id) : -1;
                     const earnedIdx = earned ? RANKED_TIERS.findIndex(t => t.id === earned.id) : -1;
-                    if (earnedIdx > currentIdx) {
-                        state.rankedTier = earned.id;
-                    }
+                    const improved = earnedIdx > currentIdx;
+                    const isRankUp = improved && previousTier !== null; // only celebrate if they already had a rank
+                    if (improved) state.rankedTier = earned.id;
+                    state.rankedPersonalBest = Math.max(state.rankedPersonalBest || 0, c);
+                    state.rankedSeasonBest = Math.max(state.rankedSeasonBest || 0, c);
+                    state.rankedGamesPlayed = (state.rankedGamesPlayed || 0) + 1;
                     state.rankedState = 'results';
-                    rankedResultLockedUntil = Date.now() + 1500; // block accidental clicks for 1.5s
+                    state.pendingRankUp = isRankUp ? earned.id : null;
+                    rankedResultLockedUntil = Date.now() + 1500;
                     render();
                 } else {
                     const timerEl = document.querySelector('.ranked-timer');
@@ -722,7 +754,12 @@
             clearTimeout(rankedResultTimer);
             clearInterval(rankedCountdownInterval);
             clearInterval(rankedGameInterval);
-            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
+            const pendingTier = state.pendingRankUp;
+            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3, pendingRankUp: null });
+            if (pendingTier) {
+                updateState({ showRankUp: true, rankUpTier: pendingTier });
+                setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
+            }
         }
 
         function playAgainRanked() {
@@ -792,14 +829,33 @@
                         message = "Usage: /rebirth [n]";
                     }
                 } else if (command === '/give') {
-                    const itemId = parts[1]?.toLowerCase();
-                    const amount = parseInt(parts[2]) || 1;
-                    const itemExists = SHOP_ITEMS.find(i => i.id === itemId);
-                    if (itemExists) {
-                        changes.inventory = { ...state.inventory, [itemId]: (state.inventory[itemId] || 0) + amount };
-                        message = `Gave ${amount}x ${itemExists.name}`;
+                    const sub = parts[1]?.toLowerCase();
+                    if (sub === 'all') {
+                        // Give 1 of every item
+                        const newInv = { ...state.inventory };
+                        SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
+                        changes.inventory = newInv;
+                        message = `Gave 1x of all ${SHOP_ITEMS.length} items`;
                     } else {
-                        message = `Error: Item '${itemId}' not found`;
+                        // Collect up to 25 item IDs from parts[1..25], last numeric arg = amount
+                        const rawArgs = parts.slice(1);
+                        const lastArg = rawArgs[rawArgs.length - 1];
+                        const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
+                        const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
+                        const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
+                        if (ids.length === 0) {
+                            message = 'Usage: /give [id] [amt] | /give [id1] [id2]... | /give all';
+                        } else {
+                            const newInv = { ...state.inventory };
+                            const given = [], missing = [];
+                            ids.forEach(id => {
+                                const item = SHOP_ITEMS.find(i => i.id === id);
+                                if (item) { newInv[id] = (newInv[id] || 0) + amount; given.push(item.name); }
+                                else missing.push(id);
+                            });
+                            if (given.length) changes.inventory = newInv;
+                            message = given.length ? `Gave ${amount}x: ${given.join(', ')}${missing.length ? ` | Not found: ${missing.join(', ')}` : ''}` : `Error: No valid items found (${missing.join(', ')})`;
+                        }
                     }
                 } else if (command === '/quest') {
                     if (state.activeQuests.length > 0) {
@@ -809,8 +865,79 @@
                     } else {
                         message = "No active quests to complete";
                     }
+                } else if (command === '/xp') {
+                    const amt = parseInt(parts[1]);
+                    if (isNaN(amt)) {
+                        message = "Usage: /xp [n]";
+                    } else if (!state.rankedTier) {
+                        message = "Must be ranked first to earn XP";
+                    } else if (state.rankedTier === 'master') {
+                        const newMasterXP = (state.masterXP || 0) + amt;
+                        changes.masterXP = newMasterXP;
+                        message = `Added ${amt} Master XP (total: ${newMasterXP})`;
+                    } else {
+                        let newXP = (state.rankedXP || 0) + amt;
+                        let newTier = state.rankedTier;
+                        let promoted = [];
+                        let promoting = true;
+                        while (promoting) {
+                            const tier = getRankedTierById(newTier);
+                            const next = getNextRankedTier(newTier);
+                            if (tier && next && tier.xpNeeded && newXP >= tier.xpNeeded) {
+                                newXP -= tier.xpNeeded;
+                                newTier = next.id;
+                                promoted.push(next.name);
+                            } else { promoting = false; }
+                        }
+                        changes.rankedXP = newXP;
+                        changes.rankedTier = newTier;
+                        message = promoted.length ? `Added ${amt} XP — ranked up to ${promoted[promoted.length-1]}!` : `Added ${amt} XP (total: ${newXP})`;
+                        if (promoted.length) {
+                            changes.showRankUp = true;
+                            changes.rankUpTier = newTier;
+                            setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
+                        }
+                    }
+                } else if (command === '/rank') {
+                    const sub = parts[1]?.toLowerCase();
+                    if (sub === 'up') {
+                        if (!state.rankedTier) {
+                            changes.rankedTier = RANKED_TIERS[0].id;
+                            changes.showRankUp = true;
+                            changes.rankUpTier = RANKED_TIERS[0].id;
+                            message = `Rank set to ${RANKED_TIERS[0].name}`;
+                        } else {
+                            const next = getNextRankedTier(state.rankedTier);
+                            if (next) {
+                                changes.rankedTier = next.id;
+                                changes.rankedXP = 0;
+                                changes.showRankUp = true;
+                                changes.rankUpTier = next.id;
+                                message = `Ranked up to ${next.name}`;
+                            } else {
+                                message = "Already at Master rank";
+                            }
+                        }
+                    } else if (sub) {
+                        const query = parts.slice(1).join(' ').toLowerCase();
+                        const match = RANKED_TIERS.find(t => t.name.toLowerCase() === query || t.id === query.replace(' ', '_'));
+                        if (match) {
+                            changes.rankedTier = match.id;
+                            changes.rankedXP = 0;
+                            changes.showRankUp = true;
+                            changes.rankUpTier = match.id;
+                            message = `Rank set to ${match.name}`;
+                        } else {
+                            message = `Unknown rank. Options: ${RANKED_TIERS.map(t => t.name).join(', ')}`;
+                        }
+                    } else {
+                        message = "Usage: /rank [tier name] | /rank up";
+                    }
+                    if (changes.showRankUp) {
+                        setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
+                    }
                 } else {
-                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /quest";
+                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /give [id1] [id2]..., /give all, /quest, /xp [n], /rank [tier], /rank up";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -1171,11 +1298,19 @@
             
             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
             const xpGained = state.rankedTier ? getQuestXP(quest) : 0;
-            let newXP = (state.rankedXP || 0) + xpGained;
-            let newTier = state.rankedTier;
+            const isMaster = state.rankedTier === 'master';
 
-            // Check for XP-based tier promotion (chain up if multiple thresholds crossed)
-            if (state.rankedTier) {
+            let newMasterXP = state.masterXP || 0;
+            let newXP = state.rankedXP || 0;
+            let newTier = state.rankedTier;
+            let rankUpTier = null;
+
+            if (isMaster) {
+                // At master: XP goes to masterXP pool for rewards
+                newMasterXP += xpGained;
+            } else if (state.rankedTier) {
+                // Below master: XP advances rank
+                newXP += xpGained;
                 let promoting = true;
                 while (promoting) {
                     const tier = getRankedTierById(newTier);
@@ -1183,19 +1318,54 @@
                     if (tier && next && tier.xpNeeded && newXP >= tier.xpNeeded) {
                         newXP -= tier.xpNeeded;
                         newTier = next.id;
+                        rankUpTier = next.id;
                     } else {
                         promoting = false;
                     }
                 }
             }
 
-            updateState({ 
+            const updates = { 
                 gold: state.gold + rewardInCurrency,
                 completedQuests: state.completedQuests + 1,
                 activeQuests: state.activeQuests.filter(q => q.id !== questId),
                 completedQuestIds: [...state.completedQuestIds, questId],
                 rankedXP: newXP,
                 rankedTier: newTier,
+                masterXP: newMasterXP,
+            };
+            if (rankUpTier) {
+                updates.showRankUp = true;
+                updates.rankUpTier = rankUpTier;
+            }
+            updateState(updates);
+
+            if (rankUpTier) {
+                setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
+            }
+        }
+
+        function claimMasterReward(rewardIdx) {
+            const reward = MASTER_REWARDS[rewardIdx];
+            if (!reward || state.rankedTier !== 'master') return;
+            if ((state.claimedMasterRewards || []).includes(rewardIdx)) return;
+            if ((state.masterXP || 0) < reward.xp) return;
+            const newInv = { ...state.inventory };
+            reward.items.forEach(id => { newInv[id] = (newInv[id] || 0) + 1; });
+            updateState({
+                inventory: newInv,
+                claimedMasterRewards: [...(state.claimedMasterRewards || []), rewardIdx],
+            });
+        }
+
+        function resetRank() {
+            if (state.rankedTier !== 'master') return;
+            updateState({
+                rankedTier: null,
+                rankedXP: 0,
+                masterXP: 0,
+                claimedMasterRewards: [],
+                rankedState: 'idle',
             });
         }
 
@@ -1293,6 +1463,28 @@
         }
 
         setInterval(createFloatingStars, 16000);
+
+        const DAILY_REFRESH_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+        // Master XP reward tiers — unlocked after reaching Master rank
+        const MASTER_REWARDS = [
+            { xp: 100,  label: 'Bronze Cache',   items: ['rainbow', 'mega', 'omega'] },
+            { xp: 300,  label: 'Silver Cache',   items: ['oracle', 'godly'] },
+            { xp: 600,  label: 'Gold Cache',     items: ['legendary', 'mythic'] },
+            { xp: 1000, label: 'Platinum Cache', items: ['divine', 'celestial'] },
+            { xp: 1500, label: 'Diamond Cache',  items: ['void', 'titan'] },
+            { xp: 2500, label: 'Master Cache',   items: ['eternal', 'infinite'] },
+        ];
+
+        setInterval(() => {
+            // Daily quest refresh — clear completed IDs so quests can be re-taken
+            if (Date.now() - (state.questLastRefresh || 0) >= DAILY_REFRESH_MS) {
+                state.questLastRefresh = Date.now();
+                state.completedQuestIds = [];
+                state.activeQuests = [];
+                render();
+            }
+        }, 60000); // check every minute
         
 
         function render() {
@@ -1488,17 +1680,14 @@
                     ` : ''}
 
                     ${state.showQuestModal ? (() => {
-                        const refreshCost = 1000000000;
-                        const refreshCostInCurrency = refreshCost / CONVERSION_RATES[state.theme];
-                        const canAffordRefresh = state.gold >= refreshCostInCurrency;
-                        
+                        const questRefreshHours = Math.max(0, Math.ceil((DAILY_REFRESH_MS - (Date.now() - (state.questLastRefresh || Date.now()))) / (1000*60*60)));
                         return `
                         <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target === event.currentTarget) updateState({showQuestModal: false})">
                             <div class="bg-white p-6 sm:p-10 pixel-card max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content">
                                 <div class="flex justify-between items-center mb-6 sm:mb-8">
                                     <div>
                                         <h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Quests</h4>
-                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active</p>
+                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active · refreshes in ${questRefreshHours}h</p>
                                     </div>
                                     <button onclick="updateState({showQuestModal: false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                                 </div>
@@ -1506,10 +1695,6 @@
                                 <div class="flex gap-3 mb-6">
                                     <button onclick="generateQuest();" class="pixel-button bg-amber-500 border-amber-700 text-white px-6 py-3 font-black uppercase flex-1">
                                         Get New Quest
-                                    </button>
-                                    <button onclick="refreshQuests()" ${!canAffordRefresh ? 'disabled' : ''} class="pixel-button ${canAffordRefresh ? 'bg-red-500 border-red-700' : 'bg-slate-200 border-slate-400'} text-white px-6 py-3 font-black uppercase flex items-center gap-2">
-                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                                        Refresh (${formatCost(refreshCostInCurrency)})
                                     </button>
                                 </div>
                                 
@@ -1544,7 +1729,7 @@
                                                             <i data-lucide="gift" class="w-4 h-4"></i>
                                                             <span>Reward: ${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</span>
                                                         </div>
-                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${Math.max(10, Math.floor(quest.reward/500))} XP</span></div>` : ''}
+                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${Math.max(10, Math.floor(quest.reward/500))} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}</span></div>` : ''}
                                                     </div>
                                                     ${quest.completed ? `
                                                         <button onclick="claimQuest('${quest.id}')" class="pixel-button bg-emerald-500 border-emerald-700 text-white px-6 py-2 font-black uppercase animate-pulse">
@@ -1581,7 +1766,7 @@
                                                                 <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
                                                                 <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
                                                             </div>
-                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))} XP</p>` : ''}
+                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}</p>` : ''}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1603,6 +1788,9 @@
 
                         let content = '';
                         if (rs === 'profile') {
+                            const isMaster = state.rankedTier === 'master';
+                            const masterXP = state.masterXP || 0;
+                            const claimed = state.claimedMasterRewards || [];
                             content = `
                                 <div class="text-center">
                                     <p class="text-slate-400 font-bold uppercase text-xs tracking-widest mb-2">Current Rank</p>
@@ -1619,7 +1807,29 @@
                                             </div>
                                         </div>
                                         <p class="text-xs font-bold text-slate-400">Complete quests to earn XP</p>
-                                    ` : `<p class="text-amber-500 font-black uppercase text-sm">Max Rank Achieved!</p>`}
+                                    ` : isMaster ? `
+                                        <div class="bg-amber-50 border-3 border-amber-300 p-4 mb-3 text-left">
+                                            <div class="flex justify-between mb-2">
+                                                <span class="text-xs font-black uppercase text-amber-600">Master XP</span>
+                                                <span class="text-xs font-black text-slate-700">${masterXP} XP earned</span>
+                                            </div>
+                                            <p class="text-xs text-slate-500 font-bold mb-3">Earn XP from quests to claim power-up caches!</p>
+                                            <div class="flex flex-col gap-2">
+                                                ${MASTER_REWARDS.map((r, i) => {
+                                                    const isClaimed = claimed.includes(i);
+                                                    const canClaim = masterXP >= r.xp && !isClaimed;
+                                                    return `<div class="flex items-center justify-between p-2 border-2 ${isClaimed ? 'border-slate-200 bg-slate-50 opacity-50' : canClaim ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}">
+                                                        <div>
+                                                            <p class="text-xs font-black text-slate-800">${r.label}</p>
+                                                            <p class="text-xs text-slate-400 font-bold">${r.xp} XP · ${r.items.join(', ')}</p>
+                                                        </div>
+                                                        ${isClaimed ? '<span class="text-xs font-black text-slate-400 uppercase">Claimed</span>' : canClaim ? `<button onclick="claimMasterReward(${i})" class="pixel-button bg-amber-500 border-amber-700 text-white px-3 py-1 text-xs font-black uppercase">Claim</button>` : `<span class="text-xs font-bold text-slate-300">${r.xp} XP</span>`}
+                                                    </div>`;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                        <button onclick="if(confirm('Reset your rank back to Unranked? This clears all Master XP and rewards.')) resetRank()" class="w-full py-3 bg-slate-100 border-3 border-slate-300 text-slate-600 font-black uppercase text-xs pixel-button hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors">Reset Rank</button>
+                                    ` : ''}
                                 </div>`;
                         } else if (rs === 'idle') {
                             content = `
@@ -1726,6 +1936,23 @@
                             </div>
                         </div>
                     </div>` : ''}
+
+                    ${state.showRankUp && state.rankUpTier ? (() => {
+                        const tier = getRankedTierById(state.rankUpTier);
+                        const colorMap = { master: '#f59e0b', pro_1: '#a855f7', pro_2: '#a855f7', pro_3: '#a855f7', normal_1: '#3b82f6', normal_2: '#3b82f6', normal_3: '#3b82f6' };
+                        const tierColor = colorMap[tier?.id] || '#94a3b8';
+                        return `
+                        <div class="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none rankup-overlay" style="background:rgba(0,0,0,0.6);">
+                            <div class="text-center">
+                                <img src="${tier?.icon}" class="w-44 h-44 mx-auto mb-5 rankup-icon pixelated" style="image-rendering:pixelated;" />
+                                <p class="font-black text-6xl text-white mb-3" style="text-shadow:4px 4px 0 rgba(0,0,0,0.8);">RANK UP!</p>
+                                <p class="font-black text-3xl mb-1" style="color:${tierColor};text-shadow:3px 3px 0 rgba(0,0,0,0.6);">${tier?.name}</p>
+                            </div>
+                        </div>`;
+                    })() : ''}
+
+
+
 
 
 
