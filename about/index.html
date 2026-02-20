@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gubby Clicker</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --accent: #00c8ff;
+    --green:  #00ff94;
+    --text:   #e8f8ff;
+    --muted:  #90c8d8;
+    --card-bg:       rgba(4,12,20,0.22);
+    --card-bg-hover: rgba(4,12,20,0.40);
+    --card-border:   rgba(0,200,255,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; overflow: hidden; background: #050a10; }
+  body { font-family: 'Pixelify Sans', monospace; color: var(--text); }
+
+  /* ── BACKGROUND ── */
+  .bg-gif  { position: fixed; inset: 0; z-index: 0; }
+  .bg-gif img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .bg-dark { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 1; pointer-events: none; }
+
+  /* ── SCROLL SNAP CONTAINER ── */
+  main {
+    position: relative; z-index: 2;
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+  }
+  main::-webkit-scrollbar { display: none; }
+
+  /* ── EVERY PANEL = one full screen ── */
+  .panel {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 80px 48px 48px;
+    overflow: hidden;
+  }
+  .panel.left  { align-items: center; text-align: center; }
+  .panel.center { align-items: center; text-align: center; }
+
+  /* ── NAV ARROWS ── */
+  .nav-arrows {
+    position: fixed; right: 24px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 10;
+  }
+  .nav-arrow {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(8,16,26,0.65);
+    border: 1px solid rgba(0,200,255,0.28);
+    color: rgba(255,255,255,0.75);
+    cursor: pointer;
+    transition: all 0.18s;
+    backdrop-filter: blur(6px);
+  }
+  .nav-arrow svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-arrow:hover { background: rgba(0,200,255,0.14); border-color: var(--accent); color: #fff; box-shadow: 0 0 14px rgba(0,200,255,0.3); }
+  .nav-arrow:disabled { opacity: 0.18; cursor: default; pointer-events: none; }
+
+  /* ── TYPOGRAPHY ── */
+  .hl  { color: var(--accent); }
+  .hlg { color: var(--green); }
+
+  .eyebrow {
+    font-size: 12px; color: var(--green);
+    letter-spacing: 6px; text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0,255,148,0.55);
+    margin-bottom: 20px;
+    animation: blink 1.4s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .hero-title {
+    font-size: clamp(48px, 9vw, 100px);
+    font-weight: 700; line-height: 1.05; margin-bottom: 32px;
+    background: linear-gradient(180deg, #00c8ff 0%, #00ffb0 30%, #00c8ff 55%, #00ff94 80%, #00c8ff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    background-size: 100% 600%;
+    filter: drop-shadow(0 0 28px rgba(0,200,255,0.5));
+    animation: heroIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both, pixelGrad 3.5s steps(10,end) infinite;
+  }
+  @keyframes heroIn { from{opacity:0;transform:translateY(40px) scale(0.88)} to{opacity:1;transform:translateY(0) scale(1)} }
+  @keyframes pixelGrad { from{background-position:0% 0%} to{background-position:0% 100%} }
+
+  .sec-label {
+    font-size: 11px; color: var(--green);
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 10px; text-shadow: 0 0 8px rgba(0,255,148,0.4);
+  }
+  .sec-title {
+    font-size: clamp(22px, 4vw, 38px); font-weight: 700;
+    color: var(--text); margin-bottom: 14px; line-height: 1.3;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  .sec-desc {
+    font-size: 15px; color: var(--muted); line-height: 1.9;
+    margin-bottom: 0; max-width: 580px; text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+
+  /* ── CTA BUTTON ── */
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 15px; font-weight: 700;
+    padding: 9px 22px; background: transparent; color: #fff;
+    text-decoration: none; border: 1px solid transparent;
+    text-shadow: 0 0 14px rgba(0,255,148,1), 0 2px 6px rgba(0,0,0,0.8);
+    letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.2s; cursor: pointer; margin-top: 28px;
+  }
+  .hero-cta:hover {
+    text-shadow: 0 0 24px rgba(0,255,148,1), 0 0 48px rgba(0,200,255,0.7);
+    transform: translateY(-2px); letter-spacing: 3px;
+  }
+  .hero-cta .cta-arrow { transition: transform 0.2s; }
+  .hero-cta:hover .cta-arrow { transform: translateX(5px); }
+
+  /* ── FEATURES ── */
+  .features {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+    width: 100%; max-width: 1000px;
+  }
+  .feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-top: 2px solid var(--card-color, var(--accent));
+    padding: 22px 18px;
+    aspect-ratio: 1/1;
+    display: flex; flex-direction: column; justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(2px);
+  }
+  .feature-card:hover { background: var(--card-bg-hover); transform: translateY(-3px); }
+  .feature-tag  { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--card-color,var(--accent)); margin-bottom:8px; opacity:0.7; }
+  .feature-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+  .feature-desc { font-size:12px; color:var(--muted); line-height:1.8; text-shadow:0 1px 6px rgba(0,0,0,0.6); }
+
+  /* ── RANK ── */
+  .rank-strip { display:flex; flex-direction:column; gap:2px; width:100%; max-width:700px; }
+  .rank-row { display:flex; align-items:center; gap:16px; padding:11px 18px; background:var(--card-bg); border:1px solid rgba(0,200,255,0.07); border-left:3px solid var(--rc,var(--muted)); backdrop-filter:blur(2px); transition:background 0.15s; text-align:left; }
+  .rank-row:hover { background: var(--card-bg-hover); }
+  .rank-name { font-size:13px; font-weight:700; color:var(--rc,var(--text)); flex:1; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+  .rank-badge { font-size:12px; color:var(--muted); }
+
+  /* ── WORLDS ── */
+  .worlds-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; width:100%; max-width:900px; }
+  .world-card { background:var(--card-bg); border:1px solid var(--card-border); border-bottom:2px solid var(--wc,var(--accent)); padding:24px 14px; text-align:center; aspect-ratio:1/1; display:flex; flex-direction:column; justify-content:center; backdrop-filter:blur(2px); transition:background 0.2s,transform 0.2s; }
+  .world-card:hover { background:var(--card-bg-hover); transform:translateY(-4px); }
+  .world-mult { font-size:26px; font-weight:700; color:var(--accent); margin-bottom:8px; text-shadow:0 0 14px rgba(0,200,255,0.5); }
+  .world-name { font-size:12px; font-weight:700; color:var(--text); margin-bottom:5px; text-shadow:0 2px 6px rgba(0,0,0,0.7); }
+  .world-currency { font-size:11px; color:var(--muted); }
+
+  /* ── MASTER ── */
+  .master-box { background:var(--card-bg); border:1px solid rgba(0,200,255,0.2); border-top:2px solid var(--accent); padding:36px 32px; backdrop-filter:blur(2px); position:relative; overflow:hidden; width:100%; max-width:800px; text-align:center; }
+  .master-box::before { content:'MASTER'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-12deg); font-size:100px; font-weight:700; color:rgba(0,200,255,0.04); white-space:nowrap; pointer-events:none; letter-spacing:8px; }
+  .master-stats { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .master-stat { flex:1; min-width:90px; background:rgba(0,200,255,0.06); border:1px solid rgba(0,200,255,0.12); padding:14px 10px; text-align:center; }
+  .master-stat-num { font-size:22px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+  .master-stat-label { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<div class="bg-gif"><img src="https://64.media.tumblr.com/5d37ab2aa782462c7aa092f7bd0d27cb/2f374d07287b003b-f4/s1280x1920/fe094893d79e09d668e1705e8b9144964f38ce75.gif" alt=""/></div>
+<div class="bg-dark"></div>
+
+<!-- NAV ARROWS — inline SVG Lucide icons, no CDN needed -->
+<div class="nav-arrows">
+  <button class="nav-arrow" id="nav-up" disabled>
+    <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+  <button class="nav-arrow" id="nav-down">
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</div>
+
+<main id="main">
+
+  <!-- HERO -->
+  <div class="panel center" id="section-hero">
+    <p class="eyebrow">now playing</p>
+    <h1 class="hero-title">Gubby Clicker</h1>
+    <a class="hero-cta" href="https://code-cat12.github.io/gubby" target="_blank">Check it out! <span class="cta-arrow">→</span></a>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="panel left" id="section-features">
+    <p class="sec-label">// core features</p>
+    <h2 class="sec-title">What You Can <span class="hl">Do</span></h2>
+    <div class="features">
+      <div class="feature-card" style="--card-color:var(--accent);">
+        <p class="feature-tag">Gameplay</p>
+        <p class="feature-name">Click to Earn</p>
+        <p class="feature-desc">Click Gubby to rack up points and sell them to the market at the right moment.</p>
+      </div>
+      <div class="feature-card" style="--card-color:var(--green);">
+        <p class="feature-tag">Economy</p>
+        <p class="feature-name">Live Marketplace</p>
+        <p class="feature-desc">Market rates fluctuate in real time. Time your sell for maximum profit.</p>
+      </div>
+      <div class="feature-card" style="--card-color:var(--accent);">
+        <p class="feature-tag">Inventory</p>
+        <p class="feature-name">Boosts & Items</p>
+        <p class="feature-desc">13 purchasable items across four tiers — Small, Medium, Large, and OP.</p>
+      </div>
+      <div class="feature-card" style="--card-color:var(--green);">
+        <p class="feature-tag">Exploration</p>
+        <p class="feature-name">World Travel</p>
+        <p class="feature-desc">Four worlds with unique currencies and profit multipliers. Converts on arrival.</p>
+      </div>
+      <div class="feature-card" style="--card-color:var(--accent);">
+        <p class="feature-tag">Competitive</p>
+        <p class="feature-name">Ranked Mode</p>
+        <p class="feature-desc">35-second clicking gauntlets. Place in one of 10 competitive tiers.</p>
+      </div>
+      <div class="feature-card" style="--card-color:var(--green);">
+        <p class="feature-tag">Daily</p>
+        <p class="feature-name">Quests</p>
+        <p class="feature-desc">Complete rotating quests for gold and XP toward your ranked progression.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKED -->
+  <div class="panel left" id="section-ranked">
+    <p class="sec-label">// competitive</p>
+    <h2 class="sec-title">Ranked <span class="hlg">Tiers</span></h2>
+    <p class="sec-desc" style="margin-bottom:18px;">Click for 35 seconds. Your count places you in a tier. Every rank-up gives a 1.5x XP Boost for 20 minutes.</p>
+    <div class="rank-strip">
+      <div class="rank-row" style="--rc:#6b7280;"><span class="rank-name">Beginner I</span><span class="rank-badge">0 – 34</span></div>
+      <div class="rank-row" style="--rc:#6b7280;"><span class="rank-name">Beginner II</span><span class="rank-badge">35 – 74</span></div>
+      <div class="rank-row" style="--rc:#6b7280;"><span class="rank-name">Beginner III</span><span class="rank-badge">75 – 109</span></div>
+      <div class="rank-row" style="--rc:#60a5fa;"><span class="rank-name">Normal I</span><span class="rank-badge">110 – 124</span></div>
+      <div class="rank-row" style="--rc:#60a5fa;"><span class="rank-name">Normal II</span><span class="rank-badge">125 – 149</span></div>
+      <div class="rank-row" style="--rc:#60a5fa;"><span class="rank-name">Normal III</span><span class="rank-badge">150 – 174</span></div>
+      <div class="rank-row" style="--rc:#a78bfa;"><span class="rank-name">Pro I</span><span class="rank-badge">175 – 199</span></div>
+      <div class="rank-row" style="--rc:#a78bfa;"><span class="rank-name">Pro II</span><span class="rank-badge">200 – 249</span></div>
+      <div class="rank-row" style="--rc:#a78bfa;"><span class="rank-name">Pro III</span><span class="rank-badge">250 – 299</span></div>
+      <div class="rank-row" style="--rc:#00c8ff;"><span class="rank-name">Master</span><span class="rank-badge">300+</span></div>
+    </div>
+  </div>
+
+  <!-- WORLDS -->
+  <div class="panel left" id="section-worlds">
+    <p class="sec-label">// exploration</p>
+    <h2 class="sec-title">Four <span class="hl">Worlds</span></h2>
+    <p class="sec-desc" style="margin-bottom:20px;">Each world multiplies earnings and uses its own currency. Your gold converts automatically on arrival.</p>
+    <div class="worlds-grid">
+      <div class="world-card" style="--wc:var(--green);"><div class="world-mult">x1</div><div class="world-name">Gubby Plains</div><div class="world-currency">Gold</div></div>
+      <div class="world-card" style="--wc:var(--accent);"><div class="world-mult">x5</div><div class="world-name">Hawaii</div><div class="world-currency">Seashells</div></div>
+      <div class="world-card" style="--wc:var(--green);"><div class="world-mult">x15</div><div class="world-name">Starlight Sky</div><div class="world-currency">Stars</div></div>
+      <div class="world-card" style="--wc:var(--accent);"><div class="world-mult">x30</div><div class="world-name">The Void</div><div class="world-currency">Galaxies</div></div>
+    </div>
+  </div>
+
+  <!-- MASTER -->
+  <div class="panel left" id="section-master">
+    <div class="master-box">
+      <p class="sec-label">// endgame</p>
+      <h2 class="sec-title">Master <span class="hl">Milestone Road Map</span></h2>
+      <p class="sec-desc">Hit Master rank and XP flows into a separate pool. Unlock 50 milestones — each grants a random item and a lucky market multiplier lasting 20 seconds.</p>
+      <div class="master-stats">
+        <div class="master-stat"><div class="master-stat-num">50</div><div class="master-stat-label">Milestones</div></div>
+        <div class="master-stat"><div class="master-stat-num">20x</div><div class="master-stat-label">Max Lucky Mult</div></div>
+        <div class="master-stat"><div class="master-stat-num">13</div><div class="master-stat-label">Possible Items</div></div>
+        <div class="master-stat"><div class="master-stat-num">20s</div><div class="master-stat-label">Lucky Duration</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- START CLICKING -->
+  <div class="panel center" id="section-cta">
+    <p class="sec-label">// ready?</p>
+    <h2 class="sec-title">Start <span class="hl">Clicking</span></h2>
+    <p class="sec-desc">No accounts. No downloads. Open and click.</p>
+    <a class="hero-cta" href="https://code-cat12.github.io/gubby" target="_blank">Check it out! <span class="cta-arrow">→</span></a>
+  </div>
+
+</main>
+
+<script>
+  const panelIds = ['section-hero','section-features','section-ranked','section-worlds','section-master','section-cta'];
+  const mainEl   = document.getElementById('main');
+  const btnUp    = document.getElementById('nav-up');
+  const btnDown  = document.getElementById('nav-down');
+  const panels   = panelIds.map(id => document.getElementById(id));
+  let current    = 0;
+  let animating  = false;
+
+  function updateButtons() {
+    btnUp.disabled   = current === 0;
+    btnDown.disabled = current === panels.length - 1;
+  }
+
+  function goTo(idx) {
+    if (animating || idx < 0 || idx >= panels.length) return;
+    animating = true;
+    current = idx;
+    panels[current].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateButtons();
+    setTimeout(() => { animating = false; }, 800);
+  }
+
+  btnDown.addEventListener('click', () => goTo(current + 1));
+  btnUp.addEventListener('click',   () => goTo(current - 1));
+
+  // track current section via scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        current = panels.indexOf(e.target);
+        updateButtons();
+      }
+    });
+  }, { root: mainEl, threshold: 0.6 });
+  panels.forEach(p => observer.observe(p));
+
+  // keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowUp'   || e.key === 'PageUp')   { e.preventDefault(); goTo(current - 1); }
+  });
+
+  updateButtons();
+</script>
+</body>
+</html>
