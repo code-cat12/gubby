@@ -663,8 +663,9 @@
         }
 
         const IS_MOBILE = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
-        const RANKED_MULT = IS_MOBILE ? 1.5 : 1;
-        const RANKED_TIME = IS_MOBILE ? 30 : 35;
+        const RANKED_MULT = 1;
+        const RANKED_TIME = 35;
+        const RANKED_CLICK_LIMIT = IS_MOBILE ? 100 : 100;
 
         function getRankedTierByClicks(clicks) {
             let tier = null;
@@ -749,7 +750,6 @@
         }
 
         let lastRankedClick = 0;
-        const RANKED_CLICK_LIMIT = IS_MOBILE ? 250 : 100;
         let rankedFirstTouchId = null;
 
         function rankedClick(e) {
