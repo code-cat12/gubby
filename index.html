@@ -568,7 +568,7 @@
             showRanked: false,
             rankedState: 'idle',
             rankedClicks: 0,
-            rankedTimeLeft: 35,
+            rankedTimeLeft: RANKED_TIME,
             rankedCountdown: 3,
             rankedTier: null,
             rankedXP: 0,
@@ -663,7 +663,8 @@
         }
 
         const IS_MOBILE = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
-        const RANKED_MULT = IS_MOBILE ? 1.4 : 1;
+        const RANKED_MULT = IS_MOBILE ? 1.2 : 1;
+        const RANKED_TIME = IS_MOBILE ? 30 : 35;
 
         function getRankedTierByClicks(clicks) {
             let tier = null;
@@ -689,7 +690,7 @@
             clearTimeout(rankedResultTimer);
             // If already ranked, show profile; otherwise idle
             const rs = state.rankedTier ? 'profile' : 'idle';
-            updateState({ showRanked: true, rankedState: rs, rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
+            updateState({ showRanked: true, rankedState: rs, rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3 });
         }
 
         function startRankedCountdown() {
@@ -713,7 +714,7 @@
         function startRankedGame() {
             state.rankedState = 'playing';
             state.rankedClicks = 0;
-            state.rankedTimeLeft = 35;
+            state.rankedTimeLeft = RANKED_TIME;
             render();
             rankedGameInterval = setInterval(() => {
                 state.rankedTimeLeft--;
@@ -740,7 +741,7 @@
                     const timerEl = document.querySelector('.ranked-timer');
                     if (timerEl) timerEl.textContent = state.rankedTimeLeft + 's remaining';
                     const barEl = document.querySelector('.ranked-bar');
-                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / 35) * 100) + '%';
+                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / RANKED_TIME) * 100) + '%';
                 }
             }, 1000);
         }
@@ -761,7 +762,7 @@
             clearInterval(rankedCountdownInterval);
             clearInterval(rankedGameInterval);
             const pendingTier = state.pendingRankUp;
-            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3, pendingRankUp: null });
+            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3, pendingRankUp: null });
             if (pendingTier) {
                 updateState({ showRankUp: true, rankUpTier: pendingTier, xpBoostUntil: Date.now() + 20 * 60 * 1000 });
                 setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
@@ -772,7 +773,7 @@
             clearTimeout(rankedResultTimer);
             clearInterval(rankedCountdownInterval);
             clearInterval(rankedGameInterval);
-            updateState({ rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: 35, rankedCountdown: 3 });
+            updateState({ rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3 });
         }
 
         function rankedTierColor(id) {
@@ -1896,7 +1897,7 @@
                         } else if (rs === 'idle') {
                             content = `
                                 <div class="text-center">
-                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for 35 seconds!</p>
+                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for ${RANKED_TIME} seconds!</p>
                                     <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-6 text-left">
                                         <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">Rank Tiers</p>
                                         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
@@ -1917,7 +1918,7 @@
                         } else if (rs === 'countdown') {
                             content = `<div class="text-center py-8"><p class="text-8xl font-black text-rose-600" id="ranked-countdown-num">${state.rankedCountdown}</p><p class="text-slate-500 font-black uppercase tracking-widest mt-4">Get Ready...</p></div>`;
                         } else if (rs === 'playing') {
-                            const pct = (state.rankedTimeLeft / 35) * 100;
+                            const pct = (state.rankedTimeLeft / RANKED_TIME) * 100;
                             content = `
                                 <div class="text-center">
                                     <p class="ranked-clicks text-7xl font-black text-slate-900 mb-1">${state.rankedClicks}</p>
@@ -1946,7 +1947,7 @@
                                     <p class="text-slate-500 font-bold uppercase text-xs tracking-widest mb-2">${improved ? 'New Rank!' : 'Result'}</p>
                                     <img src="${earnedTier?.icon}" class="w-20 h-20 mx-auto mb-2 pixelated" style="image-rendering:pixelated;" />
                                     <p class="font-black text-4xl ${rColor} mb-1">${earnedTier?.name || 'Beginner I'}</p>
-                                    <p class="text-slate-400 font-bold text-sm mb-3">${c} clicks in 35s</p>
+                                    <p class="text-slate-400 font-bold text-sm mb-3">${c} clicks in ${RANKED_TIME}s</p>
                                     ${improved ? '<p class="text-emerald-600 font-black text-sm uppercase">Rank Up!</p>' : '<p class="text-slate-400 text-xs font-bold">Complete quests to earn XP and advance</p>'}
                                 </div>`;
                         }
