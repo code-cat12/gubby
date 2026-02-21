@@ -662,12 +662,13 @@
             return mult > 1 ? Math.round(base * mult) : base;
         }
 
+        const IS_MOBILE = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
+        const RANKED_MULT = IS_MOBILE ? 1.4 : 1;
+
         function getRankedTierByClicks(clicks) {
-            const isMobile = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
-            const mult = isMobile ? 1.2 : 1;
             let tier = null;
             for (const t of RANKED_TIERS) {
-                if (clicks >= Math.round(t.threshold * mult)) tier = t;
+                if (clicks >= Math.round(t.threshold * RANKED_MULT)) tier = t;
                 else break;
             }
             return tier;
@@ -1899,16 +1900,16 @@
                                     <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-6 text-left">
                                         <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">Rank Tiers</p>
                                         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-                                            <span class="text-slate-500">Beginner I</span><span class="text-slate-700">0–34</span>
-                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">35–74</span>
-                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">75–109</span>
-                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">110–124</span>
-                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">125–149</span>
-                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">150–174</span>
-                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">175–199</span>
-                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">200–224</span>
-                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">225–249</span>
-                                            <span class="text-amber-500">Master</span><span class="text-slate-700">250+</span>
+                                            <span class="text-slate-500">Beginner I</span><span class="text-slate-700">0–${Math.round(34 * RANKED_MULT)}</span>
+                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">${Math.round(35 * RANKED_MULT)}–${Math.round(74 * RANKED_MULT)}</span>
+                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">${Math.round(75 * RANKED_MULT)}–${Math.round(109 * RANKED_MULT)}</span>
+                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">${Math.round(110 * RANKED_MULT)}–${Math.round(124 * RANKED_MULT)}</span>
+                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">${Math.round(125 * RANKED_MULT)}–${Math.round(149 * RANKED_MULT)}</span>
+                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">${Math.round(150 * RANKED_MULT)}–${Math.round(174 * RANKED_MULT)}</span>
+                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">${Math.round(175 * RANKED_MULT)}–${Math.round(199 * RANKED_MULT)}</span>
+                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">${Math.round(200 * RANKED_MULT)}–${Math.round(224 * RANKED_MULT)}</span>
+                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">${Math.round(225 * RANKED_MULT)}–${Math.round(249 * RANKED_MULT)}</span>
+                                            <span class="text-amber-500">Master</span><span class="text-slate-700">${Math.round(250 * RANKED_MULT)}+</span>
                                         </div>
                                     </div>
                                     <button onclick="startRankedCountdown()" class="w-full py-4 bg-rose-600 border-4 border-rose-800 text-white font-black text-lg uppercase pixel-button">Start</button>
