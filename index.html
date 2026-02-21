@@ -663,9 +663,11 @@
         }
 
         function getRankedTierByClicks(clicks) {
+            const isMobile = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
+            const mult = isMobile ? 1.2 : 1;
             let tier = null;
             for (const t of RANKED_TIERS) {
-                if (clicks >= t.threshold) tier = t;
+                if (clicks >= Math.round(t.threshold * mult)) tier = t;
                 else break;
             }
             return tier;
@@ -701,7 +703,8 @@
                     clearInterval(rankedCountdownInterval);
                     startRankedGame();
                 } else {
-                    render();
+                    const el = document.getElementById('ranked-countdown-num');
+                    if (el) el.textContent = state.rankedCountdown;
                 }
             }, 1000);
         }
@@ -2028,13 +2031,11 @@
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated; transform: scaleX(-1);" />
                             
                             <!-- Center logo -->
-                            <img 
+                            <span 
                                 onclick="triggerTitleClick()"
-                                src="${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? 'https://i.postimg.cc/bNLK4bMV/imageedit-19-3911960984.png' : 'https://i.postimg.cc/jSkHhxdq/download-(2)-(1).png'}" 
-                                alt="" 
-                                class="h-20 sm:h-28 pixelated cursor-help active:scale-95 transition-transform" 
-                                style="image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges;" 
-                            />
+                                class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl"
+                                style="font-family:'Pixelify Sans',monospace; color:${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? '#fff' : '#000'}; text-shadow: 3px 3px 0 rgba(0,0,0,0.15);"
+                            >Gubby Clicker</span>
                             
                             <!-- Right star (normal) -->
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated;" />
@@ -2132,6 +2133,7 @@
                         <button onclick="openRanked()" class="pixel-badge bg-rose-500 border-rose-700 text-white flex-1 text-center cursor-pointer hover:bg-rose-400 transition-colors">Ranked Mode</button>
                         <button onclick="updateState({showRankedInfo:true})" class="pixel-badge bg-rose-500 border-rose-700 text-white cursor-pointer hover:bg-rose-400 transition-colors px-3" style="flex:0 0 auto;">?</button>
                     </div>
+
                 </div>
             `;            
             lucide.createIcons();
