@@ -665,7 +665,7 @@
         const IS_MOBILE = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
         const RANKED_MULT = 1;
         const RANKED_TIME = 35;
-        const RANKED_CLICK_LIMIT = IS_MOBILE ? 400 : 0;
+        const RANKED_CLICK_LIMIT = IS_MOBILE ? 25 : 0;
 
         function getRankedTierByClicks(clicks) {
             let tier = null;
