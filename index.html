@@ -717,7 +717,6 @@
             state.rankedClicks = 0;
             state.rankedTimeLeft = RANKED_TIME;
             lastRankedClick = 0;
-            rankedFirstTouchId = null;
             render();
             rankedGameInterval = setInterval(() => {
                 state.rankedTimeLeft--;
@@ -750,39 +749,19 @@
         }
 
         let lastRankedClick = 0;
-        let rankedFirstTouchId = null;
 
         function rankedClick(e) {
             if (e.cancelable) e.preventDefault();
             if (state.rankedState !== 'playing') return;
-
-            if (e.type === 'touchstart') {
-                // Only allow the first finger that touched
-                const touch = e.changedTouches[0];
-                if (rankedFirstTouchId === null) {
-                    rankedFirstTouchId = touch.identifier;
-                } else if (touch.identifier !== rankedFirstTouchId) {
-                    return; // second+ finger — ignore
-                }
-            }
-
             const now = Date.now();
-            if (now - lastRankedClick < RANKED_CLICK_LIMIT) return;
+            if (RANKED_CLICK_LIMIT > 0 && now - lastRankedClick < RANKED_CLICK_LIMIT) return;
             lastRankedClick = now;
             state.rankedClicks++;
             const el = document.querySelector('.ranked-clicks');
             if (el) el.textContent = state.rankedClicks;
         }
 
-        function rankedTouchEnd(e) {
-            // Reset first touch when that finger lifts
-            for (const t of e.changedTouches) {
-                if (t.identifier === rankedFirstTouchId) {
-                    rankedFirstTouchId = null;
-                    break;
-                }
-            }
-        }
+        function rankedTouchEnd(e) {}
 
         let rankedResultLockedUntil = 0;
 
