@@ -6,76 +6,6 @@
     <title>Gubby Clicker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyC63tR3pmvcyHA4dr8qy-n18LOdXNXUYsE",
-        authDomain: "gubby-clicker-22396.firebaseapp.com",
-        projectId: "gubby-clicker-22396",
-        storageBucket: "gubby-clicker-22396.firebasestorage.app",
-        messagingSenderId: "170824938435",
-        appId: "1:170824938435:web:96a58f29db77ec5f658376",
-        measurementId: "G-RWFCJHZQ0E"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-
-      // Expose to global scope for use in main script
-      window._fb = {
-        async registerPlayer(id) {
-          const ref = doc(db, 'players', id);
-          const snap = await getDoc(ref);
-          if (!snap.exists()) {
-            await setDoc(ref, { id, joinedAt: new Date().toISOString() });
-          }
-        },
-        async isPlayerBanned(id) {
-          const snap = await getDoc(doc(db, 'banned', id));
-          return snap.exists();
-        },
-        async getAllPlayers() {
-          const snap = await getDocs(collection(db, 'players'));
-          return snap.docs.map(d => d.data());
-        },
-        async getBanned() {
-          const snap = await getDocs(collection(db, 'banned'));
-          return snap.docs.map(d => d.id);
-        },
-        async banPlayer(id) {
-          await setDoc(doc(db, 'banned', id), { bannedAt: new Date().toISOString() });
-        },
-        async unbanPlayer(id) {
-          await deleteDoc(doc(db, 'banned', id));
-        }
-      };
-
-      // Init player then start game
-      const PLAYER_ID_KEY = 'gubby_player_id';
-      function getOrCreatePlayerId() {
-        let id = localStorage.getItem(PLAYER_ID_KEY);
-        if (!id) {
-          id = 'p_' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
-          localStorage.setItem(PLAYER_ID_KEY, id);
-        }
-        return id;
-      }
-
-      const myId = getOrCreatePlayerId();
-      window.MY_PLAYER_ID = myId;
-
-      await window._fb.registerPlayer(myId);
-      const banned = await window._fb.isPlayerBanned(myId);
-
-      if (banned) {
-        document.body.innerHTML = `<div style="position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Pixelify Sans',monospace;color:#fff;text-align:center;padding:24px;"><p style="font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#ef4444;margin-bottom:16px;">access denied</p><h1 style="font-size:clamp(32px,8vw,72px);font-weight:900;margin-bottom:12px;">You're Banned</h1><p style="color:rgba(255,255,255,0.4);font-size:14px;letter-spacing:2px;">contact the administrator</p><p style="color:rgba(255,255,255,0.15);font-size:10px;margin-top:24px;letter-spacing:1px;">id: ${myId}</p></div>`;
-      } else {
-        window._gameReady = true;
-        document.dispatchEvent(new Event('firebase-ready'));
-      }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
@@ -663,7 +593,6 @@
 
         const ADMIN_PASSWORD = 'icygubby';
         const ADMIN_AUTH_KEY = 'gubby_admin_auth';
-        const PLAYER_ID_KEY = 'gubby_player_id';
 
         function isAdminAuthed() {
             return localStorage.getItem(ADMIN_AUTH_KEY) === '1';
@@ -695,21 +624,13 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const startGame = () => {
-                render();
-                createFloatingStars();
-                if (isMobilePortrait()) {
-                    document.getElementById('landscape-overlay').style.display = 'flex';
-                }
-                window.addEventListener('orientationchange', checkOrientation);
-                window.addEventListener('resize', checkOrientation);
-            };
-            // Wait for Firebase init (ban check done in module script)
-            if (window._gameReady) {
-                startGame();
-            } else {
-                document.addEventListener('firebase-ready', startGame, { once: true });
+            render();
+            createFloatingStars();
+            if (isMobilePortrait()) {
+                document.getElementById('landscape-overlay').style.display = 'flex';
             }
+            window.addEventListener('orientationchange', checkOrientation);
+            window.addEventListener('resize', checkOrientation);
         });
 
         // ---- RANKED MODE ----
@@ -1057,45 +978,8 @@
                         changes.xpBoostUntil = Date.now() + 20 * 60 * 1000;
                         setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
                     }
-                } else if (command === '/players') {
-                    window._fb.getAllPlayers().then(async players => {
-                        const banned = await window._fb.getBanned();
-                        if (!players.length) {
-                            const newLogs = ["No players recorded yet.", ...state.adminLog].slice(0, 10);
-                            updateState({ adminLog: newLogs });
-                        } else {
-                            const list = players.map(p => `${p.id}${banned.includes(p.id) ? ' [BANNED]' : ''}${p.id === window.MY_PLAYER_ID ? ' [you]' : ''}`).join(' | ');
-                            const newLogs = [list, ...state.adminLog].slice(0, 10);
-                            updateState({ adminLog: newLogs });
-                        }
-                    });
-                    message = "Fetching players...";
-                } else if (command === '/ban') {
-                    const targetId = parts[1];
-                    if (!targetId) {
-                        message = "Usage: /ban [player_id]";
-                    } else if (targetId === window.MY_PLAYER_ID) {
-                        message = "You can't ban yourself.";
-                    } else {
-                        window._fb.banPlayer(targetId).then(() => {
-                            const newLogs = [`Banned ${targetId}.`, ...state.adminLog].slice(0, 10);
-                            updateState({ adminLog: newLogs });
-                        });
-                        message = `Banning ${targetId}...`;
-                    }
-                } else if (command === '/unban') {
-                    const targetId = parts[1];
-                    if (!targetId) {
-                        message = "Usage: /unban [player_id]";
-                    } else {
-                        window._fb.unbanPlayer(targetId).then(() => {
-                            const newLogs = [`Unbanned ${targetId}.`, ...state.adminLog].slice(0, 10);
-                            updateState({ adminLog: newLogs });
-                        });
-                        message = `Unbanning ${targetId}...`;
-                    }
                 } else {
-                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /give [id1] [id2]..., /give all, /quest, /xp [n], /rank [tier], /rank up, /players, /ban [id], /unban [id]";
+                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /give [id1] [id2]..., /give all, /quest, /xp [n], /rank [tier], /rank up";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
