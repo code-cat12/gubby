@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gubby Clicker</title>
+    <style>
+        /* Reset margins and ensure the document fills the screen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+            background-color: #000; /* Seamless transition for video */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Container designed to fill the entire viewport */
+        .viewport-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Styling the iframe to be truly full screen */
+        #js_video_iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Optional Overlay: Subtle hint for user interaction */
+        .overlay-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            pointer-events: none; /* Allows clicks to pass through to the video */
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        body:hover .overlay-hint {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="viewport-wrapper">
+        <!-- The video iframe -->
+        <iframe 
+            id="js_video_iframe" 
+            src="https://jumpshare.com/embed/k2wsRbegQDmUJvUNXnnh" 
+            frameborder="0" 
+            webkitallowfullscreen 
+            mozallowfullscreen 
+            allowfullscreen>
+        </iframe>
+        
+        <div class="overlay-hint">Full Screen View</div>
+    </div>
+
+</body>
+</html>
