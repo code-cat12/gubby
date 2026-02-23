@@ -1064,8 +1064,7 @@
                 newGold = state.gold + amount;
                 message = `You won! +${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
             } else {
-                const remaining = state.gold - amount;
-                const penalty = amount + (remaining * 0.2);
+                const penalty = amount + (state.gold * 0.2);
                 newGold = Math.max(0, state.gold - penalty);
                 message = `You lost! -${penalty.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
             }
@@ -2113,7 +2112,7 @@
                                         class="flex-1 border-4 border-slate-300 px-3 py-2 font-black text-slate-900 text-sm focus:border-violet-500 focus:outline-none"
                                         style="font-family:'Pixelify Sans',monospace;"
                                     />
-                                    <button onclick="const v=state.gold.toFixed(2);state.gambleInput=v;const el=document.getElementById('gamble-input');if(el){el.value=v;el.focus();}" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
+                                    <button onclick="state.gambleInput=state.gold.toFixed(2);document.getElementById('gamble-input').value=state.gambleInput;" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
                                 </div>
 
                                 <button onclick="doGamble()" class="w-full pixel-button bg-violet-600 border-violet-800 text-white py-3 font-black uppercase text-lg tracking-widest">Roll the Dice</button>
