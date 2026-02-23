@@ -573,6 +573,10 @@
             rankedTier: null,
             rankedXP: 0,
             showRankedInfo: false,
+            showGamble: false,
+            gambleInput: '',
+            gambleResult: null,
+            showGameModes: false,
             rankedPersonalBest: 0,
             rankedGamesPlayed: 0,
             masterXP: 0,
@@ -597,6 +601,7 @@
         function isAdminAuthed() {
             return localStorage.getItem(ADMIN_AUTH_KEY) === '1';
         }
+
 
         function tryAdminPassword(input) {
             if (input === ADMIN_PASSWORD) {
@@ -1042,6 +1047,30 @@
             }
         }
 
+        function doGamble() {
+            const amount = parseFloat(state.gambleInput);
+            if (isNaN(amount) || amount <= 0) {
+                updateState({ gambleResult: { win: null, message: 'Enter a valid amount.' } });
+                return;
+            }
+            if (amount > state.gold) {
+                updateState({ gambleResult: { win: null, message: "You don't have enough currency." } });
+                return;
+            }
+            const win = Math.random() < 0.5;
+            let newGold;
+            let message;
+            if (win) {
+                newGold = state.gold + amount;
+                message = `You won! +${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
+            } else {
+                const penalty = amount + (state.gold * 0.2);
+                newGold = Math.max(0, state.gold - penalty);
+                message = `You lost! -${penalty.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
+            }
+            updateState({ gold: newGold, gambleResult: { win, message }, gambleInput: '' });
+        }
+
         function travelTo(destId) {
             const destination = DESTINATIONS.find(d => d.id === destId);
             
@@ -1391,7 +1420,7 @@
             state.marketQueue = [...state.marketQueue.slice(1), nextRate];
             
             // Only re-render if admin console and modals are not open
-            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal && !state.showRanked) {
+            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showTravelModal && !state.showRankedInfo) {
                 render();
             }
         }, 7000);
@@ -1485,7 +1514,7 @@
             }
             
             // Only render if admin console is not open, no modals are open, and something important changed
-            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked) {
+            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showTravelModal && !state.showRankedInfo) {
                 render();
             }
         }, 1000);
@@ -2009,6 +2038,89 @@
                         </div>
                     </div>` : ''}
 
+                    ${state.showGameModes ? `
+                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showGameModes:false})">
+                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+                            <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="text-slate-400 text-xs font-black uppercase tracking-widest">Select</p>
+                                    <h3 class="text-white font-black text-2xl uppercase">Game Modes</h3>
+                                </div>
+                                <button onclick="updateState({showGameModes:false})" class="text-white/60 hover:text-white text-2xl font-black">x</button>
+                            </div>
+                            <div class="p-4 flex flex-col gap-3">
+                                <div class="flex items-stretch gap-2">
+                                    <button onclick="updateState({showGameModes:false});openRanked()" class="flex items-center gap-4 border-4 border-rose-300 bg-rose-50 hover:bg-rose-100 p-4 transition-colors text-left flex-1">
+                                        <div class="w-12 h-12 bg-rose-500 border-4 border-rose-700 flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="timer" class="w-6 h-6 text-white"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-black text-rose-700 uppercase text-base">Ranked Mode</p>
+                                            <p class="text-xs text-slate-500 font-bold mt-0.5">Click as fast as you can in 35s. Climb the ranks.</p>
+                                        </div>
+                                    </button>
+                                    <button onclick="updateState({showGameModes:false,showRankedInfo:true})" class="border-4 border-rose-300 bg-rose-50 hover:bg-rose-100 px-3 font-black text-rose-500 hover:text-rose-700 transition-colors">?</button>
+                                </div>
+                                <button onclick="updateState({showGameModes:false,showGamble:true,gambleResult:null,gambleInput:''})" class="flex items-center gap-4 border-4 border-violet-300 bg-violet-50 hover:bg-violet-100 p-4 transition-colors text-left">
+                                    <div class="w-12 h-12 bg-violet-600 border-4 border-violet-800 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="dice-5" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-violet-700 uppercase text-base">Gamble</p>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">50/50 shot. Win double, lose your bet + 20%.</p>
+                                    </div>
+                                </button>
+                                <button onclick="updateState({showGameModes:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-1">Close</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
+                    ${state.showGamble ? `
+                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showGamble:false})">
+                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+                            <div class="bg-violet-700 px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="text-violet-300 text-xs font-black uppercase tracking-widest">Game Mode</p>
+                                    <h3 class="text-white font-black text-2xl uppercase">Gamble</h3>
+                                </div>
+                                <button onclick="updateState({showGamble:false})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">x</button>
+                            </div>
+                            <div class="p-6 flex flex-col gap-4">
+                                <div class="border-4 border-slate-200 p-4 bg-slate-50 text-center">
+                                    <p class="text-xs font-black uppercase text-slate-500 mb-1">Your Balance</p>
+                                    <p class="text-2xl font-black text-slate-900">${state.gold.toLocaleString(undefined,{maximumFractionDigits:2})} <span class="text-sm">${CURRENCIES[state.theme].name}s</span></p>
+                                </div>
+
+                                <div class="border-4 border-violet-300 p-4 bg-violet-50">
+                                    <p class="text-xs font-black uppercase text-violet-600 mb-1">Win: Double your bet</p>
+                                    <p class="text-xs font-black uppercase text-red-500">Lose: Bet + 20% of balance</p>
+                                </div>
+
+                                ${state.gambleResult ? `
+                                <div class="border-4 ${state.gambleResult.win === true ? 'border-emerald-400 bg-emerald-50' : state.gambleResult.win === false ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-slate-50'} p-4 text-center">
+                                    <p class="font-black text-lg ${state.gambleResult.win === true ? 'text-emerald-600' : state.gambleResult.win === false ? 'text-red-600' : 'text-slate-600'}">${state.gambleResult.message}</p>
+                                </div>` : ''}
+
+                                <div class="flex gap-2">
+                                    <input
+                                        id="gamble-input"
+                                        type="number"
+                                        min="0"
+                                        placeholder="Amount..."
+                                        value="${state.gambleInput || ''}"
+                                        oninput="updateState({gambleInput:this.value,gambleResult:null},true)"
+                                        class="flex-1 border-4 border-slate-300 px-3 py-2 font-black text-slate-900 text-sm focus:border-violet-500 focus:outline-none"
+                                        style="font-family:'Pixelify Sans',monospace;"
+                                    />
+                                    <button onclick="updateState({gambleInput:'${state.gold.toFixed(2)}',gambleResult:null},true)" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
+                                </div>
+
+                                <button onclick="doGamble()" class="w-full pixel-button bg-violet-600 border-violet-800 text-white py-3 font-black uppercase text-lg tracking-widest">Roll the Dice</button>
+                                <button onclick="updateState({showGamble:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600">Close</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
                     ${state.showRankUp && state.rankUpTier ? (() => {
                         const tier = getRankedTierById(state.rankUpTier);
                         const colorMap = { master: '#f59e0b', pro_1: '#a855f7', pro_2: '#a855f7', pro_3: '#a855f7', normal_1: '#3b82f6', normal_2: '#3b82f6', normal_3: '#3b82f6' };
@@ -2045,7 +2157,7 @@
                             <span 
                                 onclick="triggerTitleClick()"
                                 class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl"
-                                style="font-family:'Pixelify Sans',monospace; color:${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? '#fff' : '#000'}; text-shadow: 3px 3px 0 rgba(0,0,0,0.15);"
+                                style="font-family:'Pixelify Sans',monospace; color:${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? '#fff' : '#000'}; text-shadow: 3px 3px 0 rgba(0,0,0,0.1);"
                             >Gubby Clicker</span>
                             
                             <!-- Right star (normal) -->
@@ -2141,8 +2253,10 @@
                     </div>
 
                     <div class="z-20 w-full max-w-6xl px-4 mb-8 flex gap-2">
-                        <button onclick="openRanked()" class="pixel-badge bg-rose-500 border-rose-700 text-white flex-1 text-center cursor-pointer hover:bg-rose-400 transition-colors">Ranked Mode</button>
-                        <button onclick="updateState({showRankedInfo:true})" class="pixel-badge bg-rose-500 border-rose-700 text-white cursor-pointer hover:bg-rose-400 transition-colors px-3" style="flex:0 0 auto;">?</button>
+                        <button onclick="updateState({showGameModes:true})" class="pixel-badge bg-slate-800 border-slate-900 text-white flex-1 text-center cursor-pointer hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i>
+                            Game Modes
+                        </button>
                     </div>
 
                 </div>
