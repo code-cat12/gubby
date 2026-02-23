@@ -2112,7 +2112,7 @@
                                         class="flex-1 border-4 border-slate-300 px-3 py-2 font-black text-slate-900 text-sm focus:border-violet-500 focus:outline-none"
                                         style="font-family:'Pixelify Sans',monospace;"
                                     />
-                                    <button onclick="updateState({gambleInput:'${state.gold.toFixed(2)}',gambleResult:null},true)" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
+                                    <button onclick="state.gambleInput=state.gold.toFixed(2);document.getElementById('gamble-input').value=state.gambleInput;" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
                                 </div>
 
                                 <button onclick="doGamble()" class="w-full pixel-button bg-violet-600 border-violet-800 text-white py-3 font-black uppercase text-lg tracking-widest">Roll the Dice</button>
