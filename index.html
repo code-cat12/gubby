@@ -40,6 +40,19 @@
             background-repeat: no-repeat;
             z-index: -1;
             opacity: 1;
+            will-change: transform;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* Mobile: keep background truly fixed using position:fixed on ::before (already done above),
+           but iOS Safari ignores fixed on ::before, so we use a JS-free CSS-only fix */
+        @media (max-width: 768px) {
+            body::before {
+                /* Force GPU compositing to prevent scroll jitter on mobile */
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
         }
         
         .pixel-corners {
@@ -459,6 +472,18 @@
             animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
+        }
+
+        /* ── SETTINGS GRID LAYOUT ───────────────────── */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        @media (max-width: 480px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 
@@ -915,7 +940,26 @@
             return basePrestigeCost / rate;
         }
 
+        // ── NUMBER FORMATTING ──────────────────────────────────────
+        // For numbers >= 1 trillion (1e12): show scientific notation like 1.2e+15
+        // Otherwise: use standard abbreviated formatting
+        function formatLargeNumber(n, decimals) {
+            if (decimals === undefined) decimals = 2;
+            if (isNaN(n) || !isFinite(n)) return '0';
+            if (n >= 1e12) {
+                const exp = Math.floor(Math.log10(Math.abs(n)));
+                const mantissa = n / Math.pow(10, exp);
+                return mantissa.toFixed(1) + 'e+' + exp;
+            }
+            return n.toLocaleString(undefined, { maximumFractionDigits: decimals });
+        }
+
         function formatCost(cost) {
+            if (cost >= 1e12) {
+                const exp = Math.floor(Math.log10(Math.abs(cost)));
+                const mantissa = cost / Math.pow(10, exp);
+                return mantissa.toFixed(1) + 'e+' + exp;
+            }
             if (cost >= 1000000000) return (cost / 1000000000).toFixed(1) + 'B';
             if (cost >= 1000000) return (cost / 1000000).toFixed(1) + 'M';
             if (cost >= 1000) return (cost / 1000).toFixed(1) + 'k';
@@ -1111,9 +1155,9 @@
 
             // Update click counter inline to avoid full re-render interrupting float animation
             const clicksEl = document.querySelector('.clicks-live');
-            if (clicksEl) clicksEl.textContent = state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0});
+            if (clicksEl) clicksEl.textContent = formatLargeNumber(state.clicks, 0);
             const totalEl = document.querySelector('.total-live');
-            if (totalEl) totalEl.textContent = state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0});
+            if (totalEl) totalEl.textContent = formatLargeNumber(state.lifetimeClicks, 0);
 
             if (state.showParticles !== false) {
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
@@ -1139,7 +1183,7 @@
                 updateState({
                     gold: state.gold + totalGoldEarned,
                     clicks: 0,
-                    notification: { title: "MARKET SOLD!", message: `Sold for ${totalGoldEarned.toFixed(2)} ${CURRENCIES[state.theme].name}s!${luckyActive ? ` (x${state.luckyMultValue} Lucky!)` : ''}`, type: "success" }
+                    notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(totalGoldEarned, 2)} ${CURRENCIES[state.theme].name}s!${luckyActive ? ` (x${state.luckyMultValue} Lucky!)` : ''}`, type: "success" }
                 });
                 SFX.sell();
                 checkQuestProgress();
@@ -1161,11 +1205,11 @@
             let message;
             if (win) {
                 newGold = state.gold + amount;
-                message = `You won! +${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
+                message = `You won! +${formatLargeNumber(amount, 2)} ${CURRENCIES[state.theme].name}s`;
             } else {
                 const penalty = amount + (state.gold * 0.2);
                 newGold = Math.max(0, state.gold - penalty);
-                message = `You lost! -${penalty.toLocaleString(undefined, {maximumFractionDigits: 2})} ${CURRENCIES[state.theme].name}s`;
+                message = `You lost! -${formatLargeNumber(penalty, 2)} ${CURRENCIES[state.theme].name}s`;
             }
             updateState({ gold: newGold, gambleResult: { win, message }, gambleInput: '' });
             if (win) {
@@ -2218,7 +2262,7 @@
                             <div class="p-6 flex flex-col gap-4">
                                 <div class="border-4 border-slate-200 p-4 bg-slate-50 text-center">
                                     <p class="text-xs font-black uppercase text-slate-500 mb-1">Your Balance</p>
-                                    <p class="text-2xl font-black text-slate-900">${state.gold.toLocaleString(undefined,{maximumFractionDigits:2})} <span class="text-sm">${CURRENCIES[state.theme].name}s</span></p>
+                                    <p class="text-2xl font-black text-slate-900">${formatLargeNumber(state.gold, 2)} <span class="text-sm">${CURRENCIES[state.theme].name}s</span></p>
                                 </div>
 
                                 <div class="border-4 border-violet-300 p-4 bg-violet-50">
@@ -2274,11 +2318,6 @@
                     </div>
 
 
-
-
-
-
-
                         <div class="flex gap-6 items-center justify-center">
                             <!-- Left star (flipped) -->
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated; transform: scaleX(-1);" />
@@ -2304,11 +2343,11 @@
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start">
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Clicks</p>
-                                    <span class="clicks-live text-lg sm:text-2xl font-black text-slate-900">${state.clicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+                                    <span class="clicks-live text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.clicks, 0)}</span>
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Total</p>
-                                    <span class="total-live text-lg sm:text-2xl font-black text-slate-900">${state.lifetimeClicks.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+                                    <span class="total-live text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.lifetimeClicks, 0)}</span>
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Market</p>
@@ -2323,7 +2362,7 @@
                                 </div>
                                 <div class="stat-display">
                                     <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">${currentCurrency.name}s</p>
-                                    <span class="text-lg sm:text-2xl font-black text-slate-900">${state.gold.toLocaleString(undefined, {maximumFractionDigits: 2})}</span>
+                                    <span class="text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.gold, 2)}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center w-full sm:w-auto">
@@ -2434,7 +2473,7 @@
                 const cfg = SETTINGS_ROWS.find(r => r.key === key);
                 if (cfg) {
                     // Update border/bg
-                    btn.className = 'flex items-center justify-between border-4 ' + (newVal ? cfg.onBorder + ' ' + cfg.onBg : 'border-slate-200 bg-slate-50') + ' p-4 mb-2 w-full text-left hover:border-slate-400 transition-colors';
+                    btn.className = 'flex items-center justify-between border-4 ' + (newVal ? cfg.onBorder + ' ' + cfg.onBg : 'border-slate-200 bg-slate-50') + ' p-4 w-full text-left hover:border-slate-400 transition-colors';
                     // Update icon color
                     const icon = btn.querySelector('i[data-lucide]');
                     if (icon) icon.className = 'w-5 h-5 flex-shrink-0 ' + (newVal ? cfg.onIcon : 'text-slate-400');
@@ -2448,13 +2487,13 @@
         }
 
         const SETTINGS_ROWS = [
-            { key:'largeText',     icon:'type',                 label:'Large Text',         desc:'Increases UI font size by 10%',          onBorder:'border-blue-400',   onBg:'bg-blue-50',   onIcon:'text-blue-500',   onTrack:'bg-blue-500 border-blue-700'    },
-            { key:'floatingStars', icon:'sparkles',             label:'Floating Stars',     desc:'Decorative falling stars in background', onBorder:'border-violet-400', onBg:'bg-violet-50', onIcon:'text-violet-500', onTrack:'bg-violet-500 border-violet-700'},
+            { key:'largeText',     icon:'type',                 label:'Large Text',         desc:'Bigger UI font size',                    onBorder:'border-blue-400',   onBg:'bg-blue-50',   onIcon:'text-blue-500',   onTrack:'bg-blue-500 border-blue-700'    },
+            { key:'floatingStars', icon:'sparkles',             label:'Floating Stars',     desc:'Decorative falling stars',               onBorder:'border-violet-400', onBg:'bg-violet-50', onIcon:'text-violet-500', onTrack:'bg-violet-500 border-violet-700'},
             { key:'soundEnabled',  icon:'volume-2',             label:'Sound Effects',      desc:'All game sounds',                        onBorder:'border-amber-400',  onBg:'bg-amber-50',  onIcon:'text-amber-500',  onTrack:'bg-amber-500 border-amber-700'  },
-            { key:'clickSound',    icon:'mouse-pointer-click',  label:'Click Sounds',       desc:'Sound on every Gubby click',             onBorder:'border-rose-400',   onBg:'bg-rose-50',   onIcon:'text-rose-500',   onTrack:'bg-rose-500 border-rose-700'    },
-            { key:'showParticles', icon:'zap',                  label:'Click Particles',    desc:'Show +N pop particles on click',         onBorder:'border-amber-400',  onBg:'bg-amber-50',  onIcon:'text-amber-500',  onTrack:'bg-amber-500 border-amber-700'  },
-            { key:'questNotif',    icon:'bell',                 label:'Quest Notifications',desc:'Pop-up when a quest completes',           onBorder:'border-indigo-400', onBg:'bg-indigo-50', onIcon:'text-indigo-500', onTrack:'bg-indigo-500 border-indigo-700'},
-            { key:'marketFlash',   icon:'trending-up',          label:'Market Flash',       desc:'Pulse Sell button at high rates',        onBorder:'border-emerald-400',onBg:'bg-emerald-50',onIcon:'text-emerald-500',onTrack:'bg-emerald-500 border-emerald-700'},
+            { key:'clickSound',    icon:'mouse-pointer-click',  label:'Click Sounds',       desc:'Sound on every click',                   onBorder:'border-rose-400',   onBg:'bg-rose-50',   onIcon:'text-rose-500',   onTrack:'bg-rose-500 border-rose-700'    },
+            { key:'showParticles', icon:'zap',                  label:'Click Particles',    desc:'Show +N pop on click',                   onBorder:'border-amber-400',  onBg:'bg-amber-50',  onIcon:'text-amber-500',  onTrack:'bg-amber-500 border-amber-700'  },
+            { key:'questNotif',    icon:'bell',                 label:'Quest Notifs',       desc:'Pop-up on quest complete',               onBorder:'border-indigo-400', onBg:'bg-indigo-50', onIcon:'text-indigo-500', onTrack:'bg-indigo-500 border-indigo-700'},
+            { key:'marketFlash',   icon:'trending-up',          label:'Market Flash',       desc:'Pulse sell at high rates',               onBorder:'border-emerald-400',onBg:'bg-emerald-50',onIcon:'text-emerald-500',onTrack:'bg-emerald-500 border-emerald-700'},
         ];
 
         function renderSettings() {
@@ -2468,36 +2507,47 @@
             const AUDIO_KEYS    = ['soundEnabled','clickSound'];
             const GAMEPLAY_KEYS = ['showParticles','questNotif','marketFlash'];
 
+            function settingBtn(key) {
+                const cfg = SETTINGS_ROWS.find(function(r){ return r.key === key; });
+                if (!cfg) return '';
+                const on = getSetting(key);
+                return '<button data-setting="' + key + '" onclick="toggleSetting(\'' + key + '\')" '
+                   + 'class="flex items-center justify-between border-4 ' + (on ? cfg.onBorder + ' ' + cfg.onBg : 'border-slate-200 bg-slate-50') + ' p-4 w-full text-left hover:border-slate-400 transition-colors">'
+                   + '<div class="flex items-center gap-3 min-w-0">'
+                   + '<i data-lucide="' + cfg.icon + '" class="w-5 h-5 flex-shrink-0 ' + (on ? cfg.onIcon : 'text-slate-400') + '"></i>'
+                   + '<div class="min-w-0"><p class="font-black uppercase text-sm text-slate-900 leading-tight">' + cfg.label + '</p>'
+                   + '<p class="text-xs font-bold text-slate-500 leading-tight truncate">' + cfg.desc + '</p></div></div>'
+                   + pxToggle(on, cfg)
+                   + '</button>';
+            }
+
             function section(title, keys) {
-                let s = '<p class="text-xs font-black uppercase text-slate-400 tracking-widest mb-2 mt-3">' + title + '</p>';
-                keys.forEach(function(key) {
-                    const cfg = SETTINGS_ROWS.find(function(r){ return r.key === key; });
-                    if (!cfg) return;
-                    const on = getSetting(key);
-                    s += '<button data-setting="' + key + '" onclick="toggleSetting(\'' + key + '\')" '
-                       + 'class="flex items-center justify-between border-4 ' + (on ? cfg.onBorder + ' ' + cfg.onBg : 'border-slate-200 bg-slate-50') + ' p-4 mb-2 w-full text-left hover:border-slate-400 transition-colors">'
-                       + '<div class="flex items-center gap-3">'
-                       + '<i data-lucide="' + cfg.icon + '" class="w-5 h-5 flex-shrink-0 ' + (on ? cfg.onIcon : 'text-slate-400') + '"></i>'
-                       + '<div><p class="font-black uppercase text-sm text-slate-900">' + cfg.label + '</p>'
-                       + '<p class="text-xs font-bold text-slate-500">' + cfg.desc + '</p></div></div>'
-                       + pxToggle(on, cfg)
-                       + '</button>';
-                });
+                let s = '<p class="text-xs font-black uppercase text-slate-400 tracking-widest mb-2 mt-4 col-span-2">' + title + '</p>';
+                keys.forEach(function(key) { s += settingBtn(key); });
                 return s;
             }
 
             return '<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showSettings:false})">'
-                + '<div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden max-h-[90vh] flex flex-col">'
+                + '<div class="bg-white pixel-card w-full modal-content overflow-hidden max-h-[85vh] flex flex-col" style="max-width:680px;">'
                 + '<div class="bg-slate-800 px-6 py-4 flex justify-between items-center flex-shrink-0">'
                 + '<div><p class="text-slate-400 text-xs font-black uppercase tracking-widest">Options</p>'
                 + '<h3 class="text-white font-black text-2xl uppercase flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 mr-1"></i> Settings</h3></div>'
                 + '<button onclick="updateState({showSettings:false})" class="text-white/60 hover:text-white text-2xl font-black leading-none">✕</button>'
                 + '</div>'
-                + '<div class="p-4 overflow-y-auto flex-1">'
-                + section('Display', DISPLAY_KEYS)
-                + section('Audio', AUDIO_KEYS)
-                + section('Gameplay', GAMEPLAY_KEYS)
-                + '<button onclick="updateState({showSettings:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-2 pb-1">Close</button>'
+                + '<div class="p-6 overflow-y-auto flex-1">'
+                // 2-column grid for the settings
+                + '<div class="grid grid-cols-2 gap-x-4 gap-y-3" style="grid-template-columns: 1fr 1fr;">'
+                // Display section header (spans 2 cols)
+                + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-0 mb-1">Display</p>'
+                + DISPLAY_KEYS.map(settingBtn).join('')
+                // Audio section header
+                + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Audio</p>'
+                + AUDIO_KEYS.map(settingBtn).join('')
+                // Gameplay section header
+                + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Gameplay</p>'
+                + GAMEPLAY_KEYS.map(settingBtn).join('')
+                + '</div>'
+                + '<button onclick="updateState({showSettings:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-4 pb-1">Close</button>'
                 + '</div></div></div>';
         }
 
