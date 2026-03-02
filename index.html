@@ -2308,26 +2308,42 @@
                         if (state.speedRunPhase === 'results') {
                             const playerScores = Array.from({length:n}).map((_, i) => ({ i, score: scores[i]||0, color: PLAYER_COLORS[i] }));
                             const sorted = [...playerScores].sort((a,b) => b.score - a.score);
+                            const topScore = sorted[0].score;
+                            const tied = sorted.filter(p => p.score === topScore);
+                            const isTie = tied.length > 1;
                             const winner = sorted[0];
+                            const headerBg = isTie ? '#64748b' : winner.color.hex;
+                            const headerBorder = isTie ? '#334155' : winner.color.dark;
                             return `
                             <div class="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/95 backdrop-blur-md">
                                 <div class="bg-white pixel-card max-w-sm w-full mx-4 overflow-hidden">
-                                    <div class="px-6 py-5 text-center" style="background:${winner.color.hex}; border-bottom: 4px solid ${winner.color.dark};">
-                                        <p class="text-white/70 font-black uppercase tracking-widest text-xs mb-1">Winner!</p>
-                                        <p class="text-white font-black text-3xl uppercase">${winner.color.label}</p>
-                                        <p class="text-white font-black text-5xl">${winner.score}</p>
-                                        <p class="text-white/70 font-bold text-sm">taps</p>
+                                    <div class="px-6 py-5 text-center" style="background:${headerBg}; border-bottom: 4px solid ${headerBorder};">
+                                        ${isTie ? `
+                                            <p class="text-white/70 font-black uppercase tracking-widest text-xs mb-1">It's a Tie!</p>
+                                            <p class="text-white font-black text-3xl uppercase">${tied.map(p => p.color.label).join(' & ')}</p>
+                                            <p class="text-white font-black text-5xl">${topScore}</p>
+                                            <p class="text-white/70 font-bold text-sm">taps each</p>
+                                        ` : `
+                                            <p class="text-white/70 font-black uppercase tracking-widest text-xs mb-1">Winner!</p>
+                                            <p class="text-white font-black text-3xl uppercase">${winner.color.label}</p>
+                                            <p class="text-white font-black text-5xl">${winner.score}</p>
+                                            <p class="text-white/70 font-bold text-sm">taps</p>
+                                        `}
                                     </div>
                                     <div class="p-4">
                                         <p class="font-black uppercase text-xs text-slate-400 tracking-widest mb-3">All Scores</p>
                                         <div class="flex flex-col gap-2 mb-5">
-                                            ${sorted.map((p, rank) => `
-                                            <div class="flex items-center gap-3 p-3 border-4" style="border-color:${p.color.hex}; background:${p.color.hex}18;">
-                                                <span class="font-black text-slate-500 text-sm w-5">${rank+1}.</span>
-                                                <div class="w-4 h-4 border-2" style="background:${p.color.hex}; border-color:${p.color.dark};"></div>
-                                                <span class="font-black uppercase text-sm" style="color:${p.color.dark};">${p.color.label}</span>
-                                                <span class="font-black text-slate-800 ml-auto text-lg">${p.score}</span>
-                                            </div>`).join('')}
+                                            ${sorted.map((p, rank) => {
+                                                const isTiedEntry = isTie && p.score === topScore;
+                                                const displayRank = isTiedEntry ? '🤝' : (rank + 1) + '.';
+                                                return `
+                                                <div class="flex items-center gap-3 p-3 border-4" style="border-color:${p.color.hex}; background:${p.color.hex}18;">
+                                                    <span class="font-black text-slate-500 text-sm w-6">${displayRank}</span>
+                                                    <div class="w-4 h-4 border-2" style="background:${p.color.hex}; border-color:${p.color.dark};"></div>
+                                                    <span class="font-black uppercase text-sm" style="color:${p.color.dark};">${p.color.label}</span>
+                                                    <span class="font-black text-slate-800 ml-auto text-lg">${p.score}</span>
+                                                </div>`;
+                                            }).join('')}
                                         </div>
                                         <div class="flex gap-3">
                                             <button onclick="resetSpeedRun()" class="flex-1 pixel-button bg-amber-500 border-amber-700 text-white py-3 font-black uppercase text-sm">Play Again</button>
