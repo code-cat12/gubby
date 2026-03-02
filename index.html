@@ -45,11 +45,8 @@
             transform: translateZ(0);
         }
 
-        /* Mobile: keep background truly fixed using position:fixed on ::before (already done above),
-           but iOS Safari ignores fixed on ::before, so we use a JS-free CSS-only fix */
         @media (max-width: 768px) {
             body::before {
-                /* Force GPU compositing to prevent scroll jitter on mobile */
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
             }
@@ -501,8 +498,6 @@
             gap: 24px;
         }
 
-        /* Landscape overlay is shown/hidden via JS only */
-
         .rotate-phone {
             animation: rotatePhone 1.5s ease-in-out infinite alternate;
         }
@@ -538,12 +533,15 @@
             heaven:    { name: 'Halo',        icon: 'https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp' },
         };
 
+        // Chapter names for travel modal
+        const CHAPTER_NAMES = ['I', 'II', 'III', 'IV', 'V'];
+
         const DESTINATIONS = [
-            { id: 'plains',    name: 'Gubby Plains',  req: 0,  mult: 1,   priceMod: 1,    prestigeMod: 1,      color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
-            { id: 'hawaii',    name: 'Hawaii',         req: 5,  mult: 5,   priceMod: 0.75, prestigeMod: 0.4,    color: 'bg-green-100',  themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
-            { id: 'starlight', name: 'Starlight Sky',  req: 10, mult: 15,  priceMod: 0.5,  prestigeMod: 0.16,   color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
-            { id: 'void',      name: 'The Void',        req: 20, mult: 30,  priceMod: 0.25, prestigeMod: 0.064,  color: 'bg-blue-100',   themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/2b/93/c2/2b93c2d26ea042ef05ec0fc6dbac7de6.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' },
-            { id: 'heaven',    name: 'Gubby Heaven',    req: 35, mult: 100, priceMod: 0.1,  prestigeMod: 0.02,   color: 'bg-pink-100',   themeColor: '#fdf2f8', bgImage: 'https://i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif', img: 'https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp' },
+            { id: 'plains',    name: 'Gubby Plains',  chapter: 'I',   req: 0,  mult: 1,   priceMod: 1,    prestigeMod: 1,      color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/grass-3d-icon-png-download-9405100.png' },
+            { id: 'hawaii',    name: 'Hawaii',         chapter: 'II',  req: 5,  mult: 5,   priceMod: 0.75, prestigeMod: 0.4,    color: 'bg-green-100',  themeColor: '#dcfce7', bgImage: 'https://i.pinimg.com/originals/5e/b7/28/5eb728f74875abdba6c3c44ace2399ff.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/beach-3d-icon-png-download-9708027.png' },
+            { id: 'starlight', name: 'Starlight Sky',  chapter: 'III', req: 10, mult: 15,  priceMod: 0.5,  prestigeMod: 0.16,   color: 'bg-purple-100', themeColor: '#f5f3ff', bgImage: 'https://www.codedex.io/images/intermediate-python/intermediate-python.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/night-sky-3d-icon-png-download-11664446.png' },
+            { id: 'void',      name: 'The Void',        chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.25, prestigeMod: 0.064,  color: 'bg-blue-100',   themeColor: '#eff6ff', bgImage: 'https://i.pinimg.com/originals/2b/93/c2/2b93c2d26ea042ef05ec0fc6dbac7de6.gif', img: 'https://cdn3d.iconscout.com/3d/premium/thumb/space-3d-icon-png-download-6308159.png' },
+            { id: 'heaven',    name: 'Gubby Heaven',    chapter: 'V',   req: 35, mult: 100, priceMod: 0.1,  prestigeMod: 0.02,   color: 'bg-pink-100',   themeColor: '#fdf2f8', bgImage: 'https://i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif', img: 'https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp' },
         ];
 
         const CONVERSION_RATES = {
@@ -568,6 +566,14 @@
             { id: 'titan',    name: 'Titan',     category: 'op',     baseCost: 100000000,   power: 5000000,   duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
             { id: 'eternal',  name: 'Eternal',   category: 'op',     baseCost: 500000000,   power: 50000000,  duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
             { id: 'infinite', name: 'Infinite',  category: 'op',     baseCost: 2500000000,  power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' },
+            // Permanent Boosts (Special Items)
+            { id: 'perm_angel', name: 'Angel', category: 'perm_boost', baseCost: 1000000,    permMult: 10000,  permanent: true, description: '10,000x permanent multiplier' },
+            { id: 'perm_demon', name: 'Demon', category: 'perm_boost', baseCost: 5000000,    permMult: 25000,  permanent: true, description: '25,000x permanent multiplier' },
+            { id: 'perm_queen', name: 'Queen', category: 'perm_boost', baseCost: 15000000,   permMult: 50000,  permanent: true, description: '50,000x permanent multiplier' },
+            { id: 'perm_king',  name: 'King',  category: 'perm_boost', baseCost: 30000000,   permMult: 100000, permanent: true, description: '100,000x permanent multiplier' },
+            // Skins (Special Items)
+            { id: 'skin_narrator_final', name: 'Final Act Narrator', category: 'skin', baseCost: 500000, permanent: true, isSkin: true, skinImg: 'https://static.wikia.nocookie.net/tower-defense-sim/images/c/ce/FinalActNarratorNeutral.gif/', description: 'The Final Act form of the Narrator', img: 'https://static.wikia.nocookie.net/tower-defense-sim/images/c/ce/FinalActNarratorNeutral.gif/' },
+            { id: 'skin_executioner', name: 'Executioner', category: 'skin', baseCost: 1500000, permanent: true, isSkin: true, skinImg: 'https://static.wikia.nocookie.net/tower-defense-sim/images/3/32/ExecutionerLunarDialogue.gif/', description: 'The Executioner rises', img: 'https://static.wikia.nocookie.net/tower-defense-sim/images/3/32/ExecutionerLunarDialogue.gif/' },
         ];
 
         const QUESTS = [
@@ -614,6 +620,8 @@
             completedQuests: 0,
             completedQuestIds: [],
             equippedItem: null,
+            equippedPermBoost: null,
+            equippedSkin: null,
             showRanked: false,
             rankedState: 'idle',
             rankedClicks: 0,
@@ -626,6 +634,13 @@
             gambleInput: '',
             gambleResult: null,
             showGameModes: false,
+            showSpeedRun: false,
+            speedRunPhase: 'pick', // 'pick' | 'countdown' | 'playing' | 'results'
+            speedRunPlayers: 2,
+            speedRunTimeLeft: 60,
+            speedRunScores: [0, 0, 0, 0],
+            speedRunCountdown: 3,
+            showPrestigeChallenge: false,
             rankedPersonalBest: 0,
             rankedGamesPlayed: 0,
             masterXP: 0,
@@ -702,14 +717,12 @@
             travel:   () => { if (!state.soundEnabled) return; playTone({ type: 'sine', freq: 400, freq2: 600, gain: 0.14, attack: 0.02, decay: 0.25, duration: 0.3 }); },
             prestige: () => { if (!state.soundEnabled) return; [0, 100, 200, 320].forEach((d, i) => setTimeout(() => playTone({ type: 'sine', freq: [523, 659, 784, 1047][i], gain: 0.15, attack: 0.01, decay: 0.2, duration: 0.25 }), d)); },
             questClaim: () => { if (!state.soundEnabled) return; playTone({ type: 'sine', freq: 660, gain: 0.13, attack: 0.01, decay: 0.15, duration: 0.18 }); setTimeout(() => playTone({ type: 'sine', freq: 880, gain: 0.12, attack: 0.005, decay: 0.15, duration: 0.18 }), 100); },
-            rankedStart: () => { if (!state.soundEnabled) return; [0, 120, 240].forEach((d, i) => setTimeout(() => playTone({ type: 'square', freq: [300, 400, 600][i], gain: 0.12, attack: 0.01, decay: 0.1, duration: 0.12 }), d)); },
             rankedEnd:   () => { if (!state.soundEnabled) return; [0, 150, 300, 500].forEach((d, i) => setTimeout(() => playTone({ type: 'sine', freq: [400, 500, 650, 900][i], gain: 0.13, attack: 0.01, decay: 0.2, duration: 0.25 }), d)); },
             rankUp:   () => { if (!state.soundEnabled) return; [0, 100, 200, 300, 450].forEach((d, i) => setTimeout(() => playTone({ type: 'sine', freq: [523, 659, 784, 1047, 1319][i], gain: 0.16, attack: 0.01, decay: 0.22, duration: 0.28 }), d)); },
             gambleWin: () => { if (!state.soundEnabled) return; [0, 80, 160, 240, 360].forEach((d, i) => setTimeout(() => playTone({ type: 'sine', freq: [440, 550, 660, 880, 1100][i], gain: 0.15, attack: 0.01, decay: 0.18, duration: 0.22 }), d)); },
             gambleLose: () => { if (!state.soundEnabled) return; playTone({ type: 'sawtooth', freq: 220, freq2: 110, gain: 0.14, attack: 0.01, decay: 0.3, duration: 0.35 }); setTimeout(() => playTone({ type: 'sawtooth', freq: 180, freq2: 90, gain: 0.1, attack: 0.01, decay: 0.25, duration: 0.3 }), 180); },
             useItem:  () => { if (!state.soundEnabled) return; playTone({ type: 'sine', freq: 700, freq2: 900, gain: 0.14, attack: 0.01, decay: 0.2, duration: 0.25 }); },
             milestone: () => { if (!state.soundEnabled) return; [0, 120, 240, 400].forEach((d, i) => setTimeout(() => playTone({ type: 'sine', freq: [600, 750, 900, 1200][i], gain: 0.14, attack: 0.01, decay: 0.2, duration: 0.25 }), d)); },
-            rankedClick: () => { if (!state.soundEnabled) return; playTone({ type: 'square', freq: 480, freq2: 420, gain: 0.06, attack: 0.002, decay: 0.04, duration: 0.05 }); },
         };
         let titleClickTimer = null;
 
@@ -720,7 +733,6 @@
             return localStorage.getItem(ADMIN_AUTH_KEY) === '1';
         }
 
-
         function tryAdminPassword(input) {
             if (input === ADMIN_PASSWORD) {
                 localStorage.setItem(ADMIN_AUTH_KEY, '1');
@@ -728,8 +740,6 @@
             }
             return false;
         }
-
-        // Auto-save removed. Admin auth persists via localStorage only.
 
         function isMobilePortrait() {
             return window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
@@ -756,25 +766,26 @@
             window.addEventListener('resize', checkOrientation);
         });
 
-        // ---- RANKED MODE ----
-        let rankedCountdownInterval = null;
-        let rankedGameInterval = null;
-        let rankedResultTimer = null;
+        // ---- RANKED MODE — Quest-Only progression ----
+        // Ranked tier is earned ONLY through quests/XP, not by clicking in a minigame.
+        // Unranked → Beginner I requires 20 XP total.
 
         const RANKED_TIERS = [
-            { id: 'beginner_1',  name: 'Beginner I',   threshold: 0,   xpNeeded: 60,  icon: 'https://i.postimg.cc/H8QzcTKZ/hexagon-master-1.png'  },
-            { id: 'beginner_2',  name: 'Beginner II',  threshold: 35,  xpNeeded: 80,  icon: 'https://i.postimg.cc/rRSj0qbP/hexagon-master-2.png'  },
-            { id: 'beginner_3',  name: 'Beginner III', threshold: 75,  xpNeeded: 100, icon: 'https://i.postimg.cc/Pvmypdc6/hexagon-master-3.png'  },
-            { id: 'normal_1',    name: 'Normal I',     threshold: 110, xpNeeded: 130, icon: 'https://i.postimg.cc/K3nfkmVp/hexagon-master-4.png'  },
-            { id: 'normal_2',    name: 'Normal II',    threshold: 125, xpNeeded: 170, icon: 'https://i.postimg.cc/N21D9QVn/hexagon-master-5.png'  },
-            { id: 'normal_3',    name: 'Normal III',   threshold: 150, xpNeeded: 220, icon: 'https://i.postimg.cc/5QwgYfTc/hexagon-master-7.png'  },
-            { id: 'pro_1',       name: 'Pro I',        threshold: 175, xpNeeded: 290, icon: 'https://i.postimg.cc/V0jgrzT3/hexagon-master-9.png'  },
-            { id: 'pro_2',       name: 'Pro II',       threshold: 200, xpNeeded: 375, icon: 'https://i.postimg.cc/QKpm9jwZ/hexagon-master-10.png' },
-            { id: 'pro_3',       name: 'Pro III',      threshold: 225, xpNeeded: 490, icon: 'https://i.postimg.cc/zHn7bq6Z/hexagon-master-11.png' },
-            { id: 'master',      name: 'Master',       threshold: 250, xpNeeded: null, icon: 'https://i.postimg.cc/vxWhgGjk/hexagon-master-12.png' },
+            { id: 'beginner_1',  name: 'Beginner I',   xpNeeded: 20,  icon: 'https://i.postimg.cc/JnfRd2R8/diamond-master-1.png'  },
+            { id: 'beginner_2',  name: 'Beginner II',  xpNeeded: 40,  icon: 'https://i.postimg.cc/HW20m91g/diamond-master-2.png'  },
+            { id: 'beginner_3',  name: 'Beginner III', xpNeeded: 60,  icon: 'https://i.postimg.cc/xjRGQ3VS/diamond-master-3.png'  },
+            { id: 'normal_1',    name: 'Normal I',     xpNeeded: 90,  icon: 'https://i.postimg.cc/qBLcrxHr/diamond-master-4.png'  },
+            { id: 'normal_2',    name: 'Normal II',    xpNeeded: 120, icon: 'https://i.postimg.cc/KcN7bDhh/diamond-master-5.png'  },
+            { id: 'normal_3',    name: 'Normal III',   xpNeeded: 160, icon: 'https://i.postimg.cc/Y23N7zBp/diamond-master-7.png'  },
+            { id: 'pro_1',       name: 'Pro I',        xpNeeded: 210, icon: 'https://i.postimg.cc/FFZbvVXr/diamond-master-8.png'  },
+            { id: 'pro_2',       name: 'Pro II',       xpNeeded: 270, icon: 'https://i.postimg.cc/qR5T6ZNz/diamond-master-9.png'  },
+            { id: 'pro_3',       name: 'Pro III',      xpNeeded: 350, icon: 'https://i.postimg.cc/NG48tkvQ/diamond-master-10.png' },
+            { id: 'master',      name: 'Master',       xpNeeded: null, icon: 'https://i.postimg.cc/pXLfL5Pt/diamond-master-12.png' },
         ];
 
-        // XP awarded per quest claim = Math.floor(quest.reward / 500), min 10
+        // XP needed to go from Unranked → Beginner I is 20 (stored in state.rankedXP when unranked)
+        const UNRANKED_XP_NEEDED = 20;
+
         function getQuestXP(quest) {
             const base = Math.max(10, Math.floor(quest.reward / 500));
             const rankBoosted = (state.xpBoostUntil || 0) > Date.now();
@@ -783,20 +794,6 @@
             if (rankBoosted) mult *= 1.5;
             if (surgeBoosted) mult *= 1.3;
             return mult > 1 ? Math.round(base * mult) : base;
-        }
-
-        const IS_MOBILE = window.matchMedia('(max-width: 1024px)').matches || navigator.maxTouchPoints > 0;
-        const RANKED_MULT = 1;
-        const RANKED_TIME = 35;
-        const RANKED_CLICK_LIMIT = IS_MOBILE ? 25 : 0;
-
-        function getRankedTierByClicks(clicks) {
-            let tier = null;
-            for (const t of RANKED_TIERS) {
-                if (clicks >= Math.round(t.threshold * RANKED_MULT)) tier = t;
-                else break;
-            }
-            return tier;
         }
 
         function getRankedTierById(id) {
@@ -808,107 +805,51 @@
             return idx >= 0 && idx < RANKED_TIERS.length - 1 ? RANKED_TIERS[idx + 1] : null;
         }
 
+        // Open ranked profile (no minigame)
+        let speedRunInterval = null;
+
+        function startSpeedRun(numPlayers) {
+            updateState({ speedRunPlayers: numPlayers, speedRunPhase: 'countdown', speedRunCountdown: 3, speedRunScores: [0,0,0,0] });
+            let cd = 3;
+            const cdInterval = setInterval(() => {
+                cd--;
+                if (cd <= 0) {
+                    clearInterval(cdInterval);
+                    updateState({ speedRunPhase: 'playing', speedRunTimeLeft: 60 });
+                    startSpeedRunTimer();
+                } else {
+                    updateState({ speedRunCountdown: cd });
+                }
+            }, 1000);
+        }
+
+        function startSpeedRunTimer() {
+            let t = 60;
+            speedRunInterval = setInterval(() => {
+                t--;
+                updateState({ speedRunTimeLeft: t });
+                if (t <= 0) {
+                    clearInterval(speedRunInterval);
+                    updateState({ speedRunPhase: 'results' });
+                }
+            }, 1000);
+        }
+
+        function speedRunTap(playerIndex, event) {
+            if (state.speedRunPhase !== 'playing') return;
+            event.preventDefault();
+            const scores = [...state.speedRunScores];
+            scores[playerIndex] = (scores[playerIndex] || 0) + 1;
+            updateState({ speedRunScores: scores });
+        }
+
+        function resetSpeedRun() {
+            if (speedRunInterval) { clearInterval(speedRunInterval); speedRunInterval = null; }
+            updateState({ speedRunPhase: 'pick', speedRunScores: [0,0,0,0], speedRunTimeLeft: 60 });
+        }
+
         function openRanked() {
-            clearInterval(rankedCountdownInterval);
-            clearInterval(rankedGameInterval);
-            clearTimeout(rankedResultTimer);
-            // If already ranked, show profile; otherwise idle
-            const rs = state.rankedTier ? 'profile' : 'idle';
-            updateState({ showRanked: true, rankedState: rs, rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3 });
-        }
-
-        function startRankedCountdown() {
-            clearInterval(rankedCountdownInterval);
-            clearInterval(rankedGameInterval);
-            state.rankedCountdown = 3;
-            state.rankedState = 'countdown';
-            render();
-            rankedCountdownInterval = setInterval(() => {
-                state.rankedCountdown--;
-                if (state.rankedCountdown <= 0) {
-                    clearInterval(rankedCountdownInterval);
-                    startRankedGame();
-                } else {
-                    const el = document.getElementById('ranked-countdown-num');
-                    if (el) el.textContent = state.rankedCountdown;
-                }
-            }, 1000);
-        }
-
-        function startRankedGame() {
-            state.rankedState = 'playing';
-            state.rankedClicks = 0;
-            state.rankedTimeLeft = RANKED_TIME;
-            lastRankedClick = 0;
-            SFX.rankedStart();
-            render();
-            rankedGameInterval = setInterval(() => {
-                state.rankedTimeLeft--;
-                if (state.rankedTimeLeft <= 0) {
-                    clearInterval(rankedGameInterval);
-                    state.rankedTimeLeft = 0;
-                    const c = state.rankedClicks;
-                    const earned = getRankedTierByClicks(c);
-                    const previousTier = state.rankedTier; // null if unranked
-                    const current = getRankedTierById(state.rankedTier);
-                    const currentIdx = current ? RANKED_TIERS.findIndex(t => t.id === current.id) : -1;
-                    const earnedIdx = earned ? RANKED_TIERS.findIndex(t => t.id === earned.id) : -1;
-                    const improved = earnedIdx > currentIdx;
-                    const isRankUp = improved && previousTier !== null; // only celebrate if they already had a rank
-                    if (improved) state.rankedTier = earned.id;
-                    state.rankedPersonalBest = Math.max(state.rankedPersonalBest || 0, c);
-                    state.rankedSeasonBest = Math.max(state.rankedSeasonBest || 0, c);
-                    state.rankedGamesPlayed = (state.rankedGamesPlayed || 0) + 1;
-                    state.rankedState = 'results';
-                    state.pendingRankUp = isRankUp ? earned.id : null;
-                    rankedResultLockedUntil = Date.now() + 1500;
-                    if (isRankUp) SFX.rankUp(); else SFX.rankedEnd();
-                    render();
-                } else {
-                    const timerEl = document.querySelector('.ranked-timer');
-                    if (timerEl) timerEl.textContent = state.rankedTimeLeft + 's remaining';
-                    const barEl = document.querySelector('.ranked-bar');
-                    if (barEl) barEl.style.width = ((state.rankedTimeLeft / RANKED_TIME) * 100) + '%';
-                }
-            }, 1000);
-        }
-
-        let lastRankedClick = 0;
-
-        function rankedClick(e) {
-            if (e.cancelable) e.preventDefault();
-            if (state.rankedState !== 'playing') return;
-            const now = Date.now();
-            if (RANKED_CLICK_LIMIT > 0 && now - lastRankedClick < RANKED_CLICK_LIMIT) return;
-            lastRankedClick = now;
-            state.rankedClicks++;
-            SFX.rankedClick();
-            const el = document.querySelector('.ranked-clicks');
-            if (el) el.textContent = state.rankedClicks;
-        }
-
-        function rankedTouchEnd(e) {}
-
-        let rankedResultLockedUntil = 0;
-
-        function closeRankedResult() {
-            if (Date.now() < rankedResultLockedUntil) return; // block accidental clicks
-            clearTimeout(rankedResultTimer);
-            clearInterval(rankedCountdownInterval);
-            clearInterval(rankedGameInterval);
-            const pendingTier = state.pendingRankUp;
-            updateState({ showRanked: false, rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3, pendingRankUp: null });
-            if (pendingTier) {
-                updateState({ showRankUp: true, rankUpTier: pendingTier, xpBoostUntil: Date.now() + 20 * 60 * 1000 });
-                setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
-            }
-        }
-
-        function playAgainRanked() {
-            clearTimeout(rankedResultTimer);
-            clearInterval(rankedCountdownInterval);
-            clearInterval(rankedGameInterval);
-            updateState({ rankedState: 'idle', rankedClicks: 0, rankedTimeLeft: RANKED_TIME, rankedCountdown: 3 });
+            updateState({ showRanked: true, rankedState: 'profile' });
         }
 
         function rankedTierColor(id) {
@@ -923,6 +864,32 @@
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
             if (!skipRender) render();
+        }
+
+        function getPermanentMult() {
+            // Sum all equipped permanent boost multipliers (only one can be equipped at a time, but use highest owned)
+            const equippedId = state.equippedPermBoost;
+            if (!equippedId) return 1;
+            const item = SHOP_ITEMS.find(i => i.id === equippedId && i.category === 'perm_boost');
+            return item ? item.permMult : 1;
+        }
+
+        function buySpecialItem(itemId) {
+            const item = SHOP_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+            if (state.inventory[itemId] > 0) return; // already owned
+            const price = getItemPrice(item);
+            if (state.gold < price) return;
+            updateState({
+                gold: state.gold - price,
+                inventory: { ...state.inventory, [itemId]: 1 }
+            });
+        }
+
+        function getActiveSkin() {
+            const equippedId = state.equippedSkin;
+            if (!equippedId) return null;
+            return SHOP_ITEMS.find(i => i.id === equippedId && i.isSkin) || null;
         }
 
         function getItemPrice(item) {
@@ -940,9 +907,6 @@
             return basePrestigeCost / rate;
         }
 
-        // ── NUMBER FORMATTING ──────────────────────────────────────
-        // For numbers >= 1 trillion (1e12): show scientific notation like 1.2e+15
-        // Otherwise: use standard abbreviated formatting
         function formatLargeNumber(n, decimals) {
             if (decimals === undefined) decimals = 2;
             if (isNaN(n) || !isFinite(n)) return '0';
@@ -996,13 +960,11 @@
                         changes.inventory = newInv;
                         message = 'Gave 1x XP Surge item. Use it from Storage to activate.';
                     } else if (sub === 'all') {
-                        // Give 1 of every item
                         const newInv = { ...state.inventory };
                         SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
                         changes.inventory = newInv;
                         message = `Gave 1x of all ${SHOP_ITEMS.length} items`;
                     } else {
-                        // Collect up to 25 item IDs from parts[1..25], last numeric arg = amount
                         const rawArgs = parts.slice(1);
                         const lastArg = rawArgs[rawArgs.length - 1];
                         const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
@@ -1034,18 +996,27 @@
                     const amt = parseInt(parts[1]);
                     if (isNaN(amt)) {
                         message = "Usage: /xp [n]";
-                    } else if (!state.rankedTier) {
-                        message = "Must be ranked first to earn XP";
                     } else if (state.rankedTier === 'master') {
                         const newMasterXP = (state.masterXP || 0) + amt;
                         changes.masterXP = newMasterXP;
                         message = `Added ${amt} Master XP (total: ${newMasterXP})`;
                     } else {
+                        // Award XP — can promote from unranked to ranked too
                         let newXP = (state.rankedXP || 0) + amt;
                         let newTier = state.rankedTier;
                         let promoted = [];
                         let promoting = true;
-                        while (promoting) {
+
+                        if (!newTier) {
+                            // Unranked: need UNRANKED_XP_NEEDED to reach Beginner I
+                            if (newXP >= UNRANKED_XP_NEEDED) {
+                                newXP -= UNRANKED_XP_NEEDED;
+                                newTier = RANKED_TIERS[0].id;
+                                promoted.push(RANKED_TIERS[0].name);
+                            }
+                        }
+
+                        while (promoting && newTier) {
                             const tier = getRankedTierById(newTier);
                             const next = getNextRankedTier(newTier);
                             if (tier && next && tier.xpNeeded && newXP >= tier.xpNeeded) {
@@ -1103,7 +1074,7 @@
                         setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
                     }
                 } else {
-                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /give [id1] [id2]..., /give all, /quest, /xp [n], /rank [tier], /rank up";
+                    message = "Commands: /money [n], /rebirth [n], /give [id] [amt], /give all, /quest, /xp [n], /rank [tier], /rank up";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -1136,15 +1107,13 @@
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
             
-            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1);
+            const currentPower = (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getPermanentMult();
             
-            // Trigger squish animation on the inner container
             const gubbyElement = document.querySelector('.gubby-container');
             if (gubbyElement) {
                 gubbyElement.classList.remove('animate-squish');
                 void gubbyElement.offsetWidth;
                 gubbyElement.classList.add('animate-squish');
-                // Remove after animation to reset
                 setTimeout(() => gubbyElement.classList.remove('animate-squish'), 400);
             }
 
@@ -1153,7 +1122,6 @@
             state.lifetimeClicks = state.lifetimeClicks + 1;
             if (state.clickSound !== false) SFX.click();
 
-            // Update click counter inline to avoid full re-render interrupting float animation
             const clicksEl = document.querySelector('.clicks-live');
             if (clicksEl) clicksEl.textContent = formatLargeNumber(state.clicks, 0);
             const totalEl = document.querySelector('.total-live');
@@ -1214,7 +1182,6 @@
             updateState({ gold: newGold, gambleResult: { win, message }, gambleInput: '' });
             if (win) {
                 SFX.gambleWin();
-                // Track gamble_wins quest progress
                 const updatedQuests = state.activeQuests.map(q => {
                     if (q.type === 'gamble_wins' && !q.completed) {
                         const newProgress = (q.progress || 0) + 1;
@@ -1231,7 +1198,6 @@
 
         function travelTo(destId) {
             const destination = DESTINATIONS.find(d => d.id === destId);
-            
             const oldRate = CONVERSION_RATES[state.theme];
             const newRate = CONVERSION_RATES[destId];
             const conversionFactor = oldRate / newRate;
@@ -1241,8 +1207,8 @@
                 gold: newGold,
                 showTravelModal: false,
                 notification: { 
-                    title: "LOCATION CHANGED", 
-                    message: `Welcome to ${destination.name}. Currency converted to ${CURRENCIES[destId].name}s!`, 
+                    title: "CHAPTER UNLOCKED", 
+                    message: `Welcome to Chapter ${destination.chapter}: ${destination.name}. Currency converted to ${CURRENCIES[destId].name}s!`, 
                     type: "info" 
                 }
             });
@@ -1254,7 +1220,6 @@
             if (state.gold < cost) return;
             const nextPrestige = state.prestigeLevel + 1;
             
-            // Update quest progress for prestige quests
             const updatedQuests = state.activeQuests.map(quest => {
                 if (quest.type === 'prestige') {
                     return { ...quest, progress: (quest.progress || 0) + 1 };
@@ -1281,7 +1246,6 @@
         function setItemQty(delta) {
             const newQty = Math.max(1, Math.min(25, state.itemPopupQty + delta));
             state.itemPopupQty = newQty;
-            // Update UI directly without full re-render
             const qtyInput = document.querySelector('.qty-input');
             if (qtyInput) qtyInput.value = newQty;
             const totalEl = document.querySelector('.popup-total');
@@ -1330,7 +1294,6 @@
             const unitPrice = getItemPrice(item);
             const totalPrice = unitPrice * state.itemPopupQty;
             if (state.gold >= totalPrice) {
-                // Update quest progress for buy_and_use quests
                 const updatedQuests = state.activeQuests.map(quest => {
                     if (quest.type === 'buy_and_use' && !quest.hasBought) {
                         return { ...quest, hasBought: true };
@@ -1353,7 +1316,6 @@
         function useItem(itemId) {
             const item = SHOP_ITEMS.find(i => i.id === itemId);
             if (state.inventory[itemId] > 0 && !state.activeBuff) {
-                // Update quest progress for use and buy quests
                 const updatedQuests = state.activeQuests.map(quest => {
                     if (quest.type === 'use' || quest.type === 'buy') {
                         return { ...quest, progress: (quest.progress || 0) + 1 };
@@ -1385,18 +1347,23 @@
         }
 
         function toggleEquip(itemId) {
-            const wasEquipped = state.equippedItem === itemId;
-            if (state.equippedItem === itemId) {
-                updateState({ equippedItem: null });
+            const item = SHOP_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+            if (item.category === 'perm_boost') {
+                updateState({ equippedPermBoost: state.equippedPermBoost === itemId ? null : itemId });
+            } else if (item.isSkin) {
+                updateState({ equippedSkin: state.equippedSkin === itemId ? null : itemId });
+                document.querySelectorAll('.floating-star').forEach(s => s.remove());
+                createFloatingStars();
             } else {
-                updateState({ equippedItem: itemId });
+                if (state.equippedItem === itemId) {
+                    updateState({ equippedItem: null });
+                } else {
+                    updateState({ equippedItem: itemId });
+                }
+                document.querySelectorAll('.floating-star').forEach(s => s.remove());
+                createFloatingStars();
             }
-            
-            // Clear all existing falling particles
-            document.querySelectorAll('.floating-star').forEach(star => star.remove());
-            
-            // Restart particle generation with correct image
-            createFloatingStars();
         }
 
         function generateQuest() {
@@ -1416,18 +1383,6 @@
                 const quest = availableQuests[Math.floor(Math.random() * availableQuests.length)];
                 const newQuest = { ...quest, progress: 0, completed: false };
                 updateState({ activeQuests: [...state.activeQuests, newQuest] });
-            }
-        }
-
-        function refreshQuests() {
-            const cost = 1000000000; // 1 billion
-            const costInCurrency = cost / CONVERSION_RATES[state.theme];
-            if (state.gold >= costInCurrency) {
-                updateState({ 
-                    gold: state.gold - costInCurrency,
-                    activeQuests: [],
-                    completedQuestIds: []
-                });
             }
         }
 
@@ -1454,11 +1409,9 @@
                     case 'use':
                     case 'gamble_wins':
                     case 'buy_and_use':
-                        // Progress is already tracked per quest
                         break;
                 }
                 
-                // For gold quests, convert the target to current currency
                 let targetToCheck = quest.target;
                 if (quest.type === 'gold') {
                     targetToCheck = quest.target / CONVERSION_RATES[state.theme];
@@ -1476,7 +1429,7 @@
             });
             
             if (updated) {
-                updateState({ activeQuests: updatedQuests }, true); // Skip render to prevent flashing
+                updateState({ activeQuests: updatedQuests }, true);
             }
         }
 
@@ -1485,7 +1438,7 @@
             if (!quest || !quest.completed) return;
             
             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
-            const xpGained = state.rankedTier ? getQuestXP(quest) : 0;
+            const xpGained = getQuestXP(quest);
             const isMaster = state.rankedTier === 'master';
 
             let newMasterXP = state.masterXP || 0;
@@ -1494,13 +1447,21 @@
             let rankUpTier = null;
 
             if (isMaster) {
-                // At master: XP goes to masterXP pool for rewards
                 newMasterXP += xpGained;
-            } else if (state.rankedTier) {
-                // Below master: XP advances rank
+            } else {
+                // Always award XP (even to unranked players)
                 newXP += xpGained;
                 let promoting = true;
-                while (promoting) {
+
+                // Check if unranked and can reach Beginner I
+                if (!newTier && newXP >= UNRANKED_XP_NEEDED) {
+                    newXP -= UNRANKED_XP_NEEDED;
+                    newTier = RANKED_TIERS[0].id;
+                    rankUpTier = newTier;
+                }
+
+                // Continue promoting through tiers
+                while (promoting && newTier) {
                     const tier = getRankedTierById(newTier);
                     const next = getNextRankedTier(newTier);
                     if (tier && next && tier.xpNeeded && newXP >= tier.xpNeeded) {
@@ -1526,7 +1487,7 @@
             if (rankUpTier) {
                 updates.showRankUp = true;
                 updates.rankUpTier = rankUpTier;
-                updates.xpBoostUntil = Date.now() + 20 * 60 * 1000; // 20 min XP boost
+                updates.xpBoostUntil = Date.now() + 20 * 60 * 1000;
             }
             updateState(updates);
             if (rankUpTier) SFX.rankUp(); else SFX.questClaim();
@@ -1542,12 +1503,10 @@
             if ((state.claimedMasterRewards || []).includes(milestoneIdx)) return;
             if ((state.masterXP || 0) < milestone.xp) return;
 
-            // Pick a random item from the marketplace
             const randomItem = SHOP_ITEMS[Math.floor(Math.random() * SHOP_ITEMS.length)];
             const newInv = { ...state.inventory };
             newInv[randomItem.id] = (newInv[randomItem.id] || 0) + 1;
 
-            // Lucky multiplier: 0.05x to 20x (weighted toward lower values)
             const raw = Math.random();
             const luckyMult = parseFloat((0.05 + Math.pow(raw, 2) * 19.95).toFixed(2));
 
@@ -1572,7 +1531,6 @@
                 rankedXP: 0,
                 masterXP: 0,
                 claimedMasterRewards: [],
-                rankedState: 'idle',
             });
         }
 
@@ -1582,8 +1540,7 @@
             state.marketTrend = state.marketQueue[0] > state.marketMultiplier ? 'up' : 'down';
             state.marketQueue = [...state.marketQueue.slice(1), nextRate];
             
-            // Only re-render if admin console and modals are not open
-            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showTravelModal && !state.showRankedInfo && !state.showSettings) {
+            if (!state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showQuestModal && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showSpeedRun && !state.showTravelModal && !state.showRankedInfo && !state.showSettings) {
                 render();
             }
         }, 7000);
@@ -1597,7 +1554,6 @@
                     shouldRender = true;
                 } else { 
                     state.activeBuff.timeLeft = state.activeBuff.timeLeft - 1;
-                    // Update buff timer display without full re-render
                     const buffDisplay = document.querySelector('.buff-timer-display');
                     if (buffDisplay) {
                         buffDisplay.textContent = `${state.activeBuff.name} (${state.activeBuff.timeLeft}s)`;
@@ -1606,17 +1562,15 @@
             }
             if (state.discoEventTimer > 0) {
                 state.discoEventTimer = state.discoEventTimer - 1;
-                // Update disco timer display without full re-render
                 const discoDisplay = document.querySelector('.disco-timer-display');
                 if (discoDisplay) {
                     discoDisplay.textContent = `Disco Mode: ${state.discoEventTimer}s`;
                 }
                 if (state.discoEventTimer === 0) {
-                    shouldRender = true; // Re-render to remove disco background
+                    shouldRender = true;
                 }
             }
 
-            // Update XP boost countdown widget
             const xpBoostWidget = document.querySelector('.xp-boost-widget');
             if (xpBoostWidget) {
                 if ((state.xpBoostUntil || 0) > Date.now()) {
@@ -1630,7 +1584,6 @@
                 }
             }
 
-            // XP Surge item expiry + widget
             if ((state.xpSurgeUntil || 0) > 0 && Date.now() >= state.xpSurgeUntil) {
                 state.xpSurgeUntil = 0;
                 shouldRender = true;
@@ -1648,14 +1601,12 @@
                 }
             }
 
-            // Expire lucky multiplier
             if ((state.luckyMultUntil || 0) > 0 && Date.now() >= state.luckyMultUntil) {
                 state.luckyMultUntil = 0;
                 state.luckyMultValue = 1;
                 shouldRender = true;
             }
 
-            // Update lucky mult countdown and market stat display
             const luckyWidget = document.querySelector('.lucky-mult-widget');
             if (luckyWidget) {
                 if ((state.luckyMultUntil || 0) > Date.now()) {
@@ -1666,7 +1617,6 @@
                     luckyWidget.style.display = 'none';
                 }
             }
-            // Keep market stat display in sync with lucky mult
             const marketStatEl = document.querySelector('.market-rate-live');
             if (marketStatEl) {
                 const luckyActive = (state.luckyMultUntil || 0) > Date.now();
@@ -1676,8 +1626,7 @@
                     : `<span class="${parseFloat(displayRate) >= 1.2 ? 'text-emerald-600' : 'text-slate-900'}">${displayRate}x</span>`;
             }
             
-            // Only render if admin console is not open, no modals are open, and something important changed
-            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showTravelModal && !state.showRankedInfo && !state.showSettings) {
+            if (shouldRender && !state.showAdmin && !state.showMarketModal && !state.showStorageModal && !state.showItemPopup && !state.showRanked && !state.showGamble && !state.showGameModes && !state.showSpeedRun && !state.showTravelModal && !state.showRankedInfo && !state.showSettings) {
                 render();
             }
         }, 1000);
@@ -1685,7 +1634,10 @@
         function createFloatingStars() {
             if (state.floatingStars === false) return;
             const starCount = 8;
-            const imageUrl = 'https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png';
+            const activeSkin = getActiveSkin();
+            const imageUrl = activeSkin 
+                ? activeSkin.skinImg 
+                : 'https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png';
             
             for (let i = 0; i < starCount; i++) {
                 setTimeout(() => {
@@ -1698,22 +1650,19 @@
                     star.style.width = size + 'px';
                     star.style.height = size + 'px';
                     
-                    // Spawn on sides: either 0-30% or 70-100%
                     let leftPosition;
                     if (Math.random() < 0.5) {
-                        // Left side (0-30%)
                         leftPosition = Math.random() * 30;
                     } else {
-                        // Right side (70-100%)
                         leftPosition = 70 + Math.random() * 30;
                     }
                     star.style.left = leftPosition + 'vw';
                     star.style.top = '-100px';
                     
-                    const drift = (Math.random() - 0.5) * 150; // More drift for variety
+                    const drift = (Math.random() - 0.5) * 150;
                     star.style.setProperty('--drift', drift + 'px');
                     
-                    const duration = 12 + Math.random() * 6; // Slower fall (12-18 seconds)
+                    const duration = 12 + Math.random() * 6;
                     star.style.animationDuration = duration + 's';
                     
                     document.body.appendChild(star);
@@ -1727,10 +1676,8 @@
 
         setInterval(createFloatingStars, 16000);
 
-        const DAILY_REFRESH_MS = 24 * 60 * 60 * 1000; // 24 hours
+        const DAILY_REFRESH_MS = 24 * 60 * 60 * 1000;
 
-        // Master XP reward tiers — unlocked after reaching Master rank
-        // Master XP milestone roadmap — each milestone gives a random item + lucky multiplier
         const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII','XXVIII','XXIX','XXX','XXXI','XXXII','XXXIII','XXXIV','XXXV','XXXVI','XXXVII','XXXVIII','XXXIX','XL','XLI','XLII','XLIII','XLIV','XLV','XLVI','XLVII','XLVIII','XLIX','L'];
         const MASTER_MILESTONES = (() => {
             const milestones = [];
@@ -1743,14 +1690,13 @@
         })();
 
         setInterval(() => {
-            // Daily quest refresh — clear completed IDs so quests can be re-taken
             if (Date.now() - (state.questLastRefresh || 0) >= DAILY_REFRESH_MS) {
                 state.questLastRefresh = Date.now();
                 state.completedQuestIds = [];
                 state.activeQuests = [];
                 render();
             }
-        }, 60000); // check every minute
+        }, 60000);
         
 
         function render() {
@@ -1778,8 +1724,14 @@
             const activeElementId = document.activeElement ? document.activeElement.id : null;
             const previousValue = activeElementId === 'admin-input' ? document.activeElement.value : '';
 
-            // Calculate total items in inventory
             const totalItems = Object.values(state.inventory).reduce((sum, count) => sum + count, 0);
+
+            // Ranked XP display helpers
+            const currentTierObj = getRankedTierById(state.rankedTier);
+            const nextTierObj = state.rankedTier ? getNextRankedTier(state.rankedTier) : null;
+            const xpTowardNext = state.rankedXP || 0;
+            const xpNeededForNext = state.rankedTier ? (currentTierObj?.xpNeeded || 100) : UNRANKED_XP_NEEDED;
+            const xpPctBar = state.rankedTier === 'master' ? 100 : Math.min(100, (xpTowardNext / xpNeededForNext) * 100);
 
             root.innerHTML = `
                 <div class="min-h-screen flex flex-col items-center px-4 py-4 select-none overflow-x-hidden pb-16 transition-colors duration-500">
@@ -1804,8 +1756,9 @@
                         </div>
                     ` : ''}
 
+                    <!-- Travel button now uses compass/map-pin icon instead of map -->
                     <button onclick="updateState({showTravelModal: true})" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
-                        <i data-lucide="map" class="text-indigo-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-12 transition-transform"></i>
+                        <i data-lucide="book-open" class="text-indigo-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform"></i>
                     </button>
                     <button onclick="updateState({showSettings: true})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="settings" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-90 transition-transform duration-300"></i>
@@ -1822,8 +1775,6 @@
                         return `
                         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})">
                             <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
-
-                                <!-- Header stripe -->
                                 <div class="${tierColor} px-6 py-4 flex justify-between items-center">
                                     <div>
                                         <p class="text-white/70 text-xs font-black uppercase tracking-widest">${popupItem.category} boost</p>
@@ -1831,9 +1782,7 @@
                                     </div>
                                     <button onclick="updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
                                 </div>
-
                                 <div class="p-6">
-                                    <!-- Stats row -->
                                     <div class="grid grid-cols-2 gap-2 mb-5">
                                         <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Power</p>
@@ -1844,8 +1793,6 @@
                                             <p class="font-black text-slate-900 text-sm">${popupItem.duration + 's'}</p>
                                         </div>
                                     </div>
-
-                                    <!-- Quantity -->
                                     <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Quantity <span class="text-slate-300">(max 25)</span></p>
                                     <div class="flex items-stretch gap-0 mb-5 border-4 border-slate-300 overflow-hidden">
                                         <button onclick="setItemQty(-5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-r-3 border-slate-300 transition-colors">-5</button>
@@ -1860,8 +1807,6 @@
                                         <button onclick="setItemQty(1)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+1</button>
                                         <button onclick="setItemQty(5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-l-3 border-slate-300 transition-colors">+5</button>
                                     </div>
-
-                                    <!-- Total + Buy -->
                                     <div class="flex items-center justify-between mb-4">
                                         <span class="font-black text-slate-500 uppercase text-sm">Total Cost</span>
                                         <span class="popup-total font-black text-2xl ${canAfford ? 'text-slate-900' : 'text-red-500'}">${formatCost(totalPrice)}</span>
@@ -1888,7 +1833,11 @@
                     ${state.showTravelModal ? `
                         <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop">
                             <div class="bg-white p-6 sm:p-10 pixel-card max-w-4xl w-full modal-content max-h-[90vh] overflow-y-auto">
-                                <h4 class="font-black text-2xl sm:text-3xl text-center mb-6 sm:mb-10 uppercase text-slate-900">Travel Map</h4>
+                                <div class="flex items-center justify-center gap-3 mb-2">
+                                    <i data-lucide="book-open" class="w-7 h-7 text-indigo-500"></i>
+                                    <h4 class="font-black text-2xl sm:text-3xl text-center uppercase text-slate-900">Chapters</h4>
+                                </div>
+                                <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Select a chapter to travel to</p>
                                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                                     ${DESTINATIONS.map(dest => {
                                         const isPrestigeLocked = state.prestigeLevel < dest.req;
@@ -1898,12 +1847,14 @@
                                             <button 
                                                 ${isLocked ? 'disabled' : ''}
                                                 onclick="travelTo('${dest.id}')"
-                                                class="p-6 sm:p-8 flex flex-col items-center gap-2 sm:gap-3 transition-all border-4 ${isLocked ? 'opacity-40 grayscale bg-slate-100 border-slate-400' : `bg-white ${isCurrent ? 'border-indigo-500' : 'border-slate-600'} hover:border-slate-900`} ${!isLocked && !isCurrent ? 'hover:-translate-y-1' : ''}"
+                                                class="p-5 sm:p-6 flex flex-col items-center gap-2 transition-all border-4 ${isLocked ? 'opacity-40 grayscale bg-slate-100 border-slate-400' : `bg-white ${isCurrent ? 'border-indigo-500 bg-indigo-50' : 'border-slate-600'} hover:border-slate-900`} ${!isLocked && !isCurrent ? 'hover:-translate-y-1' : ''}"
                                                 style="box-shadow: ${isLocked ? '0 0 0' : '4px 4px 0 rgba(0,0,0,0.2)'};"
                                             >
-                                                <span class="font-black text-sm sm:text-lg uppercase text-center">${dest.name}</span>
-                                                <div class="flex flex-col items-center gap-1">
-                                                    <span class="text-xs sm:text-sm font-black text-indigo-600">x${dest.mult} Profit</span>
+                                                <span class="text-xs font-black text-indigo-400 uppercase tracking-widest">Chapter ${dest.chapter}</span>
+                                                <span class="font-black text-sm sm:text-base uppercase text-center text-slate-900 leading-tight">${dest.name}</span>
+                                                <div class="flex flex-col items-center gap-1 mt-1">
+                                                    <span class="text-xs font-black text-indigo-600">x${dest.mult} Profit</span>
+                                                    ${isCurrent ? `<span class="text-xs font-bold text-emerald-600 mt-1">Current</span>` : ''}
                                                     ${isPrestigeLocked ? `<span class="text-xs font-bold text-red-600 mt-1">Prestige ${dest.req}</span>` : ''}
                                                 </div>
                                             </button>
@@ -1922,7 +1873,6 @@
                                     <h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Marketplace</h4>
                                     <button onclick="updateState({showMarketModal: false, marketCategory: null})" class="text-slate-500 hover:text-slate-900 text-3xl font-black">✕</button>
                                 </div>
-                                
                                 ${renderMarketContent()}
                             </div>
                         </div>
@@ -1938,7 +1888,6 @@
                                     </div>
                                     <button onclick="updateState({showStorageModal: false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                                 </div>
-                                
                                 ${renderStorageContent()}
                             </div>
                         </div>
@@ -1948,15 +1897,15 @@
                         const questRefreshHours = Math.max(0, Math.ceil((DAILY_REFRESH_MS - (Date.now() - (state.questLastRefresh || Date.now()))) / (1000*60*60)));
                         const xpBoosted = (state.xpBoostUntil || 0) > Date.now();
                         const xpSurged = (state.xpSurgeUntil || 0) > Date.now();
-                        const xpBoostMinsLeft = xpBoosted ? Math.ceil(((state.xpBoostUntil || 0) - Date.now()) / 60000) : 0;
-                        const xpSurgeMinsLeft = xpSurged ? Math.ceil(((state.xpSurgeUntil || 0) - Date.now()) / 60000) : 0;
                         return `
                         <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target === event.currentTarget) updateState({showQuestModal: false})">
                             <div class="bg-white p-6 sm:p-10 pixel-card max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content">
                                 <div class="flex justify-between items-center mb-6 sm:mb-8">
                                     <div>
                                         <h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Quests</h4>
-                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active · refreshes in ${questRefreshHours}h${(xpBoosted && xpSurged) ? ` · <span class="text-purple-500 font-black">1.95x XP Multiplier</span>` : xpBoosted ? ` · <span class="text-rose-500 font-black">1.5x XP Boost</span>` : xpSurged ? ` · <span class="text-purple-500 font-black">1.3x XP Multiplier</span>` : ''}</p>
+                                        <p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active · refreshes in ${questRefreshHours}h</p>
+                                        ${(xpBoosted || xpSurged) ? `<p class="text-xs font-black mt-1 ${xpBoosted && xpSurged ? 'text-purple-500' : xpBoosted ? 'text-rose-500' : 'text-purple-500'}">${xpBoosted && xpSurged ? '1.95x XP Multiplier active!' : xpBoosted ? '1.5x XP Boost active!' : '1.3x XP Multiplier active!'}</p>` : ''}
+                                        ${!state.rankedTier ? `<p class="text-xs font-black text-amber-600 mt-1">Earn 20 XP from quests to reach Beginner I! (${xpTowardNext}/${UNRANKED_XP_NEEDED} XP)</p>` : ''}
                                     </div>
                                     <button onclick="updateState({showQuestModal: false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                                 </div>
@@ -1972,35 +1921,30 @@
                                         ${state.activeQuests.map(quest => {
                                             const rewardInCurrency = quest.reward / CONVERSION_RATES[state.theme];
                                             const progress = quest.progress || 0;
-                                            // Convert target for gold quests to current currency
                                             const displayTarget = quest.type === 'gold' ? quest.target / CONVERSION_RATES[state.theme] : quest.target;
                                             const displayProgress = progress;
                                             return `
                                             <div class="border-4 ${quest.completed ? 'border-emerald-500 bg-emerald-50' : 'border-amber-500 bg-amber-50'} p-6">
                                                 <div class="flex items-start justify-between mb-4">
                                                     <div>
-                                                        <div class="flex items-center gap-2">
-                                                            <h5 class="font-black text-xl uppercase text-slate-900">${quest.name}</h5>
-                                                        </div>
+                                                        <h5 class="font-black text-xl uppercase text-slate-900">${quest.name}</h5>
                                                         <p class="text-sm font-bold text-slate-600 mt-1">${quest.type === 'gold' ? `Earn ${formatCost(quest.target / CONVERSION_RATES[state.theme])} ${CURRENCIES[state.theme].name}${quest.target / CONVERSION_RATES[state.theme] !== 1 ? 's' : ''} total` : quest.description}</p>
                                                     </div>
                                                     <span class="pixel-badge ${quest.completed ? 'bg-emerald-500 border-emerald-700' : 'bg-amber-500 border-amber-700'} text-white text-xs">${quest.completed ? 'Complete!' : 'Active'}</span>
                                                 </div>
-                                                
                                                 <div class="mb-4">
                                                     <div class="w-full h-6 bg-slate-200 border-4 border-slate-900 overflow-hidden">
-                                                        <div class="h-full ${quest.completed ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (displayProgress / displayTarget) * 100)}%; transition: width 0.3s ease;"></div>
+                                                        <div class="h-full ${quest.completed ? 'bg-emerald-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (displayProgress / displayTarget) * 100)}%;"></div>
                                                     </div>
                                                     <p class="text-xs font-black text-slate-700 mt-2">${formatCost(displayProgress)} / ${formatCost(displayTarget)}</p>
                                                 </div>
-                                                
                                                 <div class="flex items-center justify-between">
                                                     <div class="flex items-center gap-3 text-sm font-black text-emerald-600">
                                                         <div class="flex items-center gap-2">
                                                             <i data-lucide="gift" class="w-4 h-4"></i>
                                                             <span>Reward: ${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</span>
                                                         </div>
-                                                        ${state.rankedTier ? `<div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${getQuestXP(quest)} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x)' : ''}</span></div>` : ''}
+                                                        <div class="flex items-center gap-1 text-rose-500"><span class="text-xs">+${getQuestXP(quest)} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x)' : ''}</span></div>
                                                     </div>
                                                     ${quest.completed ? `
                                                         <button onclick="claimQuest('${quest.id}')" class="pixel-button bg-emerald-500 border-emerald-700 text-white px-6 py-2 font-black uppercase animate-pulse">
@@ -2037,7 +1981,7 @@
                                                                 <i data-lucide="gift" class="w-3 h-3 text-emerald-600"></i>
                                                                 <p class="text-xs font-black text-emerald-600 ${isCompleted ? 'line-through' : ''}">${formatCost(rewardInCurrency)} ${CURRENCIES[state.theme].name}${rewardInCurrency !== 1 ? 's' : ''}</p>
                                                             </div>
-                                                            ${state.rankedTier ? `<p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))}${(xpBoosted||xpSurged) ? ' → ' + getQuestXP(quest) : ''} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x XP Multiplier)' : ''}</p>` : ''}
+                                                            <p class="text-xs font-black text-rose-500">+${Math.max(10, Math.floor(quest.reward/500))}${(xpBoosted||xpSurged) ? ' → ' + getQuestXP(quest) : ''} ${state.rankedTier === 'master' ? 'Master XP' : 'XP'}${(xpBoosted && xpSurged) ? ' (1.95x)' : xpBoosted ? ' (1.5x)' : xpSurged ? ' (1.3x)' : ''}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2047,205 +1991,99 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    `; })() : ''}
+                        `;
+                    })() : ''}
 
                     ${state.showRanked ? (() => {
-                        const rs = state.rankedState;
                         const currentTier = getRankedTierById(state.rankedTier);
                         const nextTier = state.rankedTier ? getNextRankedTier(state.rankedTier) : null;
                         const xp = state.rankedXP || 0;
-                        const xpNeeded = currentTier?.xpNeeded || 100;
-                        const xpPct = nextTier ? Math.min(100, (xp / xpNeeded) * 100) : 100;
+                        const xpForNext = state.rankedTier ? (currentTier?.xpNeeded || 100) : UNRANKED_XP_NEEDED;
+                        const xpPct = state.rankedTier === 'master' ? 100 : Math.min(100, (xp / xpForNext) * 100);
+                        const isMaster = state.rankedTier === 'master';
+                        const masterXP = state.masterXP || 0;
+                        const claimed = state.claimedMasterRewards || [];
 
-                        let content = '';
-                        if (rs === 'profile') {
-                            const isMaster = state.rankedTier === 'master';
-                            const masterXP = state.masterXP || 0;
-                            const claimed = state.claimedMasterRewards || [];
-                            content = `
-                                <div class="text-center">
+                        const content = `
+                            <div class="text-center">
+                                ${state.rankedTier ? `
                                     <p class="text-slate-400 font-bold uppercase text-xs tracking-widest mb-2">Current Rank</p>
-                                    <img src="${currentTier?.icon}" class="w-20 h-20 mx-auto mb-2 pixelated" style="image-rendering:pixelated;" />
-                                    <p class="font-black text-3xl ${rankedTierColor(state.rankedTier)} mb-4">${currentTier?.name || 'Unranked'}</p>
-                                    ${nextTier ? `
-                                        <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-3 text-left">
-                                            <div class="flex justify-between mb-2">
-                                                <span class="text-xs font-black uppercase text-slate-400">XP to ${nextTier.name}</span>
-                                                <span class="text-xs font-black text-slate-700">${xp} / ${xpNeeded}</span>
-                                            </div>
-                                            <div class="w-full bg-slate-200 h-4 border-2 border-slate-300">
-                                                <div class="h-full bg-rose-500" style="width:${xpPct}%"></div>
-                                            </div>
+                                    <img src="${currentTier?.icon}" class="w-24 h-24 mx-auto mb-2" style="image-rendering:pixelated;" />
+                                    <p class="font-black text-3xl ${rankedTierColor(state.rankedTier)} mb-4">${currentTier?.name}</p>
+                                ` : `
+                                    <p class="text-slate-400 font-bold uppercase text-xs tracking-widest mb-2">Current Rank</p>
+                                    <img src="https://i.postimg.cc/JnfRd2R8/diamond-master-1.png" class="w-20 h-20 mx-auto mb-2 opacity-30" style="image-rendering:pixelated;filter:grayscale(1);" />
+                                    <p class="font-black text-2xl text-slate-400 mb-4">Unranked</p>
+                                `}
+                                
+                                ${!isMaster ? `
+                                    <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-3 text-left">
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-slate-400">${state.rankedTier ? `XP to ${nextTier?.name || 'Max'}` : `XP to Beginner I`}</span>
+                                            <span class="text-xs font-black text-slate-700">${xp} / ${xpForNext}</span>
                                         </div>
-                                        <p class="text-xs font-bold text-slate-400">Complete quests to earn XP</p>
-                                    ` : isMaster ? `
-                                        <div class="bg-amber-50 border-3 border-amber-300 p-4 mb-3 text-left">
-                                            <div class="flex justify-between mb-2">
-                                                <span class="text-xs font-black uppercase text-amber-600">Master XP</span>
-                                                <span class="text-xs font-black text-slate-700">${masterXP} XP earned</span>
-                                            </div>
-                                            <p class="text-xs text-slate-500 font-bold mb-3">Reach milestones to earn a random item + lucky market multiplier (0.05x–20x)!</p>
-                                            <div class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
-                                                ${MASTER_MILESTONES.map((m, i) => {
-                                                    const isClaimed = claimed.includes(i);
-                                                    const canClaim = masterXP >= m.xp && !isClaimed;
-                                                    const progress = Math.min(100, (masterXP / m.xp) * 100);
-                                                    return `<div class="border-2 p-2 shrink-0 ${isClaimed ? 'border-slate-200 bg-slate-50 opacity-50' : canClaim ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}">
-                                                        <div class="flex items-center justify-between mb-1">
-                                                            <p class="text-xs font-black text-slate-800">${m.label}</p>
-                                                            ${isClaimed ? '<span class="text-xs font-black text-slate-400 uppercase">Claimed</span>' : canClaim ? `<button onclick="claimMasterReward(${i})" class="bg-amber-500 border-2 border-amber-700 text-white px-3 py-1 text-xs font-black uppercase rounded-sm">Claim</button>` : `<span class="text-xs font-bold text-slate-300">${m.xp} XP</span>`}
-                                                        </div>
-                                                        ${!isClaimed ? `<div class="w-full bg-slate-200 h-1.5 border border-slate-300"><div class="h-full bg-amber-400" style="width:${progress}%"></div></div>` : ''}
-                                                    </div>`;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                        <button onclick="if(confirm('Reset your rank back to Unranked? This clears all Master XP and milestones.')) resetRank()" class="w-full py-3 bg-slate-100 border-3 border-slate-300 text-slate-600 font-black uppercase text-xs pixel-button hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors">Reset Rank</button>
-                                    ` : ''}
-                                </div>`;
-                        } else if (rs === 'idle') {
-                            content = `
-                                <div class="text-center">
-                                    <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mb-6">Click as fast as you can for ${RANKED_TIME} seconds!</p>
-                                    <div class="bg-slate-50 border-3 border-slate-200 p-4 mb-6 text-left">
-                                        <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">Rank Tiers</p>
-                                        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-                                            <span class="text-slate-500">Beginner I</span><span class="text-slate-700">0–${Math.round(34 * RANKED_MULT)}</span>
-                                            <span class="text-slate-500">Beginner II</span><span class="text-slate-700">${Math.round(35 * RANKED_MULT)}–${Math.round(74 * RANKED_MULT)}</span>
-                                            <span class="text-slate-500">Beginner III</span><span class="text-slate-700">${Math.round(75 * RANKED_MULT)}–${Math.round(109 * RANKED_MULT)}</span>
-                                            <span class="text-blue-500">Normal I</span><span class="text-slate-700">${Math.round(110 * RANKED_MULT)}–${Math.round(124 * RANKED_MULT)}</span>
-                                            <span class="text-blue-500">Normal II</span><span class="text-slate-700">${Math.round(125 * RANKED_MULT)}–${Math.round(149 * RANKED_MULT)}</span>
-                                            <span class="text-blue-500">Normal III</span><span class="text-slate-700">${Math.round(150 * RANKED_MULT)}–${Math.round(174 * RANKED_MULT)}</span>
-                                            <span class="text-purple-500">Pro I</span><span class="text-slate-700">${Math.round(175 * RANKED_MULT)}–${Math.round(199 * RANKED_MULT)}</span>
-                                            <span class="text-purple-500">Pro II</span><span class="text-slate-700">${Math.round(200 * RANKED_MULT)}–${Math.round(224 * RANKED_MULT)}</span>
-                                            <span class="text-purple-500">Pro III</span><span class="text-slate-700">${Math.round(225 * RANKED_MULT)}–${Math.round(249 * RANKED_MULT)}</span>
-                                            <span class="text-amber-500">Master</span><span class="text-slate-700">${Math.round(250 * RANKED_MULT)}+</span>
+                                        <div class="w-full bg-slate-200 h-4 border-2 border-slate-300">
+                                            <div class="h-full bg-rose-500 transition-all" style="width:${xpPct}%"></div>
                                         </div>
                                     </div>
-                                    <button onclick="startRankedCountdown()" class="w-full py-4 bg-rose-600 border-4 border-rose-800 text-white font-black text-lg uppercase pixel-button">Start</button>
-                                </div>`;
-                        } else if (rs === 'countdown') {
-                            content = `<div class="text-center py-8"><p class="text-8xl font-black text-rose-600" id="ranked-countdown-num">${state.rankedCountdown}</p><p class="text-slate-500 font-black uppercase tracking-widest mt-4">Get Ready...</p></div>`;
-                        } else if (rs === 'playing') {
-                            const pct = (state.rankedTimeLeft / RANKED_TIME) * 100;
-                            content = `
-                                <div class="text-center">
-                                    <p class="ranked-clicks text-7xl font-black text-slate-900 mb-1">${state.rankedClicks}</p>
-                                    <p class="text-slate-400 font-bold uppercase text-sm mb-4">clicks</p>
-                                    <div class="w-full bg-slate-200 border-3 border-slate-400 h-5 mb-1">
-                                        <div class="ranked-bar h-full bg-rose-500" style="width:${pct}%; transition: width 0.9s linear;"></div>
+                                    <p class="text-xs font-bold text-slate-400 mb-4">Complete quests to earn XP and advance ranks</p>
+                                ` : `
+                                    <div class="bg-amber-50 border-3 border-amber-300 p-4 mb-3 text-left">
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-amber-600">Master XP</span>
+                                            <span class="text-xs font-black text-slate-700">${masterXP} XP earned</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 font-bold mb-3">Reach milestones to earn a random item + lucky market multiplier (0.05x–20x)!</p>
+                                        <div class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+                                            ${MASTER_MILESTONES.map((m, i) => {
+                                                const isClaimed = claimed.includes(i);
+                                                const canClaim = masterXP >= m.xp && !isClaimed;
+                                                const progress = Math.min(100, (masterXP / m.xp) * 100);
+                                                return `<div class="border-2 p-2 shrink-0 ${isClaimed ? 'border-slate-200 bg-slate-50 opacity-50' : canClaim ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}">
+                                                    <div class="flex items-center justify-between mb-1">
+                                                        <p class="text-xs font-black text-slate-800">${m.label}</p>
+                                                        ${isClaimed ? '<span class="text-xs font-black text-slate-400 uppercase">Claimed</span>' : canClaim ? `<button onclick="claimMasterReward(${i})" class="bg-amber-500 border-2 border-amber-700 text-white px-3 py-1 text-xs font-black uppercase rounded-sm">Claim</button>` : `<span class="text-xs font-bold text-slate-300">${m.xp} XP</span>`}
+                                                    </div>
+                                                    ${!isClaimed ? `<div class="w-full bg-slate-200 h-1.5 border border-slate-300"><div class="h-full bg-amber-400" style="width:${progress}%"></div></div>` : ''}
+                                                </div>`;
+                                            }).join('')}
+                                        </div>
                                     </div>
-                                    <p class="ranked-timer text-slate-600 font-black text-base mb-4">${state.rankedTimeLeft}s remaining</p>
-                                    <div
-                                        onmousedown="rankedClick(event)" ontouchstart="rankedClick(event)" ontouchend="rankedTouchEnd(event)"
-                                        class="w-full bg-slate-100 border-4 border-slate-300 select-none cursor-pointer active:bg-rose-100 active:border-rose-400 transition-colors"
-                                        style="height:180px; touch-action:manipulation; user-select:none; display:flex; align-items:center; justify-content:center;"
-                                    >
-                                        <span class="font-black text-slate-300 uppercase text-lg tracking-widest pointer-events-none">tap here</span>
+                                    <button onclick="if(confirm('Reset your rank back to Unranked? This clears all Master XP and milestones.')) resetRank()" class="w-full py-3 bg-slate-100 border-3 border-slate-300 text-slate-600 font-black uppercase text-xs pixel-button hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors mb-3">Reset Rank</button>
+                                `}
+
+                                <div class="bg-slate-50 border-3 border-slate-200 p-4 text-left mb-3">
+                                    <p class="text-xs font-black uppercase text-slate-400 mb-3 tracking-wider">All Rank Tiers</p>
+                                    <div class="grid grid-cols-1 gap-2">
+                                        ${RANKED_TIERS.map(t => {
+                                            const isCurrentTier = state.rankedTier === t.id;
+                                            const tierIdx = RANKED_TIERS.findIndex(x => x.id === t.id);
+                                            const currentIdx = state.rankedTier ? RANKED_TIERS.findIndex(x => x.id === state.rankedTier) : -1;
+                                            const isUnlocked = tierIdx <= currentIdx;
+                                            return `<div class="flex items-center gap-3 ${isCurrentTier ? 'bg-rose-50 border-2 border-rose-300 p-2' : 'py-1'}">
+                                                <img src="${t.icon}" class="w-8 h-8 ${isUnlocked ? '' : 'opacity-30 grayscale'}" style="image-rendering:pixelated;"/>
+                                                <span class="text-xs font-black ${isCurrentTier ? rankedTierColor(t.id) : isUnlocked ? 'text-slate-700' : 'text-slate-400'} uppercase">${t.name}${isCurrentTier ? ' ← You' : ''}</span>
+                                                ${t.xpNeeded ? `<span class="ml-auto text-xs font-bold text-slate-300">${t.xpNeeded} XP</span>` : '<span class="ml-auto text-xs font-black text-amber-500">MAX</span>'}
+                                            </div>`;
+                                        }).join('')}
                                     </div>
-                                </div>`;
-                        } else if (rs === 'results') {
-                            const c = state.rankedClicks;
-                            const earnedTier = getRankedTierByClicks(c);
-                            const rColor = rankedTierColor(earnedTier?.id);
-                            const currentIdx = state.rankedTier ? RANKED_TIERS.findIndex(t => t.id === state.rankedTier) : -1;
-                            const earnedIdx = earnedTier ? RANKED_TIERS.findIndex(t => t.id === earnedTier.id) : 0;
-                            const improved = earnedIdx > currentIdx;
-                            content = `
-                                <div class="text-center py-4">
-                                    <p class="text-slate-500 font-bold uppercase text-xs tracking-widest mb-2">${improved ? 'New Rank!' : 'Result'}</p>
-                                    <img src="${earnedTier?.icon}" class="w-20 h-20 mx-auto mb-2 pixelated" style="image-rendering:pixelated;" />
-                                    <p class="font-black text-4xl ${rColor} mb-1">${earnedTier?.name || 'Beginner I'}</p>
-                                    <p class="text-slate-400 font-bold text-sm mb-3">${c} clicks in ${RANKED_TIME}s</p>
-                                    ${improved ? '<p class="text-emerald-600 font-black text-sm uppercase">Rank Up!</p>' : '<p class="text-slate-400 text-xs font-bold">Complete quests to earn XP and advance</p>'}
-                                </div>`;
-                        }
-                        const canClose = rs !== 'playing' && rs !== 'countdown';
+                                </div>
+                            </div>`;
+
                         return `
                         <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop">
-                            <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
-                                <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
+                            <div class="bg-white pixel-card max-w-lg w-full modal-content overflow-hidden max-h-[90vh] flex flex-col">
+                                <div class="bg-rose-600 px-6 py-4 flex justify-between items-center flex-shrink-0">
                                     <div>
-                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
-                                        <h3 class="font-black text-2xl uppercase text-white">Click Ranked</h3>
+                                        <p class="text-white/70 text-xs font-black uppercase tracking-widest">Quest Ranked</p>
+                                        <h3 class="font-black text-2xl uppercase text-white">Rank Profile</h3>
                                     </div>
-                                    ${canClose ? `<button onclick="closeRankedResult()" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>` : ''}
+                                    <button onclick="updateState({showRanked:false})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
                                 </div>
-                                <div class="p-6">${content}</div>
+                                <div class="p-6 overflow-y-auto flex-1">${content}</div>
                             </div>
                         </div>`;
                     })() : ''}
-
-                    ${state.showRankedInfo ? `
-                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showRankedInfo:false})">
-                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
-                            <div class="bg-rose-600 px-6 py-4 flex justify-between items-center">
-                                <div>
-                                    <p class="text-white/70 text-xs font-black uppercase tracking-widest">Ranked Mode</p>
-                                    <h3 class="font-black text-2xl uppercase text-white">How It Works</h3>
-                                </div>
-                                <button onclick="updateState({showRankedInfo:false})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
-                            </div>
-                            <div class="p-6">
-                                <div class="flex flex-col gap-4">
-                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
-                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Getting Ranked</p>
-                                        <p class="text-xs font-bold text-slate-500">Play Ranked Mode and click as fast as you can for 30 seconds. Your clicks determine your starting rank.</p>
-                                    </div>
-                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
-                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Earning XP</p>
-                                        <p class="text-xs font-bold text-slate-500">Complete quests to earn XP. Each quest gives XP based on its reward size. XP fills your progress bar toward the next tier.</p>
-                                    </div>
-                                    <div class="bg-slate-50 border-3 border-slate-200 p-4">
-                                        <p class="font-black text-sm uppercase text-slate-900 mb-1">Advancing Tiers</p>
-                                        <p class="text-xs font-bold text-slate-500">Fill your XP bar to unlock the next tier, OR score high enough in a Ranked match to jump ranks instantly. Ranks never go down.</p>
-                                    </div>
-                                    <div class="bg-rose-50 border-3 border-rose-200 p-4">
-                                        <p class="font-black text-sm uppercase text-rose-700 mb-1">XP per Quest</p>
-                                        ${QUESTS.map(q => `<p class="text-xs font-bold text-slate-500">${q.name}: +${Math.max(10, Math.floor(q.reward/500))} XP</p>`).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>` : ''}
-
-                    ${state.showGameModes ? `
-                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showGameModes:false})">
-                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
-                            <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
-                                <div>
-                                    <p class="text-slate-400 text-xs font-black uppercase tracking-widest">Select</p>
-                                    <h3 class="text-white font-black text-2xl uppercase">Game Modes</h3>
-                                </div>
-                                <button onclick="updateState({showGameModes:false})" class="text-white/60 hover:text-white text-2xl font-black">x</button>
-                            </div>
-                            <div class="p-4 flex flex-col gap-3">
-                                <div class="flex items-stretch gap-2">
-                                    <button onclick="updateState({showGameModes:false});openRanked()" class="flex items-center gap-4 border-4 border-rose-300 bg-rose-50 hover:bg-rose-100 p-4 transition-colors text-left flex-1">
-                                        <div class="w-12 h-12 bg-rose-500 border-4 border-rose-700 flex items-center justify-center flex-shrink-0">
-                                            <i data-lucide="timer" class="w-6 h-6 text-white"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="font-black text-rose-700 uppercase text-base">Ranked Mode</p>
-                                            <p class="text-xs text-slate-500 font-bold mt-0.5">Click as fast as you can in 35s. Climb the ranks.</p>
-                                        </div>
-                                    </button>
-                                    <button onclick="updateState({showGameModes:false,showRankedInfo:true})" class="border-4 border-rose-300 bg-rose-50 hover:bg-rose-100 px-3 font-black text-rose-500 hover:text-rose-700 transition-colors">?</button>
-                                </div>
-                                <button onclick="updateState({showGameModes:false,showGamble:true,gambleResult:null,gambleInput:''})" class="flex items-center gap-4 border-4 border-violet-300 bg-violet-50 hover:bg-violet-100 p-4 transition-colors text-left">
-                                    <div class="w-12 h-12 bg-violet-600 border-4 border-violet-800 flex items-center justify-center flex-shrink-0">
-                                        <i data-lucide="dice-5" class="w-6 h-6 text-white"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-black text-violet-700 uppercase text-base">Gamble</p>
-                                        <p class="text-xs text-slate-500 font-bold mt-0.5">50/50 shot. Win double, lose your bet + 20%.</p>
-                                    </div>
-                                </button>
-                                <button onclick="updateState({showGameModes:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-1">Close</button>
-                            </div>
-                        </div>
-                    </div>` : ''}
 
                     ${state.showSettings ? renderSettings() : ''}
 
@@ -2264,17 +2102,14 @@
                                     <p class="text-xs font-black uppercase text-slate-500 mb-1">Your Balance</p>
                                     <p class="text-2xl font-black text-slate-900">${formatLargeNumber(state.gold, 2)} <span class="text-sm">${CURRENCIES[state.theme].name}s</span></p>
                                 </div>
-
                                 <div class="border-4 border-violet-300 p-4 bg-violet-50">
                                     <p class="text-xs font-black uppercase text-violet-600 mb-1">Win: Double your bet</p>
                                     <p class="text-xs font-black uppercase text-red-500">Lose: Bet + 20% of balance</p>
                                 </div>
-
                                 ${state.gambleResult ? `
                                 <div class="border-4 ${state.gambleResult.win === true ? 'border-emerald-400 bg-emerald-50' : state.gambleResult.win === false ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-slate-50'} p-4 text-center">
                                     <p class="font-black text-lg ${state.gambleResult.win === true ? 'text-emerald-600' : state.gambleResult.win === false ? 'text-red-600' : 'text-slate-600'}">${state.gambleResult.message}</p>
                                 </div>` : ''}
-
                                 <div class="flex gap-2">
                                     <input
                                         id="gamble-input"
@@ -2288,12 +2123,222 @@
                                     />
                                     <button onclick="const v=state.gold.toFixed(2);state.gambleInput=v;const el=document.getElementById('gamble-input');if(el){el.value=v;el.focus();}" class="pixel-button bg-slate-200 border-slate-400 text-slate-700 px-3 py-2 text-xs font-black uppercase">All In</button>
                                 </div>
-
                                 <button onclick="doGamble()" class="w-full pixel-button bg-violet-600 border-violet-800 text-white py-3 font-black uppercase text-lg tracking-widest">Roll the Dice</button>
                                 <button onclick="updateState({showGamble:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600">Close</button>
                             </div>
                         </div>
                     </div>` : ''}
+
+                    ${state.showGameModes ? `
+                    <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showGameModes:false})">
+                        <div class="bg-white pixel-card max-w-sm w-full modal-content overflow-hidden">
+                            <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
+                                <div>
+                                    <p class="text-slate-400 text-xs font-black uppercase tracking-widest">Select</p>
+                                    <h3 class="text-white font-black text-2xl uppercase">Game Modes</h3>
+                                </div>
+                                <button onclick="updateState({showGameModes:false})" class="text-white/60 hover:text-white text-2xl font-black">x</button>
+                            </div>
+                            <div class="p-4 flex flex-col gap-3">
+                                <button onclick="updateState({showGameModes:false});openRanked()" class="flex items-center gap-4 border-4 border-rose-300 bg-rose-50 hover:bg-rose-100 p-4 transition-colors text-left flex-1">
+                                    <div class="w-12 h-12 bg-rose-500 border-4 border-rose-700 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="trophy" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-black text-rose-700 uppercase text-base">Ranked Profile</p>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">View your rank. Advance by completing quests!</p>
+                                    </div>
+                                </button>
+                                <button onclick="updateState({showGameModes:false,showGamble:true,gambleResult:null,gambleInput:''})" class="flex items-center gap-4 border-4 border-violet-300 bg-violet-50 hover:bg-violet-100 p-4 transition-colors text-left">
+                                    <div class="w-12 h-12 bg-violet-600 border-4 border-violet-800 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="dice-5" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-violet-700 uppercase text-base">Gamble</p>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">50/50 shot. Win double, lose your bet + 20%.</p>
+                                    </div>
+                                </button>
+                                <button onclick="updateState({showGameModes:false,showSpeedRun:true,speedRunPhase:'pick'})" class="flex items-center gap-4 border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 p-4 transition-colors text-left">
+                                    <div class="w-12 h-12 bg-amber-500 border-4 border-amber-700 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="timer" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-amber-700 uppercase text-base">Speed Run <span class="text-xs font-bold bg-amber-200 text-amber-700 px-1.5 py-0.5 ml-1 normal-case">MULTIPLAYER</span></p>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">Split-screen tap battle. Phone: 2P · Tablet: up to 4P.</p>
+                                    </div>
+                                </button>
+                                <div class="flex items-center gap-4 border-4 border-slate-200 bg-slate-50 p-4 opacity-60 cursor-not-allowed">
+                                    <div class="w-12 h-12 bg-emerald-600 border-4 border-emerald-800 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="star" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-emerald-700 uppercase text-base">Prestige Cup <span class="text-xs font-bold text-slate-400 normal-case ml-1">Coming Soon</span></p>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">Prestige 10x under strict restrictions to earn exclusive rewards.</p>
+                                    </div>
+                                </div>
+                                <button onclick="updateState({showGameModes:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-1">Close</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
+                    ${state.showSpeedRun ? (() => {
+                        const PLAYER_COLORS = [
+                            { bg: 'bg-red-500',   border: 'border-red-700',   text: 'text-red-700',   label: 'RED',   hex: '#ef4444', dark: '#b91c1c' },
+                            { bg: 'bg-blue-500',  border: 'border-blue-700',  text: 'text-blue-700',  label: 'BLUE',  hex: '#3b82f6', dark: '#1d4ed8' },
+                            { bg: 'bg-green-500', border: 'border-green-700', text: 'text-green-700', label: 'GREEN', hex: '#22c55e', dark: '#15803d' },
+                            { bg: 'bg-yellow-400',border: 'border-yellow-600',text: 'text-yellow-700',label: 'YELLOW',hex: '#facc15', dark: '#a16207' },
+                        ];
+                        const n = state.speedRunPlayers;
+                        const scores = state.speedRunScores;
+
+                        if (state.speedRunPhase === 'pick') {
+                            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                            const isTablet = isTouchDevice && Math.min(screen.width, screen.height) >= 600;
+                            const isPhone = isTouchDevice && Math.min(screen.width, screen.height) < 600;
+                            const isPC = !isTouchDevice;
+
+                            if (isPC) {
+                                return `
+                                <div class="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/90 backdrop-blur-md">
+                                    <div class="bg-white pixel-card max-w-sm w-full mx-4 overflow-hidden">
+                                        <div class="bg-amber-500 border-b-4 border-amber-700 px-6 py-4 flex justify-between items-center">
+                                            <div>
+                                                <p class="text-amber-900/70 text-xs font-black uppercase tracking-widest">Multiplayer</p>
+                                                <h3 class="text-white font-black text-2xl uppercase">Speed Run</h3>
+                                            </div>
+                                            <button onclick="updateState({showSpeedRun:false})" class="text-white/70 hover:text-white text-2xl font-black">✕</button>
+                                        </div>
+                                        <div class="p-6 text-center">
+                                            <p class="text-5xl mb-4">🖥️</p>
+                                            <p class="font-black text-slate-800 uppercase text-lg mb-2">PC Not Supported</p>
+                                            <p class="text-sm font-bold text-slate-500 leading-relaxed mb-5">Speed Run is a <span class="text-amber-600 font-black">touch-only</span> multiplayer mode. Grab a phone or tablet to play — multiple fingers need to tap different zones at the same time!</p>
+                                            <button onclick="updateState({showSpeedRun:false})" class="w-full pixel-button bg-slate-200 border-slate-400 text-slate-700 py-3 font-black uppercase text-sm">Got It</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }
+
+                            return `
+                            <div class="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/90 backdrop-blur-md">
+                                <div class="bg-white pixel-card max-w-sm w-full mx-4 overflow-hidden">
+                                    <div class="bg-amber-500 border-b-4 border-amber-700 px-6 py-4 flex justify-between items-center">
+                                        <div>
+                                            <p class="text-amber-900/70 text-xs font-black uppercase tracking-widest">Multiplayer</p>
+                                            <h3 class="text-white font-black text-2xl uppercase">Speed Run</h3>
+                                        </div>
+                                        <button onclick="updateState({showSpeedRun:false})" class="text-white/70 hover:text-white text-2xl font-black">✕</button>
+                                    </div>
+                                    <div class="p-6">
+                                        <p class="font-black text-slate-700 uppercase text-sm mb-1 tracking-wider">How to play</p>
+                                        <p class="text-xs font-bold text-slate-500 mb-5 leading-relaxed">The screen splits between players. Everyone taps their zone as fast as possible for <span class="text-amber-600 font-black">60 seconds</span>. Highest taps wins!</p>
+                                        <p class="font-black text-slate-700 uppercase text-sm mb-3 tracking-wider">Number of Players</p>
+                                        <div class="grid grid-cols-2 gap-3 mb-2">
+                                            <button onclick="startSpeedRun(2)" class="border-4 border-blue-400 bg-blue-50 hover:bg-blue-100 p-4 transition-colors">
+                                                <div class="flex gap-1 justify-center mb-2">
+                                                    <div class="w-5 h-8 bg-red-500 border-2 border-red-700"></div>
+                                                    <div class="w-5 h-8 bg-blue-500 border-2 border-blue-700"></div>
+                                                </div>
+                                                <p class="font-black text-slate-800 uppercase text-sm">2 Players</p>
+                                                <p class="text-xs text-slate-400 font-bold">📱 Phone / Tablet</p>
+                                            </button>
+                                            <button onclick="${isPhone ? '' : 'startSpeedRun(3)'}" 
+                                                class="border-4 p-4 transition-colors ${isPhone ? 'border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed' : 'border-green-400 bg-green-50 hover:bg-green-100 cursor-pointer'}">
+                                                <div class="flex gap-1 justify-center mb-2">
+                                                    <div class="w-4 h-8 bg-red-500 border-2 border-red-700"></div>
+                                                    <div class="w-4 h-8 bg-blue-500 border-2 border-blue-700"></div>
+                                                    <div class="w-4 h-8 bg-green-500 border-2 border-green-700"></div>
+                                                </div>
+                                                <p class="font-black text-slate-800 uppercase text-sm">3 Players</p>
+                                                <p class="text-xs font-bold ${isPhone ? 'text-red-400' : 'text-slate-400'}">📱 Tablet Only</p>
+                                            </button>
+                                            <button onclick="${isPhone ? '' : 'startSpeedRun(4)'}"
+                                                class="border-4 p-4 transition-colors col-span-2 ${isPhone ? 'border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed' : 'border-yellow-400 bg-yellow-50 hover:bg-yellow-100 cursor-pointer'}">
+                                                <div class="flex gap-1 justify-center mb-2">
+                                                    <div class="w-4 h-8 bg-red-500 border-2 border-red-700"></div>
+                                                    <div class="w-4 h-8 bg-blue-500 border-2 border-blue-700"></div>
+                                                    <div class="w-4 h-8 bg-green-500 border-2 border-green-700"></div>
+                                                    <div class="w-4 h-8 bg-yellow-400 border-2 border-yellow-600"></div>
+                                                </div>
+                                                <p class="font-black text-slate-800 uppercase text-sm">4 Players</p>
+                                                <p class="text-xs font-bold ${isPhone ? 'text-red-400' : 'text-slate-400'}">📱 Tablet Only</p>
+                                            </button>
+                                        </div>
+                                        ${isPhone ? `<p class="text-xs text-center text-red-400 font-bold mt-1">3P and 4P require a tablet</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>`;
+                        }
+
+                        if (state.speedRunPhase === 'countdown') {
+                            return `
+                            <div class="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900">
+                                <div class="text-center">
+                                    <p class="text-white/50 font-black uppercase tracking-widest text-lg mb-4">Get Ready!</p>
+                                    <p class="text-white font-black" style="font-size:8rem;line-height:1;">${state.speedRunCountdown}</p>
+                                </div>
+                            </div>`;
+                        }
+
+                        if (state.speedRunPhase === 'playing') {
+                            const cols = n === 2 ? 'grid-cols-2' : n === 3 ? 'grid-cols-3' : 'grid-cols-2';
+                            const rows = n === 4 ? 'grid-rows-2' : 'grid-rows-1';
+                            return `
+                            <div class="fixed inset-0 z-[95] grid ${cols} ${rows}" style="touch-action:none;">
+                                <div class="fixed top-0 left-0 right-0 z-10 flex items-center justify-center pointer-events-none" style="height:60px;">
+                                    <div class="bg-black/70 px-8 py-2 border-2 border-white/20">
+                                        <span class="text-white font-black text-2xl">${state.speedRunTimeLeft}s</span>
+                                    </div>
+                                </div>
+                                ${Array.from({length:n}).map((_, i) => {
+                                    const c = PLAYER_COLORS[i];
+                                    return `<div 
+                                        onmousedown="speedRunTap(${i}, event)" 
+                                        ontouchstart="speedRunTap(${i}, event)"
+                                        class="flex flex-col items-center justify-center select-none cursor-pointer active:brightness-110 transition-all"
+                                        style="background:${c.hex}; border: 4px solid ${c.dark}; user-select:none; -webkit-user-select:none;"
+                                    >
+                                        <p class="text-white font-black text-xl tracking-widest mb-2 opacity-60 uppercase">${c.label}</p>
+                                        <p class="text-white font-black" style="font-size:4rem;line-height:1;text-shadow:3px 3px 0 rgba(0,0,0,0.3);">${scores[i]||0}</p>
+                                        <p class="text-white/60 font-bold text-sm mt-2 uppercase">TAP!</p>
+                                    </div>`;
+                                }).join('')}
+                            </div>`;
+                        }
+
+                        if (state.speedRunPhase === 'results') {
+                            const playerScores = Array.from({length:n}).map((_, i) => ({ i, score: scores[i]||0, color: PLAYER_COLORS[i] }));
+                            const sorted = [...playerScores].sort((a,b) => b.score - a.score);
+                            const winner = sorted[0];
+                            return `
+                            <div class="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/95 backdrop-blur-md">
+                                <div class="bg-white pixel-card max-w-sm w-full mx-4 overflow-hidden">
+                                    <div class="px-6 py-5 text-center" style="background:${winner.color.hex}; border-bottom: 4px solid ${winner.color.dark};">
+                                        <p class="text-white/70 font-black uppercase tracking-widest text-xs mb-1">Winner!</p>
+                                        <p class="text-white font-black text-3xl uppercase">${winner.color.label}</p>
+                                        <p class="text-white font-black text-5xl">${winner.score}</p>
+                                        <p class="text-white/70 font-bold text-sm">taps</p>
+                                    </div>
+                                    <div class="p-4">
+                                        <p class="font-black uppercase text-xs text-slate-400 tracking-widest mb-3">All Scores</p>
+                                        <div class="flex flex-col gap-2 mb-5">
+                                            ${sorted.map((p, rank) => `
+                                            <div class="flex items-center gap-3 p-3 border-4" style="border-color:${p.color.hex}; background:${p.color.hex}18;">
+                                                <span class="font-black text-slate-500 text-sm w-5">${rank+1}.</span>
+                                                <div class="w-4 h-4 border-2" style="background:${p.color.hex}; border-color:${p.color.dark};"></div>
+                                                <span class="font-black uppercase text-sm" style="color:${p.color.dark};">${p.color.label}</span>
+                                                <span class="font-black text-slate-800 ml-auto text-lg">${p.score}</span>
+                                            </div>`).join('')}
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <button onclick="resetSpeedRun()" class="flex-1 pixel-button bg-amber-500 border-amber-700 text-white py-3 font-black uppercase text-sm">Play Again</button>
+                                            <button onclick="updateState({showSpeedRun:false});resetSpeedRun()" class="flex-1 pixel-button bg-slate-200 border-slate-400 text-slate-700 py-3 font-black uppercase text-sm">Exit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }
+                        return '';
+                    })() : ''}
 
                     ${state.showRankUp && state.rankUpTier ? (() => {
                         const tier = getRankedTierById(state.rankUpTier);
@@ -2302,7 +2347,7 @@
                         return `
                         <div class="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none rankup-overlay" style="background:rgba(0,0,0,0.6);">
                             <div class="text-center">
-                                <img src="${tier?.icon}" class="w-44 h-44 mx-auto mb-5 rankup-icon pixelated" style="image-rendering:pixelated;" />
+                                <img src="${tier?.icon}" class="w-44 h-44 mx-auto mb-5 rankup-icon" style="image-rendering:pixelated;" />
                                 <p class="font-black text-6xl text-white mb-3" style="text-shadow:4px 4px 0 rgba(0,0,0,0.8);">RANK UP!</p>
                                 <p class="font-black text-3xl mb-2" style="color:${tierColor};text-shadow:3px 3px 0 rgba(0,0,0,0.6);">${tier?.name}</p>
                                 <p class="font-black text-lg text-amber-300" style="text-shadow:2px 2px 0 rgba(0,0,0,0.8);">1.5x XP Boost for 20 minutes!</p>
@@ -2317,19 +2362,14 @@
                         <div class="lucky-mult-widget bg-amber-500 border-2 border-amber-700 text-white text-xs font-black px-3 py-1.5 uppercase tracking-wide" style="display:${(state.luckyMultUntil||0) > Date.now() ? 'block' : 'none'};">Lucky</div>
                     </div>
 
-
-                        <div class="flex gap-6 items-center justify-center">
-                            <!-- Left star (flipped) -->
+                    <header class="z-10 w-full max-w-6xl mb-4">
+                        <div class="flex gap-6 items-center justify-center mb-4">
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated; transform: scaleX(-1);" />
-                            
-                            <!-- Center logo -->
                             <span 
                                 onclick="triggerTitleClick()"
                                 class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl"
                                 style="font-family:'Pixelify Sans',monospace; color:${currentWorld?.id === 'starlight' || currentWorld?.id === 'void' ? '#fff' : '#000'}; text-shadow: 3px 3px 0 rgba(0,0,0,0.1);"
                             >Gubby Clicker</span>
-                            
-                            <!-- Right star (normal) -->
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20 pixelated" style="image-rendering: pixelated;" />
                         </div>
                         
@@ -2383,7 +2423,7 @@
                                 ontouchstart="handleMainClick(event)"
                                 class="gubby-container w-72 h-72 flex items-center justify-center"
                             >
-                                <img src="${gubbyImgUrl}" class="w-full h-full object-contain pointer-events-none" style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));" />
+                                <img src="${getActiveSkin() ? getActiveSkin().skinImg : gubbyImgUrl}" class="w-full h-full object-contain pointer-events-none" style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));" />
                             </div>
                         </div>
                         ${state.discoEventTimer > 0 ? `<div class="mt-6 px-6 py-2 bg-white/90 border-4 border-purple-600 font-black text-purple-600 uppercase animate-pulse" style="box-shadow: 4px 4px 0 rgba(0,0,0,0.2);"><span class="disco-timer-display">Disco Mode: ${state.discoEventTimer}s</span></div>` : ''}
@@ -2429,7 +2469,7 @@
                     </div>
 
                 </div>
-            `;            
+            `;
             lucide.createIcons();
             
             if (activeElementId === 'admin-input') {
@@ -2457,7 +2497,6 @@
             const newVal = !nowOn;
             state[key] = newVal;
 
-            // Apply side-effects immediately without full re-render
             if (key === 'largeText') {
                 if (newVal) document.body.classList.add('large-text');
                 else document.body.classList.remove('large-text');
@@ -2467,17 +2506,13 @@
                 else createFloatingStars();
             }
 
-            // Patch just the toggle row in-place — no full re-render
             const btn = document.querySelector('[data-setting="' + key + '"]');
             if (btn) {
                 const cfg = SETTINGS_ROWS.find(r => r.key === key);
                 if (cfg) {
-                    // Update border/bg
                     btn.className = 'flex items-center justify-between border-4 ' + (newVal ? cfg.onBorder + ' ' + cfg.onBg : 'border-slate-200 bg-slate-50') + ' p-4 w-full text-left hover:border-slate-400 transition-colors';
-                    // Update icon color
                     const icon = btn.querySelector('i[data-lucide]');
                     if (icon) icon.className = 'w-5 h-5 flex-shrink-0 ' + (newVal ? cfg.onIcon : 'text-slate-400');
-                    // Update toggle knob
                     const knob = btn.querySelector('.setting-knob');
                     const track = btn.querySelector('.setting-track');
                     if (track) track.className = 'w-14 h-7 border-4 setting-track ' + (newVal ? cfg.onTrack : 'bg-slate-300 border-slate-500') + ' relative flex-shrink-0';
@@ -2521,12 +2556,6 @@
                    + '</button>';
             }
 
-            function section(title, keys) {
-                let s = '<p class="text-xs font-black uppercase text-slate-400 tracking-widest mb-2 mt-4 col-span-2">' + title + '</p>';
-                keys.forEach(function(key) { s += settingBtn(key); });
-                return s;
-            }
-
             return '<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showSettings:false})">'
                 + '<div class="bg-white pixel-card w-full modal-content overflow-hidden max-h-[85vh] flex flex-col" style="max-width:680px;">'
                 + '<div class="bg-slate-800 px-6 py-4 flex justify-between items-center flex-shrink-0">'
@@ -2535,15 +2564,11 @@
                 + '<button onclick="updateState({showSettings:false})" class="text-white/60 hover:text-white text-2xl font-black leading-none">✕</button>'
                 + '</div>'
                 + '<div class="p-6 overflow-y-auto flex-1">'
-                // 2-column grid for the settings
                 + '<div class="grid grid-cols-2 gap-x-4 gap-y-3" style="grid-template-columns: 1fr 1fr;">'
-                // Display section header (spans 2 cols)
                 + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-0 mb-1">Display</p>'
                 + DISPLAY_KEYS.map(settingBtn).join('')
-                // Audio section header
                 + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Audio</p>'
                 + AUDIO_KEYS.map(settingBtn).join('')
-                // Gameplay section header
                 + '<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Gameplay</p>'
                 + GAMEPLAY_KEYS.map(settingBtn).join('')
                 + '</div>'
@@ -2552,10 +2577,79 @@
         }
 
         function renderMarketContent() {
+            const isSpecial = state.marketCategory === 'special' || state.marketCategory === 'perm_boost' || state.marketCategory === 'skin';
+            const isBoosts = !isSpecial || state.marketCategory === null;
+            const showingBoostsTab = !state.marketCategory || (state.marketCategory !== 'special' && state.marketCategory !== 'perm_boost' && state.marketCategory !== 'skin');
+            const showingSpecialTab = state.marketCategory === 'special' || state.marketCategory === 'perm_boost' || state.marketCategory === 'skin';
+
+            const tabBar = `
+                <div class="flex gap-2 mb-5 -mx-0">
+                    <button onclick="updateState({marketCategory: null})" 
+                        class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSpecialTab ? 'bg-indigo-600 border-indigo-700 text-white' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">
+                        Boosts
+                    </button>
+                    <button onclick="updateState({marketCategory: 'special'})"
+                        class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSpecialTab ? 'bg-indigo-600 border-indigo-700 text-white' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">
+                        Special Items
+                    </button>
+                </div>
+            `;
+
+            // Special Items tab
+            if (showingSpecialTab) {
+                const permItems = SHOP_ITEMS.filter(i => i.category === 'perm_boost');
+                const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin');
+                return tabBar + `
+                    <div class="flex flex-col gap-0">
+                        <div class="mb-1">
+                            <p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-0.5">Permanent Boosts <span class="text-slate-400 font-bold normal-case text-xs">· Buy once · Equip in Storage</span></p>
+                        </div>
+                        ${permItems.map(item => {
+                            const price = getItemPrice(item);
+                            const canAfford = state.gold >= price;
+                            const owned = state.inventory[item.id] > 0;
+                            return `
+                            <div class="flex items-center justify-between p-4 border-4 mb-2 bg-white ${owned ? 'border-emerald-400 bg-emerald-50' : canAfford ? 'border-slate-200' : 'border-slate-100 opacity-60'}">
+                                <div class="flex-1 mr-3">
+                                    <p class="font-black text-base uppercase text-slate-900">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-400">${item.description}</p>
+                                    ${!owned ? `<p class="text-xs font-bold text-indigo-600 mt-0.5">Cost: ${formatLargeNumber(price, 0)} ${CURRENCIES[state.theme]?.name || 'Gold'}</p>` : ''}
+                                </div>
+                                <button onclick="${owned ? '' : `buySpecialItem('${item.id}')`}" class="pixel-button shrink-0 ${owned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-indigo-600 border-indigo-800 text-white hover:bg-indigo-500' : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
+                                    ${owned ? 'OWNED' : 'BUY'}
+                                </button>
+                            </div>`;
+                        }).join('')}
+
+                        <div class="mt-3 mb-1">
+                            <p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-0.5">Skins <span class="text-slate-400 font-bold normal-case text-xs">· Buy once · Equip in Storage</span></p>
+                        </div>
+                        ${skinItems.map(item => {
+                            const price = getItemPrice(item);
+                            const canAfford = state.gold >= price;
+                            const owned = state.inventory[item.id] > 0;
+                            return `
+                            <div class="flex items-center justify-between p-4 border-4 mb-2 bg-white ${owned ? 'border-emerald-400 bg-emerald-50' : canAfford ? 'border-slate-200' : 'border-slate-100 opacity-60'}">
+                                <img src="${item.img}" class="w-14 h-14 object-contain mr-3 shrink-0" style="image-rendering:pixelated;" />
+                                <div class="flex-1 mr-3">
+                                    <p class="font-black text-base uppercase text-slate-900">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-400">${item.description}</p>
+                                    ${!owned ? `<p class="text-xs font-bold text-indigo-600 mt-0.5">Cost: ${formatLargeNumber(price, 0)} ${CURRENCIES[state.theme]?.name || 'Gold'}</p>` : ''}
+                                </div>
+                                <button onclick="${owned ? '' : `buySpecialItem('${item.id}')`}" class="pixel-button shrink-0 ${owned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-indigo-600 border-indigo-800 text-white hover:bg-indigo-500' : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
+                                    ${owned ? 'OWNED' : 'BUY'}
+                                </button>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            // Boosts tab
             const catBtnBase = "w-full bg-white border-4 p-4 sm:p-6 flex justify-center items-center transition-all group market-item";
             if (!state.marketCategory) {
-                return `
-                    <div class="flex flex-col gap-4">
+                return tabBar + `
+                    <div class="flex flex-col gap-3">
                         <button onclick="updateState({marketCategory: 'small'})" class="${catBtnBase} border-blue-500">
                             <span class="font-black text-base sm:text-lg uppercase tracking-widest text-blue-600">Small Boosts</span>
                         </button>
@@ -2573,21 +2667,21 @@
             }
 
             const itemsToShow = SHOP_ITEMS.filter(i => i.category === state.marketCategory);
-            return `
+            return tabBar + `
                 <div class="flex flex-col gap-3">
-                    <button onclick="updateState({marketCategory: null})" class="w-full text-left text-xs font-black uppercase text-slate-500 mb-2 flex items-center gap-2 hover:text-slate-700 tracking-wider">← Back to Categories</button>
+                    <button onclick="updateState({marketCategory: null})" class="w-full text-left text-xs font-black uppercase text-slate-500 mb-2 flex items-center gap-2 hover:text-slate-700 tracking-wider">← Back to Boost Categories</button>
                     ${itemsToShow.map(item => {
                         const price = getItemPrice(item);
                         const canAfford = state.gold >= price;
-                        const alreadyOwned = item.permanent && state.inventory[item.id] > 0;
                         return `
-                            <div class="flex items-center justify-between p-4 border-4 bg-white ${alreadyOwned ? 'border-emerald-500 bg-emerald-50' : canAfford ? 'border-slate-300' : 'border-slate-200 opacity-50'}">
+                            <div class="flex items-center justify-between p-4 border-4 bg-white ${canAfford ? 'border-slate-300' : 'border-slate-200 opacity-50'}">
                                 <div class="text-left flex-1 mr-3">
-                                    <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}${alreadyOwned ? ' (Owned)' : ''}</p>
-                                    <p class="text-xs font-bold text-slate-400 mt-0.5">${item.permanent ? 'Permanent' : item.power > 1 ? item.power + 'x power' : 'Special'}${item.duration > 0 ? ' · ' + item.duration + 's' : ''}${item.description ? ' · ' + item.description : ''}</p>
+                                    <p class="font-black text-base sm:text-lg uppercase text-slate-900 leading-tight">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-400 mt-0.5">${item.power > 1 ? item.power + 'x power · ' + item.duration + 's' : item.description || 'Special'}</p>
+                                    <p class="text-xs font-bold text-indigo-600 mt-0.5">${formatLargeNumber(price, 0)} ${CURRENCIES[state.theme]?.name || 'Gold'}s</p>
                                 </div>
-                                <button onclick="event.stopPropagation(); ${alreadyOwned ? '' : `openItemPopup('${item.id}')`}" class="pixel-button shrink-0 ${alreadyOwned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
-                                    ${alreadyOwned ? 'OWNED' : 'BUY'}
+                                <button onclick="event.stopPropagation(); openItemPopup('${item.id}')" class="pixel-button shrink-0 ${canAfford ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">
+                                    BUY
                                 </button>
                             </div>
                         `;
@@ -2602,33 +2696,43 @@
                 medium: { name: 'Medium Boosts', color: 'purple', items: [] },
                 large: { name: 'Large Boosts', color: 'orange', items: [] },
                 op: { name: 'OP Boosts', color: 'red', items: [] },
+                perm_boost: { name: 'Permanent Boosts', color: 'yellow', items: [] },
+                skin: { name: 'Skins', color: 'pink', items: [] },
             };
 
             SHOP_ITEMS.forEach(item => {
-                if (state.inventory[item.id] > 0) {
+                if (state.inventory[item.id] > 0 && categories[item.category]) {
                     categories[item.category].items.push(item);
                 }
             });
+
+            const colorClasses = {
+                blue:   'border-blue-500 bg-blue-50',
+                purple: 'border-purple-500 bg-purple-50',
+                orange: 'border-orange-500 bg-orange-50',
+                red:    'border-red-500 bg-red-50',
+                yellow: 'border-yellow-500 bg-yellow-50',
+                pink:   'border-pink-500 bg-pink-50',
+            };
+
+            const hasAnything = Object.values(categories).some(cat => cat.items.length > 0);
 
             return `
                 <div class="flex flex-col gap-6">
                     ${Object.entries(categories).map(([catKey, catData]) => {
                         if (catData.items.length === 0) return '';
-                        
-                        const colorClasses = {
-                            blue: 'border-blue-500 bg-blue-50',
-                            purple: 'border-purple-500 bg-purple-50',
-                            orange: 'border-orange-500 bg-orange-50',
-                            red: 'border-red-500 bg-red-50',
-                            amber: 'border-amber-500 bg-amber-50'
-                        };
-
                         return `
                             <div class="border-4 ${colorClasses[catData.color]} p-4 sm:p-6">
                                 <h5 class="font-black text-base sm:text-lg uppercase mb-3 sm:mb-4 text-slate-900">${catData.name}</h5>
                                 <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
                                     ${catData.items.map(item => {
-                                        const isEquipped = state.equippedItem === item.id;
+                                        const isPermBoost = item.category === 'perm_boost';
+                                        const isSkinItem = item.isSkin;
+                                        const isEquipped = isPermBoost
+                                            ? state.equippedPermBoost === item.id
+                                            : isSkinItem
+                                                ? state.equippedSkin === item.id
+                                                : state.equippedItem === item.id;
                                         const isPermanent = item.permanent;
                                         return `
                                         <button 
@@ -2637,9 +2741,10 @@
                                             class="inventory-slot p-4 has-item ${!isPermanent && state.activeBuff !== null ? 'disabled' : ''} ${isEquipped ? 'ring-4 ring-emerald-500' : ''}"
                                         >
                                             ${!isPermanent ? `<span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>` : ''}
-                                            ${isEquipped ? `<span class="absolute -top-2 -left-2 bg-emerald-500 border-3 border-white text-white text-xs font-black px-2 py-1" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.3);">EQUIPPED</span>` : ''}
-                                            <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight mt-2">${item.name}</p>
-                                            ${item.description ? `<p class="text-xs font-bold text-slate-500 text-center mt-1">${item.description}</p>` : `<p class="text-xs font-bold text-slate-500 text-center mt-1">${item.power > 1 ? item.power + 'x' : 'Special'}</p>`}
+                                            ${isEquipped ? `<span class="absolute -top-2 -left-2 bg-emerald-500 border-3 border-white text-white text-xs font-black px-2 py-1" style="box-shadow: 2px 2px 0 rgba(0,0,0,0.3);">ON</span>` : ''}
+                                            ${item.img ? `<img src="${item.img}" class="w-10 h-10 object-contain mx-auto mb-1" style="image-rendering:pixelated;" />` : ''}
+                                            <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight mt-1">${item.name}</p>
+                                            <p class="text-xs font-bold text-slate-500 text-center mt-1">${item.description || (item.power > 1 ? item.power + 'x' : 'Special')}</p>
                                         </button>
                                     `}).join('')}
                                 </div>
@@ -2647,7 +2752,7 @@
                         `;
                     }).join('')}
                     
-                    ${Object.values(categories).every(cat => cat.items.length === 0) ? `
+                    ${!hasAnything ? `
                         <div class="text-center py-16">
                             <p class="text-3xl font-black text-slate-400 uppercase mb-2">Storage Empty</p>
                             <p class="text-lg font-bold text-slate-400">Buy items from the Marketplace!</p>
