@@ -981,7 +981,6 @@
             { id: 'titan',    name: 'Titan',     category: 'op',     baseCost: 100000000,   power: 5000000,   duration: 10, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-3d-icon-png-download-7577797.png?f=webp' },
             { id: 'eternal',  name: 'Eternal',   category: 'op',     baseCost: 500000000,   power: 50000000,  duration: 12, img: 'https://cdn3d.iconscout.com/3d/premium/thumb/atom-3d-icon-png-download-5522651.png' },
             { id: 'infinite', name: 'Infinite',  category: 'op',     baseCost: 2500000000,  power: 250000000, duration: 15, img: 'https://icons.iconarchive.com/icons/microsoft/fluentui-emoji-3d/512/Infinity-3d-icon.png' },
-            // Permanent Boosts (Special Items)
             { id: 'perm_angel', name: 'Angel', category: 'perm_boost', baseCost: 1000000,    permMult: 10000,  permanent: true, description: '10,000x permanent multiplier' },
             { id: 'perm_demon', name: 'Demon', category: 'perm_boost', baseCost: 5000000,    permMult: 25000,  permanent: true, description: '25,000x permanent multiplier' },
             { id: 'perm_queen', name: 'Queen', category: 'perm_boost', baseCost: 15000000,   permMult: 50000,  permanent: true, description: '50,000x permanent multiplier' },
@@ -1080,7 +1079,6 @@
 
         let titleClickCount = 0;
 
-        // ── SOUND SYSTEM ─────────────────────────────────────────
         let _audioCtx = null;
         function getAudioCtx() {
             if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1180,18 +1178,13 @@
             }
             window.addEventListener('orientationchange', checkOrientation);
             window.addEventListener('resize', checkOrientation);
-            // Start loading screen animations
             startSpinLoop();
             startLoadingBar();
-            // Auto-finish loading after 2.5s if user doesn't click Gubby 5 times
             setTimeout(() => {
                 if (!state.loadingDone) finishLoading();
             }, 2500);
         });
 
-        // ---- RANKED MODE — Quest-Only progression ----
-        // Ranked tier is earned ONLY through quests/XP, not by clicking in a minigame.
-        // Unranked → Beginner I requires 20 XP total.
 
         const RANKED_TIERS = [
             { id: 'beginner_1',  name: 'Beginner I',   xpNeeded: 20,  icon: 'https://i.postimg.cc/JnfRd2R8/diamond-master-1.png'  },
@@ -1206,7 +1199,6 @@
             { id: 'master',      name: 'Master',       xpNeeded: null, icon: 'https://i.postimg.cc/pXLfL5Pt/diamond-master-12.png' },
         ];
 
-        // XP needed to go from Unranked → Beginner I is 20 (stored in state.rankedXP when unranked)
         const UNRANKED_XP_NEEDED = 20;
 
         function getQuestXP(quest) {
@@ -1228,7 +1220,6 @@
             return idx >= 0 && idx < RANKED_TIERS.length - 1 ? RANKED_TIERS[idx + 1] : null;
         }
 
-        // Open ranked profile (no minigame)
         let speedRunInterval = null;
 
         function startSpeedRun(numPlayers) {
@@ -1282,7 +1273,6 @@
             if (id.startsWith('normal')) return 'text-blue-500';
             return 'text-slate-500';
         }
-        // ---- END RANKED MODE ----
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
@@ -1431,14 +1421,12 @@
                         changes.masterXP = newMasterXP;
                         message = `Added ${amt} Master XP (total: ${newMasterXP})`;
                     } else {
-                        // Award XP — can promote from unranked to ranked too
                         let newXP = (state.rankedXP || 0) + amt;
                         let newTier = state.rankedTier;
                         let promoted = [];
                         let promoting = true;
 
                         if (!newTier) {
-                            // Unranked: need UNRANKED_XP_NEEDED to reach Beginner I
                             if (newXP >= UNRANKED_XP_NEEDED) {
                                 newXP -= UNRANKED_XP_NEEDED;
                                 newTier = RANKED_TIERS[0].id;
@@ -1511,7 +1499,6 @@
                     startDemonFlash();
                     message = '😈 Demon Mode activated! 20x multiplier applied.';
                 } else if (command === '/give' && parts[1]?.startsWith('perm_')) {
-                    // Already handled above by the general /give but add explicit equip support
                     const permId = parts[1].toLowerCase();
                     const permItem = SHOP_ITEMS.find(i => i.id === permId && i.category === 'perm_boost');
                     if (permItem) {
@@ -1904,18 +1891,15 @@
             if (isMaster) {
                 newMasterXP += xpGained;
             } else {
-                // Always award XP (even to unranked players)
                 newXP += xpGained;
                 let promoting = true;
 
-                // Check if unranked and can reach Beginner I
                 if (!newTier && newXP >= UNRANKED_XP_NEEDED) {
                     newXP -= UNRANKED_XP_NEEDED;
                     newTier = RANKED_TIERS[0].id;
                     rankUpTier = newTier;
                 }
 
-                // Continue promoting through tiers
                 while (promoting && newTier) {
                     const tier = getRankedTierById(newTier);
                     const next = getNextRankedTier(newTier);
@@ -2183,7 +2167,6 @@
 
             const totalItems = Object.values(state.inventory).reduce((sum, count) => sum + count, 0);
 
-            // Ranked XP display helpers
             const currentTierObj = getRankedTierById(state.rankedTier);
             const nextTierObj = state.rankedTier ? getNextRankedTier(state.rankedTier) : null;
             const xpTowardNext = state.rankedXP || 0;
@@ -2959,7 +2942,6 @@
             }
         }
 
-        // Settings toggle keys that default to true (on) when undefined
         const SETTINGS_DEFAULT_ON = ['floatingStars','soundEnabled','clickSound','showParticles','questNotif','marketFlash'];
 
         function getSetting(key) {
@@ -3069,7 +3051,6 @@
                 </div>
             `;
 
-            // Special Items tab
             if (showingSpecialTab) {
                 const permItems = SHOP_ITEMS.filter(i => i.category === 'perm_boost');
                 const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin');
@@ -3119,7 +3100,6 @@
                 `;
             }
 
-            // Boosts tab
             const catBtnBase = "w-full bg-white border-4 p-4 sm:p-6 flex justify-center items-center transition-all group market-item";
             if (!state.marketCategory) {
                 return tabBar + `
@@ -3237,15 +3217,11 @@
         }
 
         
-        // ══════════════════════════════════════════════════════
-        // LOADING SCREEN + DEMON MODE
-        // ══════════════════════════════════════════════════════
 
         let loadingClickCount = 0;
         const DEMON_CLICKS_NEEDED = 5;
         let demonFlashInterval = null;
 
-        // Continuous spin via rAF — never resets on click
         let _spinDeg = 0;
         let _spinSpeed = 1.5; // degrees per frame
         let _spinRaf = null;
@@ -3265,7 +3241,6 @@
             if (_spinRaf) { cancelAnimationFrame(_spinRaf); _spinRaf = null; }
         }
 
-        // Progress bar
         let _loadProgress = 0;
         let _loadBarInterval = null;
 
@@ -3273,7 +3248,6 @@
             const bar = document.getElementById('loading-bar-fill');
             if (!bar) return;
             _loadBarInterval = setInterval(() => {
-                // Fill to ~90% over 2.2s, then stall until finishLoading
                 const target = state.loadingDone ? 100 : 90;
                 const step = _loadProgress < 60 ? 2.5 : _loadProgress < 85 ? 1 : 0.3;
                 _loadProgress = Math.min(target, _loadProgress + step);
@@ -3288,13 +3262,11 @@
             const img = document.getElementById('loading-gubby-spin');
 
             if (loadingClickCount >= DEMON_CLICKS_NEEDED) {
-                // Speed up dramatically on final click
                 _spinSpeed = 25;
                 img.style.filter = 'drop-shadow(0 0 40px rgba(220,38,38,1)) hue-rotate(300deg)';
                 hint.textContent = '...';
                 hint.classList.remove('heating');
                 document.getElementById('loading-screen').style.backgroundColor = '#1a0000';
-                // Fill bar to 100% fast
                 _loadProgress = 100;
                 const bar = document.getElementById('loading-bar-fill');
                 if (bar) bar.style.width = '100%';
@@ -3309,7 +3281,6 @@
                     }, 600);
                 }, 400);
             } else {
-                // Gradually speed up spin on each click
                 _spinSpeed = 1.5 + loadingClickCount * 1.8;
                 hint.classList.add('heating');
                 const msgs = ['hmm?', 'hey!', 'stop it!', "don't..."];
@@ -3339,9 +3310,7 @@
         function closeDemonIntro() {
             document.getElementById('demon-intro').style.display = 'none';
             startDemonFlash();
-            // Show demon message first, normal intro queues after it closes
             narratorShowQueue(["You found it. Demon Mode active — 20x multiplier, stacks with everything. Don't say I didn't warn you."], false);
-            // After demon message is done, normal intro will auto-run via narratorInit hook
             _pendingNarratorIntro = true;
         }
 
@@ -3349,7 +3318,6 @@
 
         function startDemonFlash() {
             if (demonFlashInterval) return;
-            // Swap falling stars to Tumore immediately
             document.querySelectorAll('.floating-star').forEach(s => s.remove());
             createFloatingStars();
             const flash = document.getElementById('demon-flash');
@@ -3362,23 +3330,17 @@
             demonFlashInterval = setInterval(doFlash, 4000 + Math.random() * 3000);
         }
 
-        // Hook demon multiplier into click power
         function getDemonMult() {
             return state.demonMode ? 20 : 1;
         }
 
-        // ══════════════════════════════════════════════════════
-        // NARRATOR SYSTEM
-        // ══════════════════════════════════════════════════════
 
-        // Intro script — shown once on first visit (3 messages only)
         const NARRATOR_INTRO = [
             "Hey! I'm Gubby. Click me to earn clicks, then hit <b>Sell!</b> to turn them into Gold. 👋",
             "When you've got enough Gold, hit <b>Ascend</b> to Prestige — you lose your Gold but click way stronger!",
             "Check the <b>Quest</b> board for missions, visit the <b>Marketplace</b> for boosts, and try <b>Game Modes</b> for fun extras. Good luck! 💙",
         ];
 
-        // Context tips — shown once per trigger, stored in localStorage
         const NARRATOR_TIPS = {
             quest:      "These are your Quests! Complete them for Gold and XP. XP levels up your Rank all the way to Master.",
             market:     "The Marketplace! Buy boosts to multiply your clicks. Check back — Lucky Multiplier events can hit 20x!",
@@ -3409,7 +3371,6 @@
             localStorage.setItem(NARRATOR_TIPS_KEY, JSON.stringify(seen));
         }
 
-        // Parse text with **word** → bold yellow spans (for button-like words)
         function narratorRenderText(raw) {
             return raw.replace(/<b>(.*?)<\/b>/g, (_, word) =>
                 `<span class="narrator-inline-btn">${word}</span>`
@@ -3417,14 +3378,12 @@
         }
 
         function narratorInit() {
-            // Clear any stale key so narrator always shows (remove this line to show only once)
             localStorage.removeItem(NARRATOR_STORAGE_KEY);
             const seen = localStorage.getItem(NARRATOR_STORAGE_KEY);
             if (seen) return;
             narratorShowQueue(NARRATOR_INTRO, true);
         }
 
-        // Show a queue of messages
         function narratorShowQueue(msgs, isIntro) {
             if (narratorState.active) {
                 clearInterval(narratorState.typingInterval);
@@ -3443,7 +3402,6 @@
             narratorTypeMessage(0);
         }
 
-        // Show a single context tip (one message)
         function narratorTip(key) {
             const seen = getNarratorTipsSeen();
             if (seen[key]) return;
@@ -3461,23 +3419,19 @@
             const fullText = narratorState.queue[idx];
             const isLast = idx >= narratorState.queue.length - 1;
 
-            // Reset display
             document.getElementById('narrator-text-inner').innerHTML = '';
             document.getElementById('narrator-cursor').style.display = 'inline-block';
             narratorSetButtons(false, isLast);
 
-            // Shake Gubby while talking
             const img = document.getElementById('narrator-gubby-img');
             img.className = 'talking';
 
-            // Type character by character (strip HTML tags for char count, render HTML live)
             clearInterval(narratorState.typingInterval);
             const stripped = fullText.replace(/<[^>]+>/g, ''); // plain text for counting
             let i = 0;
             narratorState.typingInterval = setInterval(() => {
                 if (i < stripped.length) {
                     i++;
-                    // Build rendered version up to i visible chars
                     const rendered = narratorBuildPartial(fullText, i);
                     document.getElementById('narrator-text-inner').innerHTML = rendered;
                 } else {
@@ -3491,14 +3445,12 @@
             }, NARRATOR_CHAR_DELAY);
         }
 
-        // Build partial rendered text — reveal i visible chars, preserving HTML tags
         function narratorBuildPartial(raw, visibleCount) {
             let result = '';
             let visible = 0;
             let i = 0;
             while (i < raw.length && visible < visibleCount) {
                 if (raw[i] === '<') {
-                    // Copy full tag without counting chars
                     const end = raw.indexOf('>', i);
                     if (end === -1) break;
                     result += raw.slice(i, end + 1);
@@ -3509,7 +3461,6 @@
                     i++;
                 }
             }
-            // Close any open <b> or <span> tags
             if (result.includes('<b>') && !result.includes('</b>')) result += '</b>';
             if (result.includes('<span') && !result.includes('</span>')) result += '</span>';
             return result.replace(/<b>(.*?)<\/b>/g, (_, w) => `<span class="narrator-inline-btn">${w}</span>`);
@@ -3550,7 +3501,6 @@
         function narratorAction() {
             if (!narratorState.active) return;
             if (!narratorState.finished) {
-                // Complete current message first
                 narratorSkipOrContinue();
                 return;
             }
@@ -3570,7 +3520,6 @@
             setTimeout(() => {
                 box.style.display = 'none';
                 box.classList.remove('hiding');
-                // If a normal intro was queued after the demon message, run it now
                 if (_pendingNarratorIntro) {
                     _pendingNarratorIntro = false;
                     setTimeout(narratorInit, 400);
@@ -3585,7 +3534,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Narrator is initialized by finishLoading() or closeDemonIntro()
         });
 
     </script>
