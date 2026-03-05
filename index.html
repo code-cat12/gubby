@@ -987,6 +987,37 @@
             { id: 'perm_king',  name: 'King',  category: 'perm_boost', baseCost: 30000000,   permMult: 100000, permanent: true, description: '100,000x permanent multiplier' },
         ];
 
+        const WORLD_LORE = {
+            plains:   { title: "Peaceful Grasslands", text: "Once the heart of Gubby's world — endless green fields where clicks were simple and gold grew freely. Nobody remembers when the peace ended. They just know it did." },
+            forest:   { title: "Forest of Sins", text: "A canopy so thick no light reaches the ground. Travelers who enter seeking power rarely leave the same. The trees here remember every deal ever made in the dark." },
+            glacier:  { title: "Frosty Glaciers", text: "Ancient ice stretching beyond the horizon. Somewhere beneath the frozen surface, something has been counting every click you've ever made. Waiting." },
+            medieval: { title: "Medieval Times", text: "Crumbling castles. Crowns abandoned mid-war. The kingdom collapsed overnight and no one knows why. The locals say Gubby was here before the fall." },
+        };
+
+        const LORE_FRAGMENTS = [
+            { id: 'lore_1', text: "Fragment I — 'Gubby did not arrive. Gubby was always here. We simply started noticing.'", hint: "12% chance drop from any normal quest", order: 1 },
+            { id: 'lore_2', text: "Fragment II — 'The clicks do not generate gold. The clicks generate something older than gold. The gold is just what we can see.'", hint: "12% chance drop from any normal quest", order: 2 },
+            { id: 'lore_3', text: "Fragment III — 'Every world has a scar. Plains, Forest, Glaciers, Castle. Each one left by the same event. Each one shaped like a small round figure.'", hint: "12% chance drop from any normal quest", order: 3 },
+            { id: 'lore_4', text: "Fragment IV — 'The demon does not corrupt Gubby. The demon IS Gubby. The friendly face is the mask. This is the face underneath.'", hint: "Complete the Blood Tribute demon quest", order: 4 },
+            { id: 'lore_5', text: "Fragment V — 'When the corruption meter fills — we do not know what happens. No record exists of anyone reaching it. No record exists of anyone trying more than once.'", hint: "Complete the Corrupted Ascension demon quest", order: 5 },
+            { id: 'lore_6', text: "Fragment VI — 'You have all five pieces. You understand now. Gubby is not a creature. Gubby is the act of clicking itself — ancient, purposeless, eternal. You have been feeding it since the beginning. You will never stop. Neither will it.'", hint: "Collect all 5 other fragments", order: 6, secret: true },
+        ];
+
+        const LORE_TIMELINE = [
+            { order: 1, title: "The Presence", summary: "Gubby predates everything. It was not discovered — it was simply noticed." },
+            { order: 2, title: "The Currency", summary: "Clicks generate something ancient. Gold is merely the visible surface of a deeper transaction." },
+            { order: 3, title: "The Scars", summary: "Every world bears the mark of the same event — each one shaped like Gubby." },
+            { order: 4, title: "The Truth", summary: "Gubby's friendly form is a mask. The demon underneath is the real face." },
+            { order: 5, title: "The Meter", summary: "No record exists of anyone filling the corruption meter more than once." },
+            { order: 6, title: "The End", summary: "Gubby is not a creature. It is the act of clicking itself — ancient and eternal. You have been feeding it since the start." },
+        ];
+
+        const DEMON_QUESTS = [
+            { id: 'demon_clicks_1', name: 'Blood Tribute', description: 'Click 10,000 times in demon mode', type: 'clicks', target: 10000, reward: 9999999, demonOnly: true, loreReward: 'lore_1' },
+            { id: 'demon_gold_1',   name: 'Sin Tax',       description: 'Earn 1,000,000 gold in demon mode', type: 'gold', target: 1000000, reward: 50000000, demonOnly: true, loreReward: 'lore_4' },
+            { id: 'demon_prestige', name: 'Corrupted Ascension', description: 'Prestige 3 times with demon mode active', type: 'prestige', target: 3, reward: 999999999, demonOnly: true, loreReward: 'lore_5' },
+        ];
+
         const QUESTS = [
             { id: 'clicks_100',  name: 'Beginner Clicker',  description: 'Click Gubby 100 times',            type: 'clicks',    target: 100,    reward: 500    },
             { id: 'clicks_500',  name: 'Dedicated Clicker', description: 'Click Gubby 500 times',            type: 'clicks',    target: 500,    reward: 2500   },
@@ -1075,6 +1106,14 @@
             showDemonIntro: false,
             loadingDone: false,
             infinityRebirth: false,
+            corruptionMeter: 0,
+            showCorruptionEvent: false,
+            unlockedLore: [],
+            visitedWorlds: ['plains'],
+            showLoreModal: false,
+            showWorldLore: null,
+            showFragmentsModal: false,
+            showTimelineModal: false,
         };
 
         let titleClickCount = 0;
@@ -1497,7 +1536,7 @@
                 } else if (command === '/demon') {
                     updateState({ demonMode: true });
                     startDemonFlash();
-                    message = '😈 Demon Mode activated! 20x multiplier applied.';
+                    message = 'Demon Mode activated! 20x multiplier applied.';
                 } else if (command === '/give' && parts[1]?.startsWith('perm_')) {
                     const permId = parts[1].toLowerCase();
                     const permItem = SHOP_ITEMS.find(i => i.id === permId && i.category === 'perm_boost');
@@ -1510,8 +1549,30 @@
                     } else {
                         message = `Unknown perm boost. Try: perm_angel, perm_demon, perm_queen, perm_king`;
                     }
+                } else if (command === '/fragments') {
+                    const n = parseInt(parts[1]);
+                    if (parts[1] === 'all') {
+                        changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id);
+                        message = `All ${LORE_FRAGMENTS.length} fragments unlocked`;
+                    } else if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) {
+                        const frag = LORE_FRAGMENTS[n - 1];
+                        if (!state.unlockedLore.includes(frag.id)) {
+                            const newLore = [...state.unlockedLore, frag.id];
+                            changes.unlockedLore = newLore;
+                            changes.showLoreModal = frag.id;
+                            const baseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'];
+                            if (baseFive.every(id => newLore.includes(id)) && !newLore.includes('lore_6')) {
+                                setTimeout(() => updateState({ unlockedLore: [...newLore, 'lore_6'], showLoreModal: 'lore_6' }), 3000);
+                            }
+                            message = `Unlocked Fragment ${n}`;
+                        } else {
+                            message = `Fragment ${n} already unlocked`;
+                        }
+                    } else {
+                        message = `Usage: /fragments [1-${LORE_FRAGMENTS.length}] | /fragments all`;
+                    }
                 } else {
-                    message = "Commands: /money [n], /rebirth [n], /rebirth infinity, /give [id] [amt], /give perm_[angel|demon|queen|king], /give all, /quest, /xp [n], /rank [tier], /rank up, /demon, /narrator";
+                    message = "Commands: /money [n], /rebirth [n], /rebirth infinity, /give [id] [amt], /give perm_[angel|demon|queen|king], /give all, /quest, /xp [n], /rank [tier], /rank up, /demon, /fragments [n], /narrator";
                 }
 
                 const newLogs = [message, ...state.adminLog].slice(0, 10);
@@ -1544,9 +1605,10 @@
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
             
+            const corruptionBonus = (state.demonMode && state.corruptionMeter >= 100) ? 2 : 1;
             const currentPower = state.infinityRebirth
-                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getPermanentMult() * getDemonMult()
-                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getPermanentMult() * getDemonMult();
+                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getPermanentMult() * getDemonMult() * corruptionBonus
+                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getPermanentMult() * getDemonMult() * corruptionBonus;
             
             const gubbyElement = document.querySelector('.gubby-container');
             if (gubbyElement) {
@@ -1560,6 +1622,14 @@
             state.totalClicksSession = state.totalClicksSession + 1;
             state.lifetimeClicks = state.lifetimeClicks + 1;
             if (state.clickSound !== false) SFX.click();
+
+            if (state.demonMode && !state.showCorruptionEvent) {
+                const newCorruption = Math.min(100, (state.corruptionMeter || 0) + 0.02);
+                state.corruptionMeter = newCorruption;
+                if (newCorruption >= 100) {
+                    updateState({ corruptionMeter: 100, showCorruptionEvent: true });
+                }
+            }
 
             const clicksEl = document.querySelector('.clicks-live');
             if (clicksEl) clicksEl.textContent = formatLargeNumber(state.clicks, 0);
@@ -1641,10 +1711,13 @@
             const newRate = CONVERSION_RATES[destId];
             const conversionFactor = oldRate / newRate;
             const newGold = state.gold * conversionFactor;
+            const isFirstVisit = !state.visitedWorlds.includes(destId);
             updateState({
                 theme: destId,
                 gold: newGold,
                 showTravelModal: false,
+                visitedWorlds: isFirstVisit ? [...state.visitedWorlds, destId] : state.visitedWorlds,
+                showWorldLore: isFirstVisit ? destId : null,
                 notification: { 
                     title: "Chapter Unlocked", 
                     message: `Welcome to Chapter ${destination.chapter}: ${destination.name}. Currency converted to ${CURRENCIES[destId].name}s!`, 
@@ -1652,7 +1725,7 @@
                 }
             });
             SFX.travel();
-            narratorTip('travel');
+            if (!isFirstVisit) narratorTip('travel');
         }
 
         function ascend() {
@@ -1809,11 +1882,13 @@
         }
 
         function generateQuest() {
-            const availableQuests = QUESTS.filter(q => {
+            const allQuests = state.demonMode ? [...QUESTS, ...DEMON_QUESTS] : QUESTS;
+            const availableQuests = allQuests.filter(q => {
                 const alreadyActive = state.activeQuests.some(aq => aq.id === q.id);
                 if (alreadyActive) return false;
                 const alreadyCompleted = state.completedQuestIds.includes(q.id);
                 if (alreadyCompleted) return false;
+                if (q.demonOnly && !state.demonMode) return false;
                 if (q.type === 'prestige' && state.prestigeLevel < 1) return true;
                 if (q.type === 'clicks' && state.lifetimeClicks < q.target) return true;
                 if (q.type === 'gold') return true;
@@ -1933,6 +2008,32 @@
 
             if (rankUpTier) {
                 setTimeout(() => updateState({ showRankUp: false, rankUpTier: null }), 3000);
+            }
+
+            const loreReward = quest.loreReward;
+            if (loreReward && !state.unlockedLore.includes(loreReward)) {
+                setTimeout(() => {
+                    const newLore = [...state.unlockedLore, loreReward];
+                    const updates = { unlockedLore: newLore, showLoreModal: loreReward };
+                    const baseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'];
+                    if (baseFive.every(id => newLore.includes(id)) && !newLore.includes('lore_6')) {
+                        setTimeout(() => updateState({ unlockedLore: [...newLore, 'lore_6'], showLoreModal: 'lore_6' }), 3000);
+                    }
+                    updateState(updates);
+                }, 600);
+            } else if (Math.random() < 0.12 && !quest.demonOnly) {
+                const unowned = LORE_FRAGMENTS.filter(f => !state.unlockedLore.includes(f.id) && !f.secret && !f.id.startsWith('lore_4') && !f.id.startsWith('lore_5'));
+                if (unowned.length > 0) {
+                    const fragment = unowned[Math.floor(Math.random() * unowned.length)];
+                    setTimeout(() => {
+                        const newLore = [...state.unlockedLore, fragment.id];
+                        const baseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'];
+                        if (baseFive.every(id => newLore.includes(id)) && !newLore.includes('lore_6')) {
+                            setTimeout(() => updateState({ unlockedLore: [...newLore, 'lore_6'], showLoreModal: 'lore_6' }), 3000);
+                        }
+                        updateState({ unlockedLore: newLore, showLoreModal: fragment.id });
+                    }, 600);
+                }
             }
         }
 
@@ -2264,8 +2365,14 @@
                         <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm modal-backdrop">
                             <div class="bg-white p-6 sm:p-10 pixel-card max-w-sm w-full text-center modal-content">
                                 <h4 class="font-black text-2xl sm:text-3xl mb-3 uppercase text-slate-900">${state.notification.title}</h4>
-                                <p class="text-slate-600 mb-6 sm:mb-8 font-bold text-base sm:text-lg">${state.notification.message}</p>
-                                <button onclick="updateState({notification: null})" class="w-full bg-slate-900 text-white py-3 sm:py-4 px-6 font-black uppercase pixel-button text-base sm:text-lg">OK!</button>
+                                <p class="text-slate-600 mb-4 font-bold text-base sm:text-lg">${state.notification.message}</p>
+                                ${state.showWorldLore && WORLD_LORE[state.showWorldLore] ? `
+                                    <div class="border-t-2 border-slate-200 pt-4 mb-6 text-left">
+                                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">World Lore</p>
+                                        <p class="text-slate-700 text-sm font-bold leading-relaxed italic">${WORLD_LORE[state.showWorldLore].text}</p>
+                                    </div>
+                                ` : '<div class="mb-6"></div>'}
+                                <button onclick="updateState({notification: null, showWorldLore: null}); narratorTip('travel');" class="w-full bg-slate-900 text-white py-3 sm:py-4 px-6 font-black uppercase pixel-button text-base sm:text-lg">OK!</button>
                             </div>
                         </div>
                     ` : ''}
@@ -2526,6 +2633,104 @@
                     })() : ''}
 
                     ${state.showSettings ? renderSettings() : ''}
+
+                    ${state.showLoreModal ? (() => {
+                        const fragment = LORE_FRAGMENTS.find(f => f.id === state.showLoreModal);
+                        return fragment ? `
+                        <div class="fixed inset-0 z-[98] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <div class="bg-slate-900 border-4 border-amber-600 max-w-md w-full p-8 flex flex-col gap-4" style="box-shadow:0 0 40px rgba(180,130,0,0.4);">
+                                <p class="text-xs font-black text-amber-500 uppercase tracking-widest">Lore Fragment Discovered</p>
+                                <p class="text-amber-200 font-bold text-sm leading-relaxed italic">${fragment.text}</p>
+                                <p class="text-xs text-slate-500 font-bold">${state.unlockedLore.length} / ${LORE_FRAGMENTS.length} fragments found</p>
+                                <button onclick="updateState({showLoreModal:null})" class="mt-2 bg-amber-600 text-white font-black uppercase text-xs px-6 py-3 tracking-widest hover:bg-amber-500 transition-colors">Close</button>
+                            </div>
+                        </div>` : '';
+                    })() : ''}
+
+                    ${state.showCorruptionEvent ? `
+                    <div class="fixed inset-0 z-[99] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+                        <div class="bg-black border-4 border-red-700 max-w-md w-full p-8 flex flex-col gap-4 text-center" style="box-shadow:0 0 80px rgba(220,38,38,0.6), inset 0 0 40px rgba(220,38,38,0.1);">
+                            <p class="text-xs font-black text-red-600 uppercase tracking-widest animate-pulse">Corruption Complete</p>
+                            <h3 class="font-black text-3xl text-red-500 uppercase" style="text-shadow:0 0 30px rgba(220,38,38,0.8);">It Knows</h3>
+                            <p class="text-red-300 font-bold text-sm leading-relaxed">The meter is full. Gubby has seen everything you've done. The corruption is permanent. The multiplier doubles. There is no cure.</p>
+                            <p class="text-red-600 font-black text-xs uppercase tracking-widest">Permanent 2x bonus applied on top of everything.</p>
+                            <button onclick="updateState({showCorruptionEvent:false, corruptionMeter:0}); state.demonCorruptionBonus = 2;" class="mt-2 bg-red-700 text-white font-black uppercase text-xs px-6 py-3 tracking-widest hover:bg-red-600 transition-colors border-2 border-red-500">I Accept</button>
+                        </div>
+                    </div>` : ''}
+
+                    ${state.showFragmentsModal ? (() => {
+                        const allBaseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'].every(id => state.unlockedLore.includes(id));
+                        const showTimeline = state.showTimelineModal;
+                        const totalFound = state.unlockedLore.length;
+                        const totalFrags = LORE_FRAGMENTS.length;
+                        return `
+                        <div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showFragmentsModal:false,showTimelineModal:false})">
+                            <div class="bg-white pixel-card max-w-xl w-full max-h-[90vh] overflow-y-auto modal-content">
+                                <div class="flex justify-between items-center px-8 pt-8 pb-6 border-b-4 border-slate-200">
+                                    <div>
+                                        <h4 class="font-black text-2xl uppercase text-slate-900">Lore Fragments</h4>
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">${totalFound} / ${totalFrags} discovered</p>
+                                    </div>
+                                    <button onclick="updateState({showFragmentsModal:false,showTimelineModal:false})" class="text-slate-500 hover:text-slate-900 text-3xl font-black">✕</button>
+                                </div>
+
+                                <div class="flex mx-8 mt-6 mb-0 border-4 border-slate-200 overflow-hidden">
+                                    <button onclick="updateState({showTimelineModal:false})" class="flex-1 py-3 font-black uppercase text-xs tracking-widest transition-colors ${!showTimeline ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'}">Fragments</button>
+                                    <button onclick="updateState({showTimelineModal:true})" class="flex-1 py-3 font-black uppercase text-xs tracking-widest transition-colors border-l-4 border-slate-200 ${showTimeline ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'} ${allBaseFive ? '' : 'opacity-40 cursor-not-allowed'}" ${allBaseFive ? '' : 'disabled'}>
+                                        Timeline ${allBaseFive ? '' : '(Locked)'}
+                                    </button>
+                                </div>
+
+                                ${!showTimeline ? `
+                                <div class="px-8 py-6 flex flex-col gap-4">
+                                    ${LORE_FRAGMENTS.filter(f => !f.secret).map((f) => {
+                                        const found = state.unlockedLore.includes(f.id);
+                                        return `<div class="border-4 ${found ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-slate-50'} p-4">
+                                            <div class="flex justify-between items-start mb-2 gap-4">
+                                                <p class="text-xs font-black uppercase tracking-widest flex-shrink-0 ${found ? 'text-amber-600' : 'text-slate-400'}">${found ? 'Discovered' : 'Undiscovered'}</p>
+                                                <span class="text-xs font-bold text-right ${found ? 'text-slate-400' : 'text-slate-300'} italic">${f.hint}</span>
+                                            </div>
+                                            <p class="font-bold text-sm leading-relaxed ${found ? 'text-slate-800 italic' : 'text-slate-300'}">${found ? f.text : '??? ??? ??? ??? ???'}</p>
+                                        </div>`;
+                                    }).join('')}
+
+                                    ${(() => {
+                                        const f6 = LORE_FRAGMENTS.find(f => f.secret);
+                                        if (!f6) return '';
+                                        const found = state.unlockedLore.includes(f6.id);
+                                        return `<div class="border-4 ${found ? 'border-violet-500 bg-violet-50' : 'border-slate-300 bg-slate-100'} p-4">
+                                            <div class="flex justify-between items-start mb-2 gap-4">
+                                                <p class="text-xs font-black uppercase tracking-widest flex-shrink-0 ${found ? 'text-violet-600' : 'text-slate-400'}">${found ? 'Secret Fragment' : '??? Secret Fragment'}</p>
+                                                <span class="text-xs font-bold text-right ${found ? 'text-slate-400' : 'text-slate-300'} italic">${found ? f6.hint : 'Unknown'}</span>
+                                            </div>
+                                            <p class="font-bold text-sm leading-relaxed ${found ? 'text-violet-900 italic' : 'text-slate-300'}">${found ? f6.text : '??? ??? ??? ??? ???'}</p>
+                                        </div>`;
+                                    })()}
+                                </div>
+                                ` : `
+                                <div class="px-8 py-6 flex flex-col gap-0">
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">The complete story, assembled.</p>
+                                    ${LORE_TIMELINE.map((entry, i) => {
+                                        const fragId = 'lore_' + entry.order;
+                                        const found = state.unlockedLore.includes(fragId);
+                                        const isLast = i === LORE_TIMELINE.length - 1;
+                                        const isSecret = entry.order === 6;
+                                        return `<div class="flex gap-4 ${isLast ? '' : 'mb-0'}">
+                                            <div class="flex flex-col items-center">
+                                                <div class="w-4 h-4 rounded-full border-4 flex-shrink-0 mt-1 ${found ? (isSecret ? 'border-violet-500 bg-violet-400' : 'border-amber-500 bg-amber-400') : 'border-slate-300 bg-slate-200'}"></div>
+                                                ${!isLast ? `<div class="w-0.5 flex-1 mt-1 mb-1 min-h-4 ${found ? (isSecret ? 'bg-violet-300' : 'bg-amber-300') : 'bg-slate-200'}"></div>` : ''}
+                                            </div>
+                                            <div class="pb-5">
+                                                <p class="font-black text-xs uppercase tracking-widest ${found ? (isSecret ? 'text-violet-600' : 'text-amber-600') : 'text-slate-400'} mb-1">${found ? entry.title : '???'}</p>
+                                                <p class="text-sm font-bold leading-relaxed ${found ? 'text-slate-700' : 'text-slate-300'}">${found ? entry.summary : 'Collect the fragment to reveal this chapter.'}</p>
+                                            </div>
+                                        </div>`;
+                                    }).join('')}
+                                </div>
+                                `}
+                            </div>
+                        </div>`;
+                    })() : ''}
 
                     ${state.showGamble ? `
                     <div class="fixed inset-0 z-[91] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showGamble:false})">
@@ -2914,6 +3119,15 @@
                                 <span class="absolute -top-2 -right-2 bg-amber-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow: 3px 3px 0 rgba(0,0,0,0.3);">
                                     ${state.activeQuests.length}
                                 </span>
+                            ` : ''}
+                        </button>
+
+                        <button onclick="updateState({showFragmentsModal: true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative">
+                            <i data-lucide="book-marked" class="w-12 h-12 text-violet-600"></i>
+                            <span class="font-black text-lg uppercase text-slate-900">Fragments</span>
+                            <span class="text-xs font-bold text-slate-500">${state.unlockedLore.length} / ${LORE_FRAGMENTS.length}</span>
+                            ${state.showLoreModal ? `
+                                <span class="absolute -top-2 -right-2 bg-violet-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center animate-pulse" style="box-shadow: 3px 3px 0 rgba(0,0,0,0.3);">!</span>
                             ` : ''}
                         </button>
                     </div>
