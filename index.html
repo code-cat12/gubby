@@ -200,8 +200,8 @@
             /* Header title */
             .gubby-title { font-size: 2rem !important; }
             /* Stats row wraps nicely */
-            .stats-row { gap: 0 !important; }
-            .stats-row .stat-display { border-right: 2px solid #e2e8f0; padding: 8px 10px; }
+            .stats-row { gap: 0 !important; width: 100% !important; justify-content: stretch !important; }
+            .stats-row .stat-display { flex: 1 !important; border-right: 2px solid #e2e8f0; padding: 8px 6px; text-align: center; }
             .stats-row .stat-display:last-child { border-right: none; }
             /* Action grid — 2 col */
             .actions-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; flex-direction: unset !important; }
@@ -284,12 +284,12 @@
         #demon-flash { position: fixed; inset: 0; z-index: 99990; background: rgba(220,38,38,0.35); pointer-events: none; opacity: 0; }
         #demon-flash.flashing { animation: demonRedFlash 0.18s ease-out forwards; }
         @keyframes demonRedFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
-        #landscape-overlay { display: none; position: fixed; inset: 0; z-index: 99999; background: #0f172a; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
-        .rotate-phone { animation: rotatePhone 1.5s ease-in-out infinite alternate; }
-        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 100% { transform: rotate(90deg); } }
     </style>
 </head>
 <body class="bg-emerald-50 overflow-x-hidden">
+    <audio id="bg-music" loop style="display:none;">
+        <source src="https://files.catbox.moe/wdtf06.mp3" type="audio/mpeg">
+    </audio>
     <div id="demon-flash"></div>
     <div id="loading-screen">
         <div id="loading-title">Gubby Clicker</div>
@@ -306,15 +306,7 @@
             <div id="demon-intro-sub">You have awakened something dark.<br>20x multiplier — stacks with everything.<br>The screen bleeds red. There is no going back.</div>
             <button id="demon-intro-close" onclick="closeDemonIntro()">Enter ›</button>
         </div>
-    </div>
-    <div id="landscape-overlay">
-        <div class="rotate-phone text-white" style="font-size:80px;line-height:1;">↻</div>
-        <div class="flex flex-col items-center gap-2 text-center px-8">
-            <p class="text-white font-black text-2xl uppercase tracking-widest">Rotate Your Phone</p>
-            <p class="text-slate-400 font-bold text-sm uppercase tracking-wider">This game requires landscape mode</p>
-        </div>
-    </div>
-    <div id="root"></div>
+    </div><div id="root"></div>
 
 
     <script>
@@ -322,7 +314,12 @@
         function getGubbyImgUrl() {
             if (state.equippedSkin) {
                 const skin = SHOP_ITEMS.find(i => i.id === state.equippedSkin && i.isSkin);
-                if (skin) return skin.skinImg;
+                if (skin) {
+                    // Always show level I image as the main Gubby
+                    const levelOne = SHOP_ITEMS.find(i => i.isSkin && i.skinSet === skin.skinSet && i.skinLevel === 1);
+                    if (levelOne) return levelOne.skinImg;
+                    return skin.skinImg;
+                }
             }
             return GUBBY_DEFAULT_IMG;
         }
@@ -332,38 +329,38 @@
             forest:   { name: 'Shard',   icon: '' },
             glacier:  { name: 'Crystal', icon: '' },
             medieval: { name: 'Crown',   icon: '' },
+            paradise: { name: 'Pearl',   icon: '' },
         };
 
         const DESTINATIONS = [
             { id: 'plains',   name: 'Peaceful Grasslands', chapter: 'I',   req: 0,  mult: 1,   priceMod: 1,    color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887' },
-            { id: 'forest',   name: 'Forest of Sins',      chapter: 'II',  req: 5,  mult: 5,   priceMod: 0.75, color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
-            { id: 'glacier',  name: 'Frosty Glaciers',     chapter: 'III', req: 10, mult: 15,  priceMod: 0.5,  color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
-            { id: 'medieval', name: 'Medieval Times',      chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.25, color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
+            { id: 'paradise', name: 'Paradise',            chapter: 'II',  req: 5,  mult: 5,   priceMod: 0.75, color: 'bg-cyan-50',    themeColor: '#ecfeff', bgImage: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif' },
+            { id: 'forest',   name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 15,  priceMod: 0.75, color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
+            { id: 'glacier',  name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.5,  color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
+            { id: 'medieval', name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 50,  priceMod: 0.25, color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
         ];
 
-        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150 };
+        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
-            { id: 'rainbow',  name: 'Rainbow',   category: 'small',  baseCost: 100,        power: 10,       duration: 15  },
-            { id: 'mega',     name: 'Mega',      category: 'small',  baseCost: 450,        power: 25,       duration: 12  },
-            { id: 'omega',    name: 'Omega',     category: 'small',  baseCost: 1200,       power: 120,      duration: 10  },
-            { id: 'xpmult',   name: 'XP Surge',  category: 'medium', baseCost: 5000,       power: 0,        duration: 900, description: '1.3x XP · 15min' },
-            { id: 'godly',    name: 'Godly',     category: 'medium', baseCost: 15000,      power: 400,      duration: 20  },
-            { id: 'legendary',name: 'Legendary', category: 'medium', baseCost: 75000,      power: 1000,     duration: 9   },
-            { id: 'mythic',   name: 'Mythic',    category: 'large',  baseCost: 250000,     power: 5000,     duration: 9   },
-            { id: 'divine',   name: 'Divine',    category: 'large',  baseCost: 1000000,    power: 25000,    duration: 9   },
-            { id: 'celestial',name: 'Celestial', category: 'large',  baseCost: 5000000,    power: 100000,   duration: 8   },
-            { id: 'void',     name: 'Void',      category: 'large',  baseCost: 15000000,   power: 500000,   duration: 7   },
-            { id: 'titan',    name: 'Titan',     category: 'op',     baseCost: 100000000,  power: 5000000,  duration: 10  },
-            { id: 'eternal',  name: 'Eternal',   category: 'op',     baseCost: 500000000,  power: 50000000, duration: 12  },
-            { id: 'infinite', name: 'Infinite',  category: 'op',     baseCost: 2500000000, power: 250000000,duration: 15  },
-            { id: 'perm_angel', name: 'Angel', category: 'perm_boost', baseCost: 1000000,  permMult: 10000, permanent: true, description: '10,000x permanent multiplier' },
-            { id: 'perm_demon', name: 'Demon', category: 'perm_boost', baseCost: 5000000,  permMult: 25000, permanent: true, description: '25,000x permanent multiplier' },
-            { id: 'perm_queen', name: 'Queen', category: 'perm_boost', baseCost: 15000000, permMult: 50000, permanent: true, description: '50,000x permanent multiplier' },
-            { id: 'perm_king',  name: 'King',  category: 'perm_boost', baseCost: 30000000, permMult: 100000,permanent: true, description: '100,000x permanent multiplier' },
-            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
-            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
-            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Opal stars burst out on every click.', reqSkin: 'skin_season_2' },
+            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 10,       duration: 15  },
+            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 25,       duration: 12  },
+            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 120,      duration: 10  },
+            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 400,      duration: 20  },
+            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 1000,     duration: 9   },
+            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 5000,     duration: 9   },
+            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 25000,    duration: 9   },
+            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 100000,   duration: 8   },
+            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 500000,   duration: 7   },
+            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 5000000,  duration: 10  },
+            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 50000000, duration: 12  },
+            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 250000000,duration: 15  },
+            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
+            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
+            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Opal stars burst out on every click.', reqSkin: 'skin_season_2' },
+            { id: 'skin_demon_1',  name: 'Demon Gubby I',  category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327', description: 'Pure evil radiates from within.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_3',  name: 'Demon Gubby III',category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'The final form. Darkness incarnate.', reqSkin: 'skin_demon_2' },
         ];
 
         const WORLD_LORE = {
@@ -371,6 +368,7 @@
             forest:   { text: "A canopy so thick no light reaches the ground. Travelers who enter seeking power rarely leave the same. The trees remember every deal made in the dark." },
             glacier:  { text: "Ancient ice stretching beyond the horizon. Somewhere beneath the surface, something has been counting every click you've ever made. Waiting." },
             medieval: { text: "Crumbling castles. Crowns abandoned mid-war. The kingdom collapsed overnight and no one knows why. The locals say Gubby was here before the fall." },
+            paradise: { text: "An island suspended in perpetual golden hour. The water is warm, the air is sweet, and everything glitters. Nobody who arrives ever wants to ask how they got here." },
         };
 
         const LORE_FRAGMENTS = [
@@ -420,8 +418,8 @@
             showAdmin: false, adminLog: [], discoEventTimer: 0,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
-            equippedPermBoost: null, equippedSkin: null, skinShopTab: 1,
-            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, largeText: false, purpleAccent: false,
+            equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1,
+            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
             showFragmentsModal: false, showJournalModal: false, showWorldLore: null,
@@ -444,13 +442,13 @@
                     clicks: state.clicks, lifetimeClicks: state.lifetimeClicks,
                     gold: state.gold, theme: state.theme,
                     prestigeLevel: state.prestigeLevel, infinityRebirth: state.infinityRebirth,
-                    inventory: state.inventory, equippedPermBoost: state.equippedPermBoost,
+                    inventory: state.inventory,
                     equippedSkin: state.equippedSkin,
                     completedQuests: state.completedQuests, completedQuestIds: state.completedQuestIds,
                     unlockedLore: state.unlockedLore, visitedWorlds: state.visitedWorlds,
                     demonMode: state.demonMode,
                     largeText: state.largeText, floatingStars: state.floatingStars,
-                    soundEnabled: state.soundEnabled, clickSound: state.clickSound,
+                    soundEnabled: state.soundEnabled, musicEnabled: state.musicEnabled, clickSound: state.clickSound,
                     showParticles: state.showParticles, questNotif: state.questNotif,
                     marketFlash: state.marketFlash, purpleAccent: state.purpleAccent,
                     skinShopTab: state.skinShopTab,
@@ -460,6 +458,10 @@
         }
         function loadGame() {
             try {
+                if (localStorage.getItem(SAVE_KEY + '_reset') === '1') {
+                    localStorage.removeItem(SAVE_KEY + '_reset');
+                    return;
+                }
                 const raw = localStorage.getItem(SAVE_KEY);
                 if (!raw) return;
                 const save = JSON.parse(raw);
@@ -471,6 +473,8 @@
             window.removeEventListener('beforeunload', saveGame);
             localStorage.removeItem(SAVE_KEY);
             localStorage.removeItem(ADMIN_AUTH_KEY);
+            // Write empty marker so loadGame doesn't restore old save
+            localStorage.setItem(SAVE_KEY + '_reset', '1');
             location.reload();
         }
         // Auto-save every 10 seconds
@@ -506,18 +510,8 @@
             questClaim: () => { playTone({ type:'sine', freq:660, gain:0.13, attack:0.01, decay:0.15, duration:0.18 }); setTimeout(() => playTone({ type:'sine', freq:880, gain:0.12, attack:0.005, decay:0.15, duration:0.18 }), 100); },
             useItem:    () => playTone({ type:'sine', freq:700, freq2:900, gain:0.14, attack:0.01, decay:0.2, duration:0.25 }),
         };
-
-        function isMobilePortrait() { return window.innerWidth <= 768 && window.innerHeight > window.innerWidth; }
-        function checkOrientation() {
-            const overlay = document.getElementById('landscape-overlay');
-            if (overlay) { overlay.style.display = (window.innerWidth > window.innerHeight || window.innerWidth > 768) ? 'none' : 'flex'; }
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
-            if (isMobilePortrait()) document.getElementById('landscape-overlay').style.display = 'flex';
-            window.addEventListener('orientationchange', checkOrientation);
-            window.addEventListener('resize', checkOrientation);
             startSpinLoop();
             startLoadingBar();
             setTimeout(() => { if (!state.loadingDone) finishLoading(); }, 2500);
@@ -525,12 +519,23 @@
 
         function updateState(newState, skipRender = false) {
             state = { ...state, ...newState };
+            if ('soundEnabled' in newState || 'musicEnabled' in newState) syncMusic();
             if (!skipRender) render();
         }
 
+        function syncMusic() {
+            const music = document.getElementById('bg-music');
+            if (!music) return;
+            if (state.musicEnabled) {
+                music.volume = 0.35;
+                music.play().catch(() => {});
+            } else {
+                music.pause();
+            }
+        }
+
         function getPermanentMult() {
-            const id = state.equippedPermBoost;
-            return id ? (SHOP_ITEMS.find(i => i.id === id && i.category === 'perm_boost')?.permMult || 1) : 1;
+            return 1;
         }
         function getDemonMult() { return state.demonMode ? 20 : 1; }
 
@@ -570,50 +575,76 @@
             if (e.key !== 'Enter') return;
             const cmdText = e.target.value.trim();
             if (!cmdText) return;
-            const parts = cmdText.split(' ');
+
+            // HP spell aliases → /command mapping
+            const spellMap = {
+                'aurum revelio': '/money',
+                'ascensio infinitus': '/rebirth infinity',
+                'ascensio': '/rebirth',
+                'accio omnia': '/give all',
+                'accio': '/give',
+                'finite quaestum': '/quest',
+                'tenebris invoco': '/demon',
+                'fragmentum omnia': '/fragments all',
+                'fragmentum': '/fragments',
+            };
+
+            let normalized = cmdText;
+            if (!cmdText.startsWith('/')) {
+                const lower = cmdText.toLowerCase();
+                for (const [spell, cmd] of Object.entries(spellMap)) {
+                    if (lower.startsWith(spell)) {
+                        const rest = cmdText.slice(spell.length).trim();
+                        normalized = cmd + (rest ? ' ' + rest : '');
+                        break;
+                    }
+                }
+            }
+
+            const parts = normalized.split(' ');
             const command = parts[0].toLowerCase();
             let message = "", changes = {};
 
             if (command === '/money') {
                 const amt = parseFloat(parts[1]) || 0;
                 changes.gold = state.gold + amt;
-                message = `Money added: ${amt}`;
+                message = `Aurum Revelio ${amt}`;
             } else if (command === '/rebirth') {
                 const arg = parts[1]?.toLowerCase();
-                if (arg === 'infinity') { changes.prestigeLevel = 9999; changes.infinityRebirth = true; message = "∞ Infinity Rebirth activated!"; }
-                else { const lvl = parseInt(parts[1]); if (!isNaN(lvl)) { changes.prestigeLevel = lvl; changes.infinityRebirth = false; message = "Prestige set to " + lvl; } else message = "Usage: /rebirth [n] | /rebirth infinity"; }
+                if (arg === 'infinity') { changes.prestigeLevel = 9999; changes.infinityRebirth = true; message = "Ascensio Infinitus ∞"; }
+                else { const lvl = parseInt(parts[1]); if (!isNaN(lvl)) { changes.prestigeLevel = lvl; changes.infinityRebirth = false; message = "Ascensio " + lvl; } else message = "Ascensio [n]"; }
             } else if (command === '/give') {
                 const sub = parts[1]?.toLowerCase();
                 if (sub === 'all') {
                     const newInv = { ...state.inventory };
                     SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
-                    changes.inventory = newInv; message = `Gave 1x of all items`;
+                    changes.inventory = newInv; message = `Accio Omnia`;
                 } else {
                     const rawArgs = parts.slice(1);
                     const lastArg = rawArgs[rawArgs.length - 1];
                     const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
                     const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
                     const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
-                    if (ids.length === 0) { message = 'Usage: /give [id] [amt] | /give all'; }
+                    if (ids.length === 0) { message = 'Accio [id] [amt]'; }
                     else {
                         const newInv = { ...state.inventory }, given = [], missing = [];
                         ids.forEach(id => { const item = SHOP_ITEMS.find(i => i.id === id); if (item) { newInv[id] = (newInv[id]||0) + amount; given.push(item.name); } else missing.push(id); });
                         if (given.length) changes.inventory = newInv;
-                        message = given.length ? `Gave ${amount}x: ${given.join(', ')}` : `Not found: ${missing.join(', ')}`;
+                        message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
                     }
                 }
             } else if (command === '/quest') {
                 if (state.activeQuests.length > 0) {
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
-                    message = `All ${state.activeQuests.length} quest(s) completed!`;
+                    message = `Finite Quaestum ${state.activeQuests.length}`;
                 } else message = "No active quests";
             } else if (command === '/demon') {
-                changes.demonMode = true; startDemonFlash(); message = 'Demon Mode activated!';
+                changes.demonMode = true; startDemonFlash(); message = 'Tenebris Invoco';
             } else if (command === '/fragments') {
-                if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `All fragments unlocked`; }
-                else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Unlocked Fragment ${n}`; } else message = `Fragment ${n} already unlocked`; } else message = `Usage: /fragments [1-6] | /fragments all`; }
+                if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `Fragmentum Omnia`; }
+                else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Fragmentum ${n}`; } else message = `Fragmentum ${n} — already known`; } else message = `Fragmentum [1-6]`; }
             } else {
-                message = "Commands: /money [n], /rebirth [n], /rebirth infinity, /give [id] [amt], /give all, /quest, /demon, /fragments [n]";
+                message = "Unknown spell";
             }
 
             updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
@@ -660,58 +691,32 @@
             }
 
 
-            // Skin I — mini gubbies fly out
-            if (state.equippedSkin === 'skin_season_1') {
-                const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-                const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-                const count = 4;
-                for (let i = 0; i < count; i++) {
-                    const mini = document.createElement('img');
-                    mini.src = 'https://i.postimg.cc/nzCdK6z1/image.png';
-                    const size = 36 + Math.random() * 20;
-                    const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.9;
-                    const dist = 70 + Math.random() * 70;
-                    const tx = Math.cos(angle) * dist;
-                    const ty = Math.sin(angle) * dist - 50;
-                    mini.style.cssText = `position:fixed;left:${clientX - size/2}px;top:${clientY - size/2}px;width:${size}px;height:${size}px;pointer-events:none;z-index:9999;transition:none;image-rendering:pixelated;`;
-                    mini.style.animation = 'none';
-                    document.body.appendChild(mini);
-                    const start = performance.now();
-                    const dur = 650 + Math.random() * 300;
-                    (function animMini(img, tx, ty, dur, start) {
-                        const dir = Math.random() > 0.5 ? 1 : -1;
-                        function frame(now) {
-                            const t = Math.min(1, (now - start) / dur);
-                            const ease = 1 - Math.pow(1 - t, 3);
-                            img.style.transform = `translate(${tx * ease}px, ${ty * ease}px) rotate(${ease * 360 * dir}deg) scale(${1 - ease * 0.4})`;
-                            img.style.opacity = String(1 - ease * 0.8);
-                            if (t < 1) requestAnimationFrame(frame);
-                            else img.remove();
-                        }
-                        requestAnimationFrame(frame);
-                    })(mini, tx, ty, dur, start);
-                }
-            }
 
-            // Skin III — opal stars fly out
-            if (state.equippedSkin === 'skin_season_3') {
+            const isStar = state.equippedSkin && state.equippedSkin.startsWith('skin_season_');
+            const isDemon = state.equippedSkin && state.equippedSkin.startsWith('skin_demon_');
+            const skinLevel = isStar ? parseInt(state.equippedSkin.slice(-1)) : isDemon ? parseInt(state.equippedSkin.slice(-1)) : 0;
+
+            // Level III only: level III image flies out on click
+            if (skinLevel >= 3) {
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                const imgIII = isDemon
+                    ? 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
+                    : 'https://i.postimg.cc/nzCdK6z1/image.png';
                 const count = 3;
                 for (let i = 0; i < count; i++) {
                     const plush = document.createElement('img');
-                    plush.src = 'https://i.postimg.cc/nzCdK6z1/image.png';
+                    plush.src = imgIII;
                     const size = 56 + Math.random() * 24;
                     const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.8;
                     const dist = 80 + Math.random() * 80;
                     const tx = Math.cos(angle) * dist;
                     const ty = Math.sin(angle) * dist - 60;
                     plush.style.cssText = `position:fixed;left:${clientX - size/2}px;top:${clientY - size/2}px;width:${size}px;height:${size}px;pointer-events:none;z-index:9999;transition:none;image-rendering:pixelated;`;
-                    plush.style.animation = 'none';
                     document.body.appendChild(plush);
                     const start = performance.now();
                     const dur = 700 + Math.random() * 300;
-                    function animPlush(img, tx, ty, dur, start) {
+                    (function animPlush(img, tx, ty, dur, start) {
                         const dir = Math.random() > 0.5 ? 1 : -1;
                         function frame(now) {
                             const t = Math.min(1, (now - start) / dur);
@@ -722,8 +727,7 @@
                             else img.remove();
                         }
                         requestAnimationFrame(frame);
-                    }
-                    animPlush(plush, tx, ty, dur, start);
+                    })(plush, tx, ty, dur, start);
                 }
             }
             checkQuestProgress();
@@ -760,7 +764,7 @@
             const updatedQuests = state.activeQuests.map(q => q.type === 'prestige' ? { ...q, progress: (q.progress||0) + 1 } : q);
             const resetInventory = SHOP_ITEMS.reduce((acc, item) => ({
                 ...acc,
-                [item.id]: (item.category === 'perm_boost' || item.category === 'skin') ? (state.inventory[item.id] || 0) : 0
+                [item.id]: (item.category === 'skin') ? (state.inventory[item.id] || 0) : 0
             }), {});
             const isMilestone = [5,10,25,50].includes(nextPrestige);
             updateState({
@@ -823,7 +827,7 @@
         function toggleEquip(itemId) {
             const item = SHOP_ITEMS.find(i => i.id === itemId);
             if (!item) return;
-            if (item.category === 'perm_boost') updateState({ equippedPermBoost: state.equippedPermBoost === itemId ? null : itemId });
+            // perm_boost removed
             if (item.category === 'skin') {
                 const newSkin = state.equippedSkin === itemId ? null : itemId;
                 state.equippedSkin = newSkin;
@@ -947,19 +951,28 @@
 
         function createFloatingStars() {
             if (state.floatingStars === false) return;
-            const hasSkinII = state.equippedSkin === 'skin_season_2' || state.equippedSkin === 'skin_season_3';
-            if (!hasSkinII) return;
-            const imgUrl = 'https://static.wikia.nocookie.net/roblox-find-the-cornbreads/images/2/2e/Star.png/revision/latest/thumbnail/width/360/height/360?cb=20230612014323';
-            for (let i = 0; i < 5; i++) {
+            const isStar = state.equippedSkin && state.equippedSkin.startsWith('skin_season_');
+            const isDemon = state.equippedSkin && state.equippedSkin.startsWith('skin_demon_');
+            const skinLevel = isStar ? parseInt(state.equippedSkin.slice(-1)) : isDemon ? parseInt(state.equippedSkin.slice(-1)) : 0;
+            if (skinLevel < 2) return;
+
+            const imgUrl = isDemon
+                ? 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327'
+                : 'https://static.wikia.nocookie.net/roblox-find-the-cornbreads/images/2/2e/Star.png/revision/latest/thumbnail/width/360/height/360?cb=20230612014323';
+            const baseSize = isDemon ? 60 : 24;
+            const sizeRange = isDemon ? 40 : 24;
+            const baseDur = isDemon ? 17 : 11;
+            const durRange = isDemon ? 7 : 6;
+            for (let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     const star = document.createElement('img');
                     star.src = imgUrl; star.className = 'floating-star'; star.style.imageRendering = 'pixelated';
-                    const size = 24 + Math.random()*24;
+                    const size = baseSize + Math.random() * sizeRange;
                     star.style.width = size + 'px'; star.style.height = size + 'px';
                     star.style.left = (Math.random() * 95) + 'vw';
                     star.style.top = '-80px';
                     star.style.setProperty('--drift', (Math.random()-0.5)*100 + 'px');
-                    const dur = 14 + Math.random()*8;
+                    const dur = baseDur + Math.random() * durRange;
                     star.style.animationDuration = dur + 's';
                     document.body.appendChild(star);
                     setTimeout(() => star.remove(), dur*1000);
@@ -972,6 +985,7 @@
             { key:'largeText',     icon:'type',               label:'Large Text',      desc:'Bigger UI font size',        onBorder:'border-blue-400',   onBg:'bg-blue-50',   onIcon:'text-blue-500',   onTrack:'bg-blue-500 border-blue-700'     },
             { key:'floatingStars', icon:'sparkles',           label:'Floating Stars',  desc:'Decorative falling stars',   onBorder:'border-violet-400', onBg:'bg-violet-50', onIcon:'text-violet-500', onTrack:'bg-violet-500 border-violet-700' },
             { key:'soundEnabled',  icon:'volume-2',           label:'Sound Effects',   desc:'All game sounds',            onBorder:'border-amber-400',  onBg:'bg-amber-50',  onIcon:'text-amber-500',  onTrack:'bg-amber-500 border-amber-700'   },
+                { key:'musicEnabled',   icon:'music',              label:'Music',           desc:'Background music',           onBorder:'border-pink-400',   onBg:'bg-pink-50',   onIcon:'text-pink-500',   onTrack:'bg-pink-500 border-pink-700'     },
             { key:'clickSound',    icon:'mouse-pointer-click',label:'Click Sounds',    desc:'Sound on every click',       onBorder:'border-rose-400',   onBg:'bg-rose-50',   onIcon:'text-rose-500',   onTrack:'bg-rose-500 border-rose-700'     },
             { key:'showParticles', icon:'zap',                label:'Click Particles', desc:'Show +N pop on click',       onBorder:'border-amber-400',  onBg:'bg-amber-50',  onIcon:'text-amber-500',  onTrack:'bg-amber-500 border-amber-700'   },
             { key:'questNotif',    icon:'bell',               label:'Quest Notifs',    desc:'Pop-up on quest complete',   onBorder:'border-indigo-400', onBg:'bg-indigo-50', onIcon:'text-indigo-500', onTrack:'bg-indigo-500 border-indigo-700' },
@@ -982,6 +996,7 @@
             const newVal = !getSetting(key); state[key] = newVal;
             if (key === 'largeText') { document.body.classList.toggle('large-text', newVal); }
             if (key === 'floatingStars') { if (!newVal) document.querySelectorAll('.floating-star').forEach(s => s.remove()); else createFloatingStars(); }
+            if (key === 'musicEnabled') syncMusic();
             const btn = document.querySelector('[data-setting="'+key+'"]');
             if (btn) {
                 const cfg = SETTINGS_ROWS.find(r => r.key === key);
@@ -1010,7 +1025,7 @@
                 +'<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-0 mb-1">Display</p>'
                 +['largeText','floatingStars'].map(settingBtn).join('')
                 +'<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Audio</p>'
-                +['soundEnabled','clickSound'].map(settingBtn).join('')
+                +['soundEnabled','musicEnabled','clickSound'].map(settingBtn).join('')
                 +'<p class="text-xs font-black uppercase text-slate-400 tracking-widest col-span-2 mt-3 mb-1">Gameplay</p>'
                 +['showParticles','questNotif','marketFlash'].map(settingBtn).join('')
                 +'</div><button onclick="updateState({showSettings:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-4 pb-1">Close</button>'
@@ -1020,86 +1035,74 @@
 
         // ── MARKET / STORAGE RENDER ──────────────────────────────
         function renderMarketContent() {
-            const showingSpecialTab = state.marketCategory === 'special' || state.marketCategory === 'perm_boost';
+            const showingSpecialTab = state.marketCategory === 'special';
             const tabBar = `
                 <div class="flex gap-2 mb-5">
-                    <button onclick="updateState({marketCategory:null})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Boosts</button>
-                    <button onclick="updateState({marketCategory:'special'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Special Items</button>
+                    <button onclick="updateState({marketCategory:null})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Potions</button>
+                    <button onclick="updateState({marketCategory:'special'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Skins</button>
                 </div>`;
 
             if (showingSpecialTab) {
-                const permItems = SHOP_ITEMS.filter(i => i.category === 'perm_boost');
                 return tabBar
                     + '<div class="flex flex-col gap-0">'
-                    + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-2">Permanent Boosts <span class="text-slate-400 font-bold normal-case text-xs">· Buy once · Equip in Storage</span></p>'
-                    + permItems.map(item => {
-                        const price = getItemPrice(item), canAfford = state.gold >= price, owned = state.inventory[item.id] > 0;
-                        return `<div class="flex items-center justify-between p-4 border-4 mb-2 bg-white ${owned?'border-emerald-400 bg-emerald-50':canAfford?'border-slate-200':'border-slate-100 opacity-60'}">
-                            <div class="flex-1 mr-3">
-                                <p class="font-black text-base uppercase text-slate-900">${item.name}</p>
-                                <p class="text-xs font-bold text-slate-400">${item.description}</p>
-                                ${!owned?`<p class="text-xs font-bold text-indigo-600 mt-0.5">Cost: ${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}</p>`:''}
-                            </div>
-                            <button onclick="${owned?'':'buySpecialItem(\''+item.id+'\')'}" class="pixel-button shrink-0 ${owned?'bg-emerald-500 border-emerald-700 text-white cursor-default':canAfford?'bg-indigo-600 border-indigo-800 text-white':'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">${owned?'OWNED':'BUY'}</button>
-                        </div>`;
-                    }).join('')
-                    + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mt-4 mb-3">Season Skins <span class="text-slate-400 font-bold normal-case text-xs">· Cosmetic · Equip in Storage</span></p>'
+                    + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-3">Skins <span class="text-slate-400 font-bold normal-case text-xs">· Cosmetic · Equip in Storage</span></p>'
                     + (() => {
-                        const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin');
-                        const tab = state.skinShopTab || 1;
-                        const item = skinItems.find(i => i.skinLevel === tab);
-                        if (!item) return '';
-                        const price = getItemPrice(item), canAfford = state.gold >= price, owned = state.inventory[item.id] > 0;
-                        const prevSkinId = item.reqSkin;
-                        const prevOwned = !prevSkinId || state.inventory[prevSkinId] > 0;
-                        const locked = !prevOwned;
-                        const isEquipped = state.equippedSkin === item.id;
-
-                        const previews = [
-                            'https://i.postimg.cc/nzCdK6z1/image.png',
-                            'https://i.postimg.cc/kggWtWDx/image.png',
-                            'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png',
+                        const skinSets = [
+                            { key: 'star',  label: 'Star Gubby',  stateTab: 'skinShopTab',      bg: 'https://i.redd.it/8hr60jort3w91.gif' },
+                            { key: 'demon', label: 'Demon Gubby', stateTab: 'skinShopTabDemon',  bg: 'https://i.pinimg.com/originals/aa/04/0e/aa040ec6845c62139afbfa67c7988540.jpg' },
                         ];
+                        return skinSets.map(set => {
+                            const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin' && i.skinSet === set.key);
+                            const tab = state[set.stateTab] || 1;
+                            const tabItem = skinItems.find(i => i.skinLevel === tab) || skinItems[0];
+                            const levelOneItem = skinItems.find(i => i.skinLevel === 1);
+                            if (!tabItem || !levelOneItem) return '';
+                            const price = getItemPrice(tabItem), canAfford = state.gold >= price, owned = state.inventory[tabItem.id] > 0;
+                            const prevSkinId = tabItem.reqSkin;
+                            const prevOwned = !prevSkinId || state.inventory[prevSkinId] > 0;
+                            const locked = !prevOwned;
+                            const isEquipped = state.equippedSkin === tabItem.id;
+                            const perksMap = {
+                                star:  { 1: '✦ Star Gubby skin', 2: '✦ Stars fall from the sky', 3: '✦ Opal stars fly out on click' },
+                                demon: { 1: '✦ Demon Gubby skin', 2: '✦ Dark images fall from the sky', 3: '✦ Demon images fly out on click' },
+                            };
+                            const perks = perksMap[set.key][tab] || '';
+                            const tabBtns = skinItems.map(s => {
+                                const active = s.skinLevel === tab;
+                                return `<button onclick="updateState({${set.stateTab}:${s.skinLevel}})" class="flex-1 py-2 font-black uppercase text-xs tracking-widest border-t-4 transition-colors ${active?'border-purple-600 text-purple-700 bg-purple-50':'border-slate-200 text-slate-400 hover:text-slate-600 bg-white'}">Level ${s.skinLevel === 1 ? 'I' : s.skinLevel === 2 ? 'II' : 'III'}</button>`;
+                            }).join('');
 
-                        const tabBtns = skinItems.map(s => {
-                            const active = s.skinLevel === tab;
-                            return `<button onclick="updateState({skinShopTab:${s.skinLevel}})" class="flex-1 py-2 font-black uppercase text-xs tracking-widest border-t-4 transition-colors ${active?'border-purple-600 text-purple-700 bg-purple-50':'border-slate-200 text-slate-400 hover:text-slate-600 bg-white'}">Level ${s.skinLevel === 1 ? 'I' : s.skinLevel === 2 ? 'II' : 'III'}</button>`;
-                        }).join('');
-
-                        const perks = tab === 3 ? '✦ Opal stars fly out on click' :
-                                      tab === 2 ? '✦ Stars fall from the sky' :
-                                                  '✦ Star Gubby skin';
-
-                        return `<div class="mb-2 overflow-hidden border-4 ${isEquipped?'border-purple-500':owned?'border-emerald-400':'border-slate-200'} relative" id="skin-shop-card" style="background:linear-gradient(rgba(255,255,255,0.10),rgba(255,255,255,0.10)),url('https://64.media.tumblr.com/be9e196e0e59b345a49575020cef444b/4e9537cad97cbf25-b2/s640x960/5a63b0bfd6967ff590fbd06aa905acfba619cfdb.gif') center/cover no-repeat;">
-                            <div class="flex items-stretch gap-0">
-                                <div class="flex-shrink-0 flex items-center justify-center relative overflow-hidden" style="width:140px;height:140px;">
-                                    <img src="https://i.postimg.cc/nzCdK6z1/image.png" class="w-full h-full object-contain" style="image-rendering:pixelated;" />
-                                </div>
-                                <div class="flex-1 p-4 flex flex-col justify-between min-w-0">
-                                    <div>
-                                        <div class="flex items-center gap-2 flex-wrap mb-0.5">
-                                            <p class="font-black text-base uppercase text-white" style="text-shadow:1px 1px 3px rgba(0,0,0,0.5);">${item.name}</p>
-                                            ${isEquipped?'<span class="text-xs font-black bg-purple-600 text-white px-2 py-0.5">EQUIPPED</span>':''}
-                                        </div>
-                                        <p class="text-xs font-bold text-white/80">${perks}</p>
-                                        ${locked ? `<p class="text-xs font-bold text-red-300 mt-1">⚠ Requires ${SHOP_ITEMS.find(i=>i.id===prevSkinId)?.name||'previous level'}</p>` : ''}
-                                        ${!owned && !locked ? `<p class="text-xs font-bold text-white/70 mt-1">${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}</p>` : ''}
+                            return `<div class="mb-4 overflow-hidden border-4 ${isEquipped?'border-purple-500':owned?'border-emerald-400':'border-slate-200'} relative" style="background:linear-gradient(rgba(255,255,255,0.10),rgba(255,255,255,0.10)),url('${set.bg}') center/cover no-repeat;">
+                                <div class="flex items-stretch gap-0">
+                                    <div class="flex-shrink-0 flex items-center justify-center relative overflow-hidden" style="width:140px;height:140px;">
+                                        <img src="${levelOneItem.skinImg}" class="w-full h-full object-contain" style="image-rendering:pixelated;" />
                                     </div>
-                                    <button onclick="${locked||owned?'':'buySpecialItem(\''+item.id+'\')'}" class="pixel-button mt-3 px-5 py-2 font-black text-sm self-end ${locked?'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed':owned?'bg-emerald-500 border-emerald-700 text-white cursor-default':canAfford?'bg-purple-600 border-purple-800 text-white':'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'}">${locked?'LOCKED':owned?'OWNED':'BUY'}</button>
+                                    <div class="flex-1 p-4 flex flex-col justify-between min-w-0">
+                                        <div>
+                                            <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                                                <p class="font-black text-base uppercase text-white" style="text-shadow:1px 1px 3px rgba(0,0,0,0.5);">${tabItem.name}</p>
+                                                ${isEquipped?'<span class="text-xs font-black bg-purple-600 text-white px-2 py-0.5">EQUIPPED</span>':''}
+                                            </div>
+                                            <p class="text-xs font-bold text-white/80">${perks}</p>
+                                            ${locked ? `<p class="text-xs font-bold text-red-300 mt-1">⚠ Requires ${SHOP_ITEMS.find(i=>i.id===prevSkinId)?.name||'previous level'}</p>` : ''}
+                                            ${!owned && !locked ? `<p class="text-xs font-bold text-white/70 mt-1">${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}</p>` : ''}
+                                        </div>
+                                        <button onclick="${locked||owned?'':'buySpecialItem(\''+tabItem.id+'\')'}" class="pixel-button mt-3 px-5 py-2 font-black text-sm self-end ${locked?'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed':owned?'bg-emerald-500 border-emerald-700 text-white cursor-default':canAfford?'bg-purple-600 border-purple-800 text-white':'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'}">${locked?'LOCKED':owned?'OWNED':'BUY'}</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex border-t-4 border-slate-100">${tabBtns}</div>
-                        </div>`;
+                                <div class="flex border-t-4 border-white/20">${tabBtns}</div>
+                            </div>`;
+                        }).join('');
                     })()
                     + '</div>';
             }
 
             if (!state.marketCategory) {
                 const cats = [
-                    { id:'small',  label:'Small Boosts',  color:'border-blue-500 text-blue-600' },
-                    { id:'medium', label:'Medium Boosts', color:'border-purple-500 text-purple-600' },
-                    { id:'large',  label:'Large Boosts',  color:'border-orange-500 text-orange-600' },
-                    { id:'op',     label:'OP Boosts',     color:'border-red-500 text-red-600' },
+                    { id:'small',  label:'Weak Potions',  color:'border-blue-500 text-blue-600' },
+                    { id:'medium', label:'Ordinary Potions', color:'border-purple-500 text-purple-600' },
+                    { id:'large',  label:'Strong Potions',  color:'border-orange-500 text-orange-600' },
+                    { id:'op',     label:'Powerful Potions',     color:'border-red-500 text-red-600' },
                 ];
                 return tabBar + '<div class="flex flex-col gap-3">' + cats.map(c => `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 p-4 flex justify-center items-center market-item ${c.color}"><span class="font-black text-base uppercase tracking-widest">${c.label}</span></button>`).join('') + '</div>';
             }
@@ -1121,12 +1124,11 @@
 
         function renderStorageContent() {
             const cats = {
-                small:      { name: 'Small Boosts',     color: 'border-blue-500 bg-blue-50',     items: [] },
-                medium:     { name: 'Medium Boosts',    color: 'border-purple-500 bg-purple-50',  items: [] },
-                large:      { name: 'Large Boosts',     color: 'border-orange-500 bg-orange-50',  items: [] },
+                small:      { name: 'Weak Potions',     color: 'border-blue-500 bg-blue-50',     items: [] },
+                medium:     { name: 'Ordinary Potions',    color: 'border-purple-500 bg-purple-50',  items: [] },
+                large:      { name: 'Strong Potions',     color: 'border-orange-500 bg-orange-50',  items: [] },
                 op:         { name: 'OP Boosts',        color: 'border-red-500 bg-red-50',        items: [] },
-                perm_boost: { name: 'Permanent Boosts', color: 'border-yellow-500 bg-yellow-50',  items: [] },
-                skin:       { name: 'Season Skins',     color: 'border-purple-500 bg-purple-50',  items: [] },
+                skin:       { name: 'Skins',     color: 'border-purple-500 bg-purple-50',  items: [] },
             };
             SHOP_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
             const hasAny = Object.values(cats).some(c => c.items.length > 0);
@@ -1152,12 +1154,8 @@
                 return `<div class="border-4 ${catData.color} p-4 sm:p-6"><h5 class="font-black text-base sm:text-lg uppercase mb-3 sm:mb-4 text-slate-900">${catData.name}</h5>
                     <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
                         ${catData.items.map(item => {
-                            const isPermBoost = item.category === 'perm_boost';
-                            const isEquipped = isPermBoost && state.equippedPermBoost === item.id;
-                            const isPermanent = item.permanent;
-                            return `<button onclick="${isPermanent?'toggleEquip(\''+item.id+'\')':'useItem(\''+item.id+'\')'}" ${!isPermanent&&state.activeBuff?'disabled':''} class="inventory-slot p-4 has-item ${!isPermanent&&state.activeBuff?'disabled':''} ${isEquipped?'ring-4 ring-emerald-500':''}">
-                                ${!isPermanent?`<span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow:2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>`:''}
-                                ${isEquipped?`<span class="absolute -top-2 -left-2 bg-emerald-500 border-3 border-white text-white text-xs font-black px-2 py-1" style="box-shadow:2px 2px 0 rgba(0,0,0,0.3);">ON</span>`:''}
+                            return `<button onclick="useItem('${item.id}')" ${state.activeBuff?'disabled':''} class="inventory-slot p-4 has-item ${state.activeBuff?'disabled':''}">
+                                <span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow:2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>
                                 <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight">${item.name}</p>
                                 <p class="text-xs font-bold text-slate-500 text-center mt-1">${item.description||(item.power>1?item.power+'x':'Special')}</p>
                             </button>`;
@@ -1189,15 +1187,47 @@
                 <div class="min-h-screen flex flex-col items-center px-4 py-4 select-none overflow-x-hidden pb-16 transition-colors duration-500">
 
                     ${state.showAdmin ? `
-                    <div id="admin-console" class="fixed bottom-24 left-4 right-4 z-[100] bg-slate-900 p-6 border-4 border-slate-700 max-w-md mx-auto pixel-shadow">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-black text-blue-400 uppercase tracking-wider">Admin Terminal</span>
-                            <button onclick="updateState({showAdmin:false})" class="text-slate-500 hover:text-white text-xl">✕</button>
+                    <div id="admin-console" class="fixed bottom-24 left-4 right-4 z-[100] max-w-md mx-auto" style="background:#1a0a2e;border:4px solid #6d28d9;box-shadow:0 0 24px rgba(109,40,217,0.5);">
+                        <div class="flex justify-between items-center px-5 py-3 border-b-2 border-purple-800">
+                            <div class="flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="3" y1="17" x2="13" y2="7" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+                                    <line x1="13" y1="7" x2="17" y2="3" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+                                    <circle cx="17" cy="3" r="1.5" fill="#e9d5ff"/>
+                                    <line x1="15" y1="6" x2="17" y2="4" stroke="#e9d5ff" stroke-width="1" stroke-linecap="round"/>
+                                    <line x1="14" y1="4" x2="14" y2="2" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
+                                    <line x1="16" y1="8" x2="18" y2="8" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
+                                    <line x1="12" y1="5" x2="13" y2="3" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
+                                </svg>
+                                <span class="text-sm font-black text-purple-300 uppercase tracking-wider">Spellbook</span>
+                            </div>
+                            <button onclick="updateState({showAdmin:false})" class="text-purple-500 hover:text-white text-xl font-black">✕</button>
                         </div>
-                        <div class="mb-4 max-h-32 overflow-y-auto flex flex-col gap-1">
-                            ${state.adminLog.map(log => `<p class="text-xs font-mono text-emerald-400 py-1 border-b border-slate-800">> ${log}</p>`).join('')}
+                        <div class="px-5 py-3 border-b-2 border-purple-900">
+                            <p class="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">Known Spells</p>
+                            <div class="grid grid-cols-1 gap-1.5">
+                                ${[
+                                    { spell: 'Aurum Revelio [n]', cmd: '/money', desc: 'Conjure gold' },
+                                    { spell: 'Ascensio [n]', cmd: '/rebirth', desc: 'Set prestige level' },
+                                    { spell: 'Ascensio Infinitus', cmd: '/rebirth infinity', desc: 'Infinity rebirth' },
+                                    { spell: 'Accio [id] [amt]', cmd: '/give', desc: 'Summon item by ID' },
+                                    { spell: 'Accio Omnia', cmd: '/give all', desc: 'Summon all items' },
+                                    { spell: 'Finite Quaestum', cmd: '/quest', desc: 'Complete all quests' },
+                                    { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
+                                    { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
+                                    { spell: 'Fragmentum Omnia', cmd: '/fragments all', desc: 'Reveal all fragments' },
+                                ].map(s => `<div class="flex items-baseline gap-2">
+                                    <span style="font-family:'Pixelify Sans',monospace;font-size:14px;color:#c4b5fd;font-weight:900;" class="flex-shrink-0">${s.spell}</span>
+                                    <span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#7c3aed;font-weight:700;">— ${s.desc}</span>
+                                </div>`).join('')}
+                            </div>
                         </div>
-                        <input id="admin-input" type="text" placeholder="ADMIN COMMANDS?" onkeydown="handleAdminCommand(event)" class="w-full p-3 outline-none text-sm font-bold" autocomplete="off" />
+                        <div class="px-5 py-3 max-h-24 overflow-y-auto flex flex-col gap-1">
+                            ${state.adminLog.length ? state.adminLog.map(log => `<p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:700;color:#34d399;" class="py-0.5">> ${log}</p>`).join('') : '<p style="font-family:\'Pixelify Sans\',monospace;font-size:14px;" class="text-purple-600 italic">No spells cast yet...</p>'}
+                        </div>
+                        <div class="px-5 pb-4">
+                            <input id="admin-input" type="text" placeholder="Cast a spell..." onkeydown="handleAdminCommand(event)" class="w-full px-4 py-2.5 outline-none text-sm font-bold text-purple-200 border-2 border-purple-700" style="background:#0f0520;font-family:'Pixelify Sans',monospace;" autocomplete="off" />
+                        </div>
                     </div>` : ''}
 
                     <button onclick="updateState({showTravelModal:true})" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
@@ -1261,11 +1291,11 @@
                         <div class="bg-white p-6 sm:p-10 pixel-card max-w-4xl w-full modal-content max-h-[90vh] overflow-y-auto">
                             <div class="flex items-center justify-center gap-3 mb-2"><i data-lucide="book-open" class="w-7 h-7 text-indigo-500"></i><h4 class="font-black text-2xl sm:text-3xl text-center uppercase text-slate-900">Chapters</h4></div>
                             <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Select a chapter to travel to</p>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5">
                                 ${DESTINATIONS.map(dest => {
                                     const isLocked = state.prestigeLevel < dest.req;
                                     const isCurrent = state.theme === dest.id;
-                                    return `<button ${isLocked?'disabled':''} onclick="travelTo('${dest.id}')" class="p-5 sm:p-6 flex flex-col items-center gap-2 transition-all border-4 ${isLocked?'opacity-40 grayscale bg-slate-100 border-slate-400':`bg-white ${isCurrent?'border-indigo-500 bg-indigo-50':'border-slate-600'} hover:border-slate-900`} ${!isLocked&&!isCurrent?'hover:-translate-y-1':''}" style="box-shadow:${isLocked?'0 0 0':'4px 4px 0 rgba(0,0,0,0.2)'};">
+                                    return `<button ${isLocked?'disabled':''} onclick="travelTo('${dest.id}')" style="box-shadow:${isLocked?'0 0 0':'4px 4px 0 rgba(0,0,0,0.2)'};min-height:110px;" class="p-4 flex flex-col items-center justify-center gap-1.5 transition-all border-4 ${isLocked?'opacity-40 grayscale bg-slate-100 border-slate-400':`bg-white ${isCurrent?'border-indigo-500 bg-indigo-50':'border-slate-600'} hover:border-slate-900`} ${!isLocked&&!isCurrent?'hover:-translate-y-1':''}">
                                         <span class="text-xs font-black text-indigo-400 uppercase tracking-widest">Chapter ${dest.chapter}</span>
                                         <span class="font-black text-sm sm:text-base uppercase text-center text-slate-900 leading-tight">${dest.name}</span>
                                         <span class="text-xs font-black text-indigo-600">x${dest.mult} Profit</span>
@@ -1434,9 +1464,9 @@
                     <!-- HEADER -->
                     <header class="z-10 w-full max-w-6xl mb-4">
                         <div class="flex gap-6 items-center justify-center mb-4">
-                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;transform:scaleX(-1);" />
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;transform:scaleX(-1);${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'filter:invert(1);':''}" />
                             <span onclick="triggerTitleClick()" class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl" style="color:${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'#fff':'#000'};text-shadow:3px 3px 0 rgba(0,0,0,0.1);">Gubby Clicker</span>
-                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;" />
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'filter:invert(1);':''}" />
                         </div>
                         <div class="w-full max-w-6xl flex gap-3 mb-2 flex-wrap">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>
@@ -1571,7 +1601,7 @@
                 stopSpinLoop();
                 const screen = document.getElementById('loading-screen');
                 screen.classList.add('fade-out');
-                setTimeout(() => { screen.style.display = 'none'; updateState({ loadingDone: true }); }, 600);
+                setTimeout(() => { screen.style.display = 'none'; updateState({ loadingDone: true }); syncMusic(); }, 600);
             }, 150);
         }
 
