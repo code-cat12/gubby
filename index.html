@@ -266,6 +266,34 @@
         #loading-click-hint { font-family: 'Pixelify Sans', monospace; font-size: 11px; color: #1e293b; letter-spacing: 1px; transition: color 0.3s; height: 16px; }
         #loading-click-hint.heating { color: #dc2626; animation: hintPulse 0.4s ease-in-out infinite alternate; }
         @keyframes hintPulse { from { opacity: 0.6; } to { opacity: 1; } }
+        #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
+        #crash-overlay.active { display:block; }
+        @keyframes epilepsy { 0%{background:#ff0000} 14%{background:#00cc00} 28%{background:#0055ff} 42%{background:#ffee00} 56%{background:#ff00ff} 70%{background:#00ffee} 85%{background:#ff6600} 100%{background:#ff0000} }
+        #crash-flash-bg { position:fixed; inset:0; z-index:99997; display:none; pointer-events:none; }
+        #crash-flash-bg.active { display:block; animation: epilepsy 0.12s infinite; }
+        #crash-bsod { position:fixed; top:24px; left:24px; width:380px; background:#0000aa; border:3px solid #ffffff; font-family:'Courier New',monospace; color:#ffffff; z-index:99999; pointer-events:all; box-shadow: 6px 6px 0 rgba(0,0,0,0.6); }
+        #crash-bsod .bsod-title-bar { background:#aaaaaa; color:#0000aa; padding:4px 10px; font-weight:900; font-size:13px; display:flex; justify-content:space-between; align-items:center; }
+        #crash-bsod .bsod-body { padding:20px; }
+        #crash-bsod .bsod-sad { font-size:52px; margin-bottom:12px; }
+        #crash-bsod h2 { font-size:16px; font-weight:900; margin-bottom:12px; line-height:1.5; }
+        #crash-bsod p { font-size:13px; margin-bottom:7px; opacity:0.9; line-height:1.6; }
+        #crash-bsod .bsod-progress { font-size:13px; margin-top:14px; color:#aaffaa; }
+        #crash-bsod .blink { animation: blink 0.8s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        #boss-overlay { display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.92); flex-direction:column; align-items:center; justify-content:center; gap:16px; position:fixed; }
+        #boss-overlay.active { display:flex; }
+        #boss-title { font-family:'Pixelify Sans',monospace; font-size:36px; font-weight:900; color:#dc2626; text-shadow:0 0 30px rgba(220,38,38,1),0 0 60px rgba(220,38,38,0.5); text-transform:uppercase; letter-spacing:4px; animation:bossPulse 1s ease-in-out infinite alternate; }
+        @keyframes bossPulse { from{transform:scale(1)} to{transform:scale(1.05)} }
+        #boss-gubby { width:180px; height:180px; image-rendering:pixelated; cursor:pointer; transition:transform 0.05s; filter:drop-shadow(0 0 30px rgba(220,38,38,0.9)); }
+        #boss-gubby:active { transform:scale(0.92); }
+        #boss-bar-wrap { width:400px; max-width:90vw; height:24px; background:#1a0000; border:3px solid #dc2626; overflow:hidden; }
+        #boss-bar-fill { height:100%; background:linear-gradient(90deg,#dc2626,#ff4444); transition:width 0.1s linear; }
+        #boss-timer { font-family:'Pixelify Sans',monospace; font-size:14px; color:#fca5a5; letter-spacing:2px; }
+        #boss-clicks { font-family:'Pixelify Sans',monospace; font-size:18px; color:#fff; font-weight:900; }
+        #boss-defeated { display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.95); flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+        #boss-defeated.active { display:flex; }
+        #boss-defeated h1 { font-family:'Pixelify Sans',monospace; font-size:42px; color:#fbbf24; text-shadow:0 0 40px rgba(251,191,36,0.8); letter-spacing:4px; animation:bossPulse 1s ease-in-out infinite alternate; }
+        #boss-defeated p { font-family:'Pixelify Sans',monospace; font-size:16px; color:#fde68a; text-align:center; max-width:500px; line-height:1.6; }
         #demon-intro {
             position: fixed; inset: 0; z-index: 99997;
             background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ7p45bM49NJfL5kjC0NFmbyA1E8pFe4VcnA&s') center/cover no-repeat;
@@ -291,6 +319,54 @@
         <source src="https://files.catbox.moe/wdtf06.mp3" type="audio/mpeg">
     </audio>
     <div id="demon-flash"></div>
+
+    <!-- CRASH FLASH BG -->
+    <div id="crash-flash-bg"></div>
+
+    <!-- CRASH BSOD CORNER -->
+    <div id="crash-overlay">
+        <div id="crash-bsod">
+            <div class="bsod-title-bar">
+                <span>GUBBY_CLICKER.exe — Fatal Error</span>
+                <span style="cursor:pointer;font-size:11px;" onclick="return false;">✕</span>
+            </div>
+            <div class="bsod-body">
+                <div class="bsod-sad">:(</div>
+                <h2>Your PC ran into a problem and<br>needs to restart.</h2>
+                <p>Stop code: <strong>GUBBY_OVERFLOW</strong></p>
+                <p>Memory dump: 0x4E554C4C_00000000</p>
+                <p>gubby_kernel32.dll failed at 0x0000FF</p>
+                <p style="margin-top:10px;color:#ffff88;font-size:10px;">For more information visit:<br>gubby.support/crash/0x000000FF</p>
+                <div class="bsod-progress blink">[ Click anywhere to recover... <span id="crash-click-counter">3</span> ]</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOSS OVERLAY -->
+    <div id="boss-overlay">
+        <div id="boss-title">GUBBY LORD</div>
+        <img id="boss-gubby" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
+        <div id="boss-clicks">0 / 5000</div>
+        <div id="boss-bar-wrap"><div id="boss-bar-fill" style="width:0%"></div></div>
+        <div id="boss-timer">20:00 remaining</div>
+        <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#6b7280;">Click Gubby Lord 5,000 times to defeat him</p>
+        <!-- Boss active buff display -->
+        <div id="boss-buff-display" style="display:none;font-family:'Pixelify Sans',monospace;font-size:13px;color:#fbbf24;letter-spacing:1px;"></div>
+        <!-- Potions button -->
+        <div style="position:relative;">
+            <div id="boss-storage-btn" onclick="toggleBossStorage()" style="background:#1a0000;border:2px solid #dc2626;color:#fca5a5;font-family:'Pixelify Sans',monospace;font-size:12px;padding:7px 18px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">Potions</div>
+            <div id="boss-storage-panel" style="display:none;position:absolute;bottom:44px;left:50%;transform:translateX(-50%);background:#111;border:2px solid #dc2626;padding:12px;min-width:240px;max-height:260px;overflow-y:auto;z-index:10;">
+                <div id="boss-storage-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOSS DEFEATED -->
+    <div id="boss-defeated">
+        <h1>VICTORY</h1>
+        <p>You have defeated the Gubby Lord.<br>Infinite gold flows from his broken crown.<br>No ascension can take it from you.</p>
+        <button onclick="closeBossDefeated()" style="font-family:'Pixelify Sans',monospace;background:#fbbf24;border:4px solid #92400e;color:#1a0000;padding:12px 32px;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Claim Reward</button>
+    </div>
     <div id="loading-screen">
         <div id="loading-title">Gubby Clicker</div>
         <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
@@ -343,18 +419,18 @@
         const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
-            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 10,       duration: 15  },
-            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 25,       duration: 12  },
-            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 120,      duration: 10  },
-            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 400,      duration: 20  },
-            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 1000,     duration: 9   },
-            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 5000,     duration: 9   },
-            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 25000,    duration: 9   },
-            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 100000,   duration: 8   },
-            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 500000,   duration: 7   },
-            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 5000000,  duration: 10  },
-            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 50000000, duration: 12  },
-            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 250000000,duration: 15  },
+            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15  },
+            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 19,       duration: 12  },
+            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 90,       duration: 10  },
+            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 330,      duration: 20  },
+            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 825,      duration: 9   },
+            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 4125,     duration: 9   },
+            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 22500,    duration: 9   },
+            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 90000,    duration: 8   },
+            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 450000,   duration: 7   },
+            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 4750000,  duration: 10  },
+            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 47500000, duration: 12  },
+            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 237500000,duration: 15  },
             { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
             { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
             { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Opal stars burst out on every click.', reqSkin: 'skin_season_2' },
@@ -391,21 +467,21 @@
         ];
 
         const DEMON_QUESTS = [
-            { id: 'demon_clicks_1', name: 'Blood Tribute',       description: 'Click 10,000 times in demon mode', type: 'clicks',  target: 10000,   reward: 9999999,   demonOnly: true, loreReward: 'lore_4' },
-            { id: 'demon_gold_1',   name: 'Sin Tax',             description: 'Earn 1,000,000 gold in demon mode', type: 'gold',    target: 1000000, reward: 50000000,  demonOnly: true },
-            { id: 'demon_prestige', name: 'Corrupted Ascension', description: 'Prestige 3 times with demon mode',  type: 'prestige',target: 3,       reward: 999999999, demonOnly: true, loreReward: 'lore_5' },
+            { id: 'demon_clicks_1', name: 'Blood Tribute',       description: 'Click 10,000 times in demon mode',  type: 'clicks',  target: 10000,   reward: 13999999,   demonOnly: true, loreReward: 'lore_4' },
+            { id: 'demon_gold_1',   name: 'Sin Tax',             description: 'Earn 1,000,000 gold in demon mode', type: 'gold',    target: 1000000, reward: 70000000,   demonOnly: true },
+            { id: 'demon_prestige', name: 'Corrupted Ascension', description: 'Prestige 3 times with demon mode',  type: 'prestige',target: 3,       reward: 1399999999, demonOnly: true, loreReward: 'lore_5' },
         ];
 
         const QUESTS = [
-            { id: 'clicks_100',  name: 'Beginner Clicker',  description: 'Click Gubby 100 times',            type: 'clicks',    target: 100,    reward: 500    },
-            { id: 'clicks_500',  name: 'Dedicated Clicker', description: 'Click Gubby 500 times',            type: 'clicks',    target: 500,    reward: 2500   },
-            { id: 'clicks_1000', name: 'Expert Clicker',    description: 'Click Gubby 1,000 times',          type: 'clicks',    target: 1000,   reward: 10000  },
-            { id: 'gold_1000',   name: 'First Fortune',     description: 'Earn 1,000 gold total',            type: 'gold',      target: 1000,   reward: 1500   },
-            { id: 'gold_10000',  name: 'Growing Wealth',    description: 'Earn 10,000 gold total',           type: 'gold',      target: 10000,  reward: 15000  },
-            { id: 'gold_100000', name: 'Rich Clicker',      description: 'Earn 100,000 gold total',          type: 'gold',      target: 100000, reward: 150000 },
-            { id: 'buy_and_use', name: 'Power Boost',       description: 'Buy and use any boost item',       type: 'buy_and_use',target: 1,     reward: 3000   },
-            { id: 'use_5_boosts',name: 'Boost Master',      description: 'Buy and use 5 boost items',        type: 'use',       target: 5,      reward: 15000  },
-            { id: 'buy_10_items',name: 'Shopping Spree',    description: 'Buy and use 10 boost items total', type: 'buy',       target: 10,     reward: 20000  },
+            { id: 'clicks_100',  name: 'Beginner Clicker',  description: 'Click Gubby 100 times',            type: 'clicks',     target: 100,    reward: 700    },
+            { id: 'clicks_500',  name: 'Dedicated Clicker', description: 'Click Gubby 500 times',            type: 'clicks',     target: 500,    reward: 3500   },
+            { id: 'clicks_1000', name: 'Expert Clicker',    description: 'Click Gubby 1,000 times',          type: 'clicks',     target: 1000,   reward: 14000  },
+            { id: 'gold_1000',   name: 'First Fortune',     description: 'Earn 1,000 gold total',            type: 'gold',       target: 1000,   reward: 2100   },
+            { id: 'gold_10000',  name: 'Growing Wealth',    description: 'Earn 10,000 gold total',           type: 'gold',       target: 10000,  reward: 21000  },
+            { id: 'gold_100000', name: 'Rich Clicker',      description: 'Earn 100,000 gold total',          type: 'gold',       target: 100000, reward: 210000 },
+            { id: 'buy_and_use', name: 'Power Boost',       description: 'Buy and use any boost item',       type: 'buy_and_use',target: 1,      reward: 4200   },
+            { id: 'use_5_boosts',name: 'Boost Master',      description: 'Buy and use 5 boost items',        type: 'use',        target: 5,      reward: 21000  },
+            { id: 'buy_10_items',name: 'Shopping Spree',    description: 'Buy and use 10 boost items total', type: 'buy',        target: 10,     reward: 28000  },
         ];
 
         let state = {
@@ -424,6 +500,8 @@
             unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
             showFragmentsModal: false, showJournalModal: false, showWorldLore: null,
             questLastRefresh: Date.now(),
+            bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false,
+            crashPhase: false, crashClickCount: 0,
         };
 
         let titleClickCount = 0;
@@ -452,6 +530,8 @@
                     showParticles: state.showParticles, questNotif: state.questNotif,
                     marketFlash: state.marketFlash, purpleAccent: state.purpleAccent,
                     skinShopTab: state.skinShopTab,
+                    bossDefeated: state.bossDefeated, infiniteMoney: state.infiniteMoney,
+                    totalSells: state.totalSells || 0,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -587,6 +667,7 @@
                 'tenebris invoco': '/demon',
                 'fragmentum omnia': '/fragments all',
                 'fragmentum': '/fragments',
+                'chaos ruino': '/crash',
             };
 
             let normalized = cmdText;
@@ -643,12 +724,153 @@
             } else if (command === '/fragments') {
                 if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `Fragmentum Omnia`; }
                 else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Fragmentum ${n}`; } else message = `Fragmentum ${n} — already known`; } else message = `Fragmentum [1-6]`; }
+            } else if (command === '/crash') {
+                message = 'Chaos Ruino';
+                updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
+                e.target.value = "";
+                setTimeout(() => startCrashSequence(), 200);
+                return;
             } else {
                 message = "Unknown spell";
             }
 
             updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
             e.target.value = "";
+        }
+
+        // ── CRASH / BOSS FIGHT ───────────────────────────────────
+        let _crashFlashInterval = null;
+        let _bossTimerInterval = null;
+        let _crashClicksLeft = 3;
+
+        function startCrashSequence() {
+            if (state.bossDefeated) { updateState({ adminLog: ['Chaos Ruino — boss already slain', ...state.adminLog].slice(0,10) }); return; }
+            _crashClicksLeft = 3;
+            const overlay = document.getElementById('crash-overlay');
+            const flashBg = document.getElementById('crash-flash-bg');
+            const counter = document.getElementById('crash-click-counter');
+            overlay.classList.add('active');
+            if (flashBg) flashBg.classList.add('active');
+            if (counter) counter.textContent = _crashClicksLeft;
+
+            function onCrashClick(e) {
+                // Don't count clicks on the BSOD box itself as "recovery"
+                const bsod = document.getElementById('crash-bsod');
+                if (bsod && bsod.contains(e.target)) return;
+                _crashClicksLeft--;
+                if (counter) counter.textContent = _crashClicksLeft;
+                if (_crashClicksLeft <= 0) {
+                    document.removeEventListener('click', onCrashClick, true);
+                    overlay.classList.remove('active');
+                    if (flashBg) flashBg.classList.remove('active');
+                    startBossFight();
+                }
+            }
+            document.addEventListener('click', onCrashClick, true);
+        }
+
+        function startBossFight() {
+            const BOSS_TARGET = 5000;
+            const BOSS_TIME = 20 * 60 * 1000;
+            state.bossActive = true;
+            state.bossClicks = 0;
+            state.bossStartTime = Date.now();
+            const overlay = document.getElementById('boss-overlay');
+            overlay.classList.add('active');
+            updateBossUI();
+            clearInterval(_bossTimerInterval);
+            _bossTimerInterval = setInterval(() => {
+                if (!state.bossActive) { clearInterval(_bossTimerInterval); return; }
+                const elapsed = Date.now() - state.bossStartTime;
+                const remaining = Math.max(0, BOSS_TIME - elapsed);
+                const mins = Math.floor(remaining / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                const timerEl = document.getElementById('boss-timer');
+                if (timerEl) timerEl.textContent = `${mins}:${secs.toString().padStart(2,'0')} remaining`;
+                if (remaining <= 0) {
+                    clearInterval(_bossTimerInterval);
+                    state.bossActive = false;
+                    overlay.classList.remove('active');
+                    updateState({ notification: { title: 'DEFEATED', message: 'Gubby Lord escaped. Cast Chaos Ruino again to challenge him.', type: 'error' } });
+                }
+            }, 1000);
+        }
+
+        function bossBattleClick() {
+            if (!state.bossActive) return;
+            const BOSS_TARGET = 5000;
+            const mult = state.activeBuff ? state.activeBuff.power : 1;
+            state.bossClicks += mult;
+            // Update buff display
+            const buffEl = document.getElementById('boss-buff-display');
+            if (buffEl) {
+                if (state.activeBuff) { buffEl.style.display='block'; buffEl.textContent = `${state.activeBuff.power}x · ${state.activeBuff.timeLeft}s`; }
+                else { buffEl.style.display='none'; }
+            }
+            updateBossUI();
+            // Shake effect
+            const img = document.getElementById('boss-gubby');
+            if (img) { img.style.filter = 'drop-shadow(0 0 40px rgba(255,0,0,1)) hue-rotate(180deg)'; setTimeout(() => { if(img) img.style.filter = 'drop-shadow(0 0 30px rgba(220,38,38,0.9))'; }, 80); }
+            if (state.bossClicks >= BOSS_TARGET) {
+                clearInterval(_bossTimerInterval);
+                state.bossActive = false;
+                state.bossDefeated = true;
+                state.infiniteMoney = true;
+                document.getElementById('boss-overlay').classList.remove('active');
+                document.getElementById('boss-defeated').classList.add('active');
+                saveGame();
+            }
+        }
+
+        function updateBossUI() {
+            const BOSS_TARGET = 5000;
+            const clicksEl = document.getElementById('boss-clicks');
+            const barEl = document.getElementById('boss-bar-fill');
+            if (clicksEl) clicksEl.textContent = `${state.bossClicks.toLocaleString()} / ${BOSS_TARGET.toLocaleString()}`;
+            if (barEl) barEl.style.width = Math.min(100, (state.bossClicks / BOSS_TARGET) * 100) + '%';
+        }
+
+        function toggleBossStorage() {
+            const panel = document.getElementById('boss-storage-panel');
+            if (!panel) return;
+            const open = panel.style.display === 'none';
+            panel.style.display = open ? 'block' : 'none';
+            if (open) renderBossStorage();
+        }
+
+        function renderBossStorage() {
+            const list = document.getElementById('boss-storage-list');
+            if (!list) return;
+            const potions = SHOP_ITEMS.filter(i => !i.isSkin && i.power > 1 && state.inventory[i.id] > 0);
+            if (potions.length === 0) {
+                list.innerHTML = '<p style="font-family:\'Pixelify Sans\',monospace;font-size:11px;color:#6b7280;">No potions in storage</p>';
+                return;
+            }
+            const buffActive = !!state.activeBuff;
+            list.innerHTML = potions.map(item => {
+                const btn = buffActive
+                    ? `<button disabled style="background:#3a0000;border:2px solid #7f1d1d;color:#6b7280;font-family:'Pixelify Sans',monospace;font-size:10px;padding:4px 10px;cursor:not-allowed;text-transform:uppercase;letter-spacing:1px;">Active</button>`
+                    : `<button onclick="bossUseItem('${item.id}')" style="background:#dc2626;border:2px solid #991b1b;color:#fff;font-family:'Pixelify Sans',monospace;font-size:10px;padding:4px 10px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">Use</button>`;
+                return `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:12px;">
+                    <div>
+                        <div style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#fff;font-weight:900;">${item.name}</div>
+                        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#fca5a5;">${item.power}x · ${item.duration}s · ×${state.inventory[item.id]}</div>
+                    </div>
+                    ${btn}
+                </div>`;
+            }).join('');
+        }
+
+        function bossUseItem(itemId) {
+            if (state.activeBuff) return;
+            useItem(itemId);
+            setTimeout(renderBossStorage, 50);
+        }
+
+        function closeBossDefeated() {
+            document.getElementById('boss-defeated').classList.remove('active');
+            // Grant infinite gold permanently
+            updateState({ gold: state.gold + 1e100, notification: { title: 'INFINITE GOLD', message: 'The Gubby Lord\'s treasure is yours forever.', type: 'success' } });
         }
 
         function triggerTitleClick() {
@@ -738,6 +960,7 @@
                 const world = DESTINATIONS.find(d => d.id === state.theme);
                 const worldMult = world ? world.mult : 1;
                 const earned = (state.clicks * state.marketMultiplier * worldMult) / CONVERSION_RATES[state.theme];
+                state.totalSells = (state.totalSells || 0) + 1;
                 updateState({ gold: state.gold + earned, clicks: 0, notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(earned, 2)} ${CURRENCIES[state.theme].name}s!`, type: "success" } });
                 SFX.sell(); checkQuestProgress();
             }
@@ -770,8 +993,10 @@
             updateState({
                 prestigeLevel: nextPrestige, gold: 0, clicks: 0, totalClicksSession: 0,
                 inventory: resetInventory, activeBuff: null, activeQuests: updatedQuests,
-                notification: { title: isMilestone ? `✦ MILESTONE! Prestige ${nextPrestige}` : "Ascended!", message: `Prestige ${nextPrestige} reached!`, type: "success" }
+                notification: { title: "Ascended!", message: `Prestige ${nextPrestige} reached!`, type: "success" }
             });
+            // Restore infinite money if boss was defeated
+            if (state.infiniteMoney) { state.gold = 1e100; }
             SFX.prestige(); checkQuestProgress();
         }
 
@@ -850,6 +1075,11 @@
                 updateState({ activeQuests: [...state.activeQuests, { ...quest, progress: 0, completed: false }] });
             }
         }
+        function rerollQuests() {
+            const cost = 10000;
+            if (state.gold < cost) { updateState({ notification: { title: 'Not enough gold', message: 'Rerolling quests costs 10,000 gold.', type: 'error' } }); return; }
+            updateState({ gold: state.gold - cost, activeQuests: [], completedQuestIds: [], notification: { title: 'Quests Rerolled', message: 'New quests available.', type: 'success' } });
+        }
         function checkQuestProgress() {
             if (state.activeQuests.length === 0) return;
             let updated = false;
@@ -860,6 +1090,7 @@
                     case 'clicks': progress = state.lifetimeClicks; break;
                     case 'gold': progress = state.gold; break;
                     case 'prestige': progress = state.prestigeLevel; break;
+                    case 'sell': progress = state.totalSells || 0; break;
                 }
                 const target = quest.type === 'gold' ? quest.target / CONVERSION_RATES[state.theme] : quest.target;
                 const isComplete = progress >= target;
@@ -919,11 +1150,23 @@
         setInterval(() => {
             let shouldRender = false;
             if (state.activeBuff) {
-                if (state.activeBuff.timeLeft <= 1) { state.activeBuff = null; shouldRender = true; }
-                else {
+                if (state.activeBuff.timeLeft <= 1) {
+                    state.activeBuff = null; shouldRender = true;
+                    // If boss is active, refresh potion panel and hide buff display
+                    if (state.bossActive) {
+                        renderBossStorage();
+                        const buffEl = document.getElementById('boss-buff-display');
+                        if (buffEl) buffEl.style.display = 'none';
+                    }
+                } else {
                     state.activeBuff.timeLeft--;
                     const el = document.querySelector('.buff-timer-display');
                     if (el) el.textContent = `${state.activeBuff.name} (${state.activeBuff.timeLeft}s)`;
+                    // Update boss buff display
+                    if (state.bossActive) {
+                        const buffEl = document.getElementById('boss-buff-display');
+                        if (buffEl) buffEl.textContent = `${state.activeBuff.power}x · ${state.activeBuff.timeLeft}s`;
+                    }
                 }
             }
             if (state.discoEventTimer > 0) {
@@ -942,12 +1185,6 @@
         setInterval(() => { createFloatingStars(); }, 8000);
 
 
-        const DAILY_REFRESH_MS = 24 * 60 * 60 * 1000;
-        setInterval(() => {
-            if (Date.now() - (state.questLastRefresh || 0) >= DAILY_REFRESH_MS) {
-                state.questLastRefresh = Date.now(); state.completedQuestIds = []; state.activeQuests = []; render();
-            }
-        }, 60000);
 
         function createFloatingStars() {
             if (state.floatingStars === false) return;
@@ -1194,10 +1431,6 @@
                                     <line x1="3" y1="17" x2="13" y2="7" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
                                     <line x1="13" y1="7" x2="17" y2="3" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
                                     <circle cx="17" cy="3" r="1.5" fill="#e9d5ff"/>
-                                    <line x1="15" y1="6" x2="17" y2="4" stroke="#e9d5ff" stroke-width="1" stroke-linecap="round"/>
-                                    <line x1="14" y1="4" x2="14" y2="2" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
-                                    <line x1="16" y1="8" x2="18" y2="8" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
-                                    <line x1="12" y1="5" x2="13" y2="3" stroke="#a78bfa" stroke-width="1" stroke-linecap="round"/>
                                 </svg>
                                 <span class="text-sm font-black text-purple-300 uppercase tracking-wider">Spellbook</span>
                             </div>
@@ -1253,7 +1486,7 @@
                                 </div>
                                 <div class="p-6">
                                     <div class="grid grid-cols-2 gap-2 mb-5">
-                                        <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Power</p><p class="font-black text-slate-900 text-sm">${popupItem.power>1?popupItem.power+'x':'Special'}</p></div>
+                                        <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Power</p><p class="font-black text-slate-900 text-sm">${popupItem.power>1?popupItem.power+'x':'Special'}</p>${popupItem.category==='small'?'<p class="text-[9px] text-slate-400 mt-0.5">75% efficiency</p>':popupItem.category==='medium'?'<p class="text-[9px] text-slate-400 mt-0.5">82.5% efficiency</p>':popupItem.category==='large'?'<p class="text-[9px] text-slate-400 mt-0.5">90% efficiency</p>':popupItem.category==='op'?'<p class="text-[9px] text-slate-400 mt-0.5">95% efficiency</p>':''}</div>
                                         <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Duration</p><p class="font-black text-slate-900 text-sm">${popupItem.duration+'s'}</p></div>
                                     </div>
                                     <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Quantity <span class="text-slate-300">(max 25)</span></p>
@@ -1337,7 +1570,10 @@
                                 <div><h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Quests</h4><p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active</p></div>
                                 <button onclick="updateState({showQuestModal:false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                             </div>
-                            <div class="flex gap-3 mb-6"><button onclick="generateQuest()" class="pixel-button bg-amber-500 border-amber-700 text-white px-6 py-3 font-black uppercase flex-1">Get New Quest</button></div>
+                            <div class="flex gap-3 mb-6">
+                                <button onclick="generateQuest()" class="pixel-button bg-amber-500 border-amber-700 text-white px-6 py-3 font-black uppercase flex-1">Get New Quest</button>
+                                ${state.activeQuests.length > 0 ? `<button onclick="rerollQuests()" class="${state.gold >= 10000 ? 'pixel-button bg-rose-500 border-rose-700 text-white' : 'pixel-button bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-6 py-3 font-black uppercase flex-1">Reroll All · 10k</button>` : ''}
+                            </div>
                             ${state.activeQuests.length > 0 ? `
                                 <div class="flex flex-col gap-4 mb-6">
                                     ${state.activeQuests.map(quest => {
@@ -1464,9 +1700,9 @@
                     <!-- HEADER -->
                     <header class="z-10 w-full max-w-6xl mb-4">
                         <div class="flex gap-6 items-center justify-center mb-4">
-                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;transform:scaleX(-1);${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'filter:invert(1);':''}" />
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;transform:scaleX(-1);" />
                             <span onclick="triggerTitleClick()" class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl" style="color:${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'#fff':'#000'};text-shadow:3px 3px 0 rgba(0,0,0,0.1);">Gubby Clicker</span>
-                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'filter:invert(1);':''}" />
+                            <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;" />
                         </div>
                         <div class="w-full max-w-6xl flex gap-3 mb-2 flex-wrap">
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>
