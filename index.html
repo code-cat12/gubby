@@ -266,6 +266,35 @@
         #loading-click-hint { font-family: 'Pixelify Sans', monospace; font-size: 11px; color: #1e293b; letter-spacing: 1px; transition: color 0.3s; height: 16px; }
         #loading-click-hint.heating { color: #dc2626; animation: hintPulse 0.4s ease-in-out infinite alternate; }
         @keyframes hintPulse { from { opacity: 0.6; } to { opacity: 1; } }
+
+        /* ── MERCHANT SLIDES ── */
+        .merchant-screen { position:fixed; inset:0; z-index:88888; transition:transform 0.55s cubic-bezier(0.77,0,0.18,1); pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; background-size:cover; background-position:center; }
+        .merchant-screen.slide-above { transform:translateY(-100%); }
+        .merchant-screen.slide-visible { transform:translateY(0); pointer-events:all; }
+        .merchant-screen.slide-below { transform:translateY(100%); }
+        #sky-screen { background-image:url('https://i.postimg.cc/4NKRv014/image.png'); }
+        #crystal-screen { background-image:url('https://cdnb.artstation.com/p/assets/images/images/056/756/425/original/bencin-studios-pixelartbackground.gif?1670002516'); }
+        .merchant-card { background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:3px solid rgba(255,255,255,0.4); padding:40px 48px; text-align:center; max-width:460px; width:90vw; }
+        /* Sky — dark gold text */
+        #sky-screen .merchant-title { font-family:'Pixelify Sans',monospace; font-size:30px; font-weight:900; color:#92600a; text-shadow:0 2px 8px rgba(0,0,0,0.2); letter-spacing:3px; margin-bottom:6px; }
+        #sky-screen .merchant-sub   { font-family:'Pixelify Sans',monospace; font-size:13px; color:#a97c30; margin-bottom:24px; letter-spacing:1px; }
+        #sky-screen .potion-name    { font-family:'Pixelify Sans',monospace; font-size:18px; font-weight:900; color:#7a4f0a; margin-bottom:4px; }
+        #sky-screen .potion-desc    { font-family:'Pixelify Sans',monospace; font-size:12px; color:#9a7030; margin-bottom:20px; }
+        #sky-screen .potion-price   { font-family:'Pixelify Sans',monospace; font-size:22px; font-weight:900; color:#92600a; margin-bottom:20px; }
+        #sky-screen .merchant-owned { font-family:'Pixelify Sans',monospace; font-size:12px; color:#9a7030; margin-top:10px; }
+        #sky-screen .close-hint     { font-family:'Pixelify Sans',monospace; font-size:11px; color:#b8903a; letter-spacing:1px; margin-top:8px; }
+        #sky-screen .buy-btn        { font-family:'Pixelify Sans',monospace; background:#fde68a; border:3px solid #b45309; color:#1a0000; padding:12px 36px; font-size:15px; font-weight:900; cursor:pointer; letter-spacing:2px; text-transform:uppercase; }
+        /* Crystal — red text */
+        #crystal-screen .merchant-title { font-family:'Pixelify Sans',monospace; font-size:30px; font-weight:900; color:#7f0000; text-shadow:0 2px 8px rgba(0,0,0,0.3); letter-spacing:3px; margin-bottom:6px; }
+        #crystal-screen .merchant-sub   { font-family:'Pixelify Sans',monospace; font-size:13px; color:#b91c1c; margin-bottom:24px; letter-spacing:1px; }
+        #crystal-screen .potion-name    { font-family:'Pixelify Sans',monospace; font-size:18px; font-weight:900; color:#7f0000; margin-bottom:4px; }
+        #crystal-screen .potion-desc    { font-family:'Pixelify Sans',monospace; font-size:12px; color:#b91c1c; margin-bottom:20px; }
+        #crystal-screen .potion-price   { font-family:'Pixelify Sans',monospace; font-size:22px; font-weight:900; color:#7f0000; margin-bottom:20px; }
+        #crystal-screen .merchant-owned { font-family:'Pixelify Sans',monospace; font-size:12px; color:#b91c1c; margin-top:10px; }
+        #crystal-screen .close-hint     { font-family:'Pixelify Sans',monospace; font-size:11px; color:#dc2626; letter-spacing:1px; margin-top:8px; }
+        #crystal-screen .buy-btn        { font-family:'Pixelify Sans',monospace; background:#dc2626; border:3px solid #7f1d1d; color:#fff; padding:12px 36px; font-size:15px; font-weight:900; cursor:pointer; letter-spacing:2px; text-transform:uppercase; }
+        .buy-btn:disabled { background:#aaa !important; border-color:#777 !important; color:#555 !important; cursor:not-allowed !important; }
+        .potion-img { width:80px; height:80px; image-rendering:pixelated; margin:0 auto 16px; display:block; filter:drop-shadow(0 4px 16px rgba(100,180,255,0.5)); }
         #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
         #crash-overlay.active { display:block; }
         @keyframes epilepsy { 0%{background:#ff0000} 14%{background:#00cc00} 28%{background:#0055ff} 42%{background:#ffee00} 56%{background:#ff00ff} 70%{background:#00ffee} 85%{background:#ff6600} 100%{background:#ff0000} }
@@ -319,6 +348,36 @@
         <source src="https://files.catbox.moe/wdtf06.mp3" type="audio/mpeg">
     </audio>
     <div id="demon-flash"></div>
+
+    <!-- SKY MERCHANT -->
+    <div id="sky-screen" class="merchant-screen slide-above">
+        <div class="merchant-card">
+            <div class="merchant-title">Sky Merchant</div>
+            <div class="merchant-sub">A stranger from above...</div>
+            <img class="potion-img" src="https://i.postimg.cc/CKJwrqn0/potion-339.png" />
+            <div class="potion-name">Sky Potion</div>
+            <div class="potion-desc">Permanently boosts your click power by +5x<br>Stacks with every purchase. Forever.</div>
+            <div class="potion-price">500,000 Gold</div>
+            <button class="buy-btn" onclick="buySkyPotion()">Purchase</button>
+            <div class="merchant-owned" id="sky-owned"></div>
+        </div>
+        <div class="close-hint">↓ Scroll down to return</div>
+    </div>
+
+    <!-- CRYSTAL MERCHANT -->
+    <div id="crystal-screen" class="merchant-screen slide-below">
+        <div class="merchant-card">
+            <div class="merchant-title">Crystal Merchant</div>
+            <div class="merchant-sub">From the depths below...</div>
+            <img class="potion-img" src="https://i.postimg.cc/XZGMpXgD/potion-211.png" />
+            <div class="potion-name">Crystal Potion</div>
+            <div class="potion-desc">Permanently boosts your click power by +7.5x<br>A different power. Same permanence.</div>
+            <div class="potion-price">750,000 Gold</div>
+            <button class="buy-btn" onclick="buyCrystalPotion()">Purchase</button>
+            <div class="merchant-owned" id="crystal-owned"></div>
+        </div>
+        <div class="close-hint">↑ Scroll up to return</div>
+    </div>
 
     <!-- CRASH FLASH BG -->
     <div id="crash-flash-bg"></div>
@@ -419,24 +478,24 @@
         const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
-            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15  },
-            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 19,       duration: 12  },
-            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 90,       duration: 10  },
-            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 330,      duration: 20  },
-            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 825,      duration: 9   },
-            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 4125,     duration: 9   },
-            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 22500,    duration: 9   },
-            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 90000,    duration: 8   },
-            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 450000,   duration: 7   },
-            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 4750000,  duration: 10  },
-            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 47500000, duration: 12  },
-            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 237500000,duration: 15  },
+            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15,  icon: 'https://i.postimg.cc/Dzpccx68/potion-259.png'  },
+            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 19,       duration: 12,  icon: 'https://i.postimg.cc/3wfZZt1W/potion-131.png'  },
+            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 90,       duration: 10,  icon: 'https://i.postimg.cc/vm2vv0hB/potion-067.png'  },
+            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 330,      duration: 20,  icon: 'https://i.postimg.cc/N0CxxdD2/potion-263.png'  },
+            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 825,      duration: 9,   icon: 'https://i.postimg.cc/g0tKKgsw/potion-135.png'  },
+            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 4125,     duration: 9,   icon: 'https://i.postimg.cc/pdcBBsCr/potion-071.png'  },
+            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 22500,    duration: 9,   icon: 'https://i.postimg.cc/hGZ002sm/potion-279.png'  },
+            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 90000,    duration: 8,   icon: 'https://i.postimg.cc/VNZFFKgb/potion-151.png'  },
+            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 450000,   duration: 7,   icon: 'https://i.postimg.cc/GpgjjXK8/potion-087.png'  },
+            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 4750000,  duration: 10,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
+            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 47500000, duration: 12,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
+            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 237500000,duration: 15,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
             { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
             { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
-            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Opal stars burst out on every click.', reqSkin: 'skin_season_2' },
+            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
             { id: 'skin_demon_1',  name: 'Demon Gubby I',  category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
-            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327', description: 'Pure evil radiates from within.', reqSkin: 'skin_demon_1' },
-            { id: 'skin_demon_3',  name: 'Demon Gubby III',category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'The final form. Darkness incarnate.', reqSkin: 'skin_demon_2' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_3',  name: 'Demon Gubby III',category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
         ];
 
         const WORLD_LORE = {
@@ -502,6 +561,7 @@
             questLastRefresh: Date.now(),
             bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false,
             crashPhase: false, crashClickCount: 0,
+            skyBoost: 0, showSkyMerchant: false, crystalBoost: 0,
         };
 
         let titleClickCount = 0;
@@ -532,6 +592,7 @@
                     skinShopTab: state.skinShopTab,
                     bossDefeated: state.bossDefeated, infiniteMoney: state.infiniteMoney,
                     totalSells: state.totalSells || 0,
+                    skyBoost: state.skyBoost || 0, crystalBoost: state.crystalBoost || 0,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -615,7 +676,7 @@
         }
 
         function getPermanentMult() {
-            return 1;
+            return 1 + (state.skyBoost || 0) * 5 + (state.crystalBoost || 0) * 7.5;
         }
         function getDemonMult() { return state.demonMode ? 20 : 1; }
 
@@ -872,6 +933,83 @@
             // Grant infinite gold permanently
             updateState({ gold: state.gold + 1e100, notification: { title: 'INFINITE GOLD', message: 'The Gubby Lord\'s treasure is yours forever.', type: 'success' } });
         }
+
+        // ── MERCHANT SLIDES ─────────────────────────────────────
+        // slide: 0=game, 1=sky(up), 2=crystal(down)
+        let _slide = 0;
+        let _wheelAccum = 0;
+        let _wheelTimer = null;
+        let _touchStartY = 0;
+        let _slideCooldown = false;
+
+        function setSlide(n) {
+            _slide = n;
+            _wheelAccum = 0;
+            _slideCooldown = true;
+            setTimeout(() => { _slideCooldown = false; }, 800);
+            const sky = document.getElementById('sky-screen');
+            const crystal = document.getElementById('crystal-screen');
+            sky.className = 'merchant-screen ' + (n === 1 ? 'slide-visible' : 'slide-above');
+            crystal.className = 'merchant-screen ' + (n === 2 ? 'slide-visible' : 'slide-below');
+            if (n === 1) updateSkyUI();
+            if (n === 2) updateCrystalUI();
+        }
+
+        function updateSkyUI() {
+            const owned = state.skyBoost || 0;
+            const el = document.getElementById('sky-owned');
+            if (el) el.textContent = owned > 0 ? `Owned: ${owned} · Boost: +${owned*5}x permanent` : '';
+            const btn = document.querySelector('#sky-screen .buy-btn');
+            if (btn) btn.disabled = state.gold < 500000;
+        }
+        function updateCrystalUI() {
+            const owned = state.crystalBoost || 0;
+            const el = document.getElementById('crystal-owned');
+            if (el) el.textContent = owned > 0 ? `Owned: ${owned} · Boost: +${owned*7.5}x permanent` : '';
+            const btn = document.querySelector('#crystal-screen .buy-btn');
+            if (btn) btn.disabled = state.gold < 750000;
+        }
+
+        function buySkyPotion() {
+            if (state.gold < 500000) return;
+            const next = (state.skyBoost || 0) + 1;
+            updateState({ gold: state.gold - 500000, skyBoost: next,
+                notification: { title: 'Sky Potion!', message: `Permanent +${next*5}x click boost!`, type: 'success' } });
+            updateSkyUI(); SFX.useItem();
+        }
+        function buyCrystalPotion() {
+            if (state.gold < 750000) return;
+            const next = (state.crystalBoost || 0) + 1;
+            updateState({ gold: state.gold - 750000, crystalBoost: next,
+                notification: { title: 'Crystal Potion!', message: `Permanent +${next*7.5}x click boost!`, type: 'success' } });
+            updateCrystalUI(); SFX.useItem();
+        }
+
+        window.addEventListener('wheel', (e) => {
+            if (_slide !== 0) e.preventDefault();
+            const anyModalOpen = state.showMarketModal || state.showStorageModal || state.showQuestModal || state.showFragmentsModal || state.showJournalModal || state.showSettings || state.showItemPopup;
+            if (anyModalOpen || state.bossActive || _slideCooldown) return;
+
+            _wheelAccum += e.deltaY;
+            clearTimeout(_wheelTimer);
+            _wheelTimer = setTimeout(() => { _wheelAccum = 0; }, 300);
+
+            if (_slide === 0 && _wheelAccum < -180)      { setSlide(1); }  // scroll up → sky
+            else if (_slide === 1 && _wheelAccum > 180)  { setSlide(0); }  // scroll down from sky → game
+            else if (_slide === 0 && _wheelAccum > 180)  { setSlide(2); }  // scroll down → crystal
+            else if (_slide === 2 && _wheelAccum < -180) { setSlide(0); }  // scroll up from crystal → game
+        }, { passive: false });
+
+        window.addEventListener('touchstart', (e) => { _touchStartY = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', (e) => {
+            const anyModalOpen = state.showMarketModal || state.showStorageModal || state.showQuestModal || state.showFragmentsModal || state.showJournalModal || state.showSettings || state.showItemPopup;
+            if (anyModalOpen || state.bossActive || _slideCooldown) return;
+            const dy = e.changedTouches[0].clientY - _touchStartY;
+            if (_slide === 0 && dy > 120)       setSlide(1);
+            else if (_slide === 1 && dy < -120) setSlide(0);
+            else if (_slide === 0 && dy < -120) setSlide(2);
+            else if (_slide === 2 && dy > 120)  setSlide(0);
+        }, { passive: true });
 
         function triggerTitleClick() {
             titleClickCount++;
@@ -1300,8 +1438,8 @@
                             const locked = !prevOwned;
                             const isEquipped = state.equippedSkin === tabItem.id;
                             const perksMap = {
-                                star:  { 1: '✦ Star Gubby skin', 2: '✦ Stars fall from the sky', 3: '✦ Mini Star Gubbies fly out on click' },
-                                demon: { 1: '✦ Demon Gubby skin', 2: '✦ Demons fall from the sky', 3: '✦ Demons fly out on click' },
+                                star:  { 1: '✦ Star Gubby skin', 2: '✦ Stars fall from the sky', 3: '✦ Opal stars fly out on click' },
+                                demon: { 1: '✦ Demon Gubby skin', 2: '✦ Dark images fall from the sky', 3: '✦ Demon images fly out on click' },
                             };
                             const perks = perksMap[set.key][tab] || '';
                             const tabBtns = skinItems.map(s => {
@@ -1349,6 +1487,7 @@
                 + items.map(item => {
                     const price = getItemPrice(item), canAfford = state.gold >= price;
                     return `<div class="flex items-center justify-between p-4 border-4 bg-white ${canAfford?'border-slate-300':'border-slate-200 opacity-50'}">
+                        ${item.icon ? `<img src="${item.icon}" style="width:44px;height:44px;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />` : ''}
                         <div class="text-left flex-1 mr-3">
                             <p class="font-black text-base uppercase text-slate-900">${item.name}</p>
                             <p class="text-xs font-bold text-slate-400 mt-0.5">${item.power>1?item.power+'x power · '+item.duration+'s':item.description||'Special'}</p>
@@ -1393,8 +1532,8 @@
                         ${catData.items.map(item => {
                             return `<button onclick="useItem('${item.id}')" ${state.activeBuff?'disabled':''} class="inventory-slot p-4 has-item ${state.activeBuff?'disabled':''}">
                                 <span class="absolute -top-2 -right-2 bg-slate-900 border-3 border-white text-white text-sm font-black w-8 h-8 flex items-center justify-center" style="box-shadow:2px 2px 0 rgba(0,0,0,0.3);">${state.inventory[item.id]}</span>
-                                <p class="text-sm font-black uppercase text-slate-900 text-center leading-tight">${item.name}</p>
-                                <p class="text-xs font-bold text-slate-500 text-center mt-1">${item.description||(item.power>1?item.power+'x':'Special')}</p>
+                                ${item.icon ? `<img src="${item.icon}" style="width:40px;height:40px;image-rendering:pixelated;margin:0 auto 4px;" />` : ''}
+                                <p class="text-xs font-black uppercase text-slate-900 text-center leading-tight">${item.name}</p>
                             </button>`;
                         }).join('')}
                     </div>
