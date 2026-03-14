@@ -494,7 +494,7 @@
             { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
             { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
             { id: 'skin_demon_1',  name: 'Demon Gubby I',  category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
-            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
             { id: 'skin_demon_3',  name: 'Demon Gubby III',category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
         ];
 
@@ -1129,7 +1129,7 @@
             }), {});
             const isMilestone = [5,10,25,50].includes(nextPrestige);
             updateState({
-                prestigeLevel: nextPrestige, gold: 0, clicks: 0, totalClicksSession: 0,
+                prestigeLevel: nextPrestige, gold: state.gold * 0.2, clicks: 0, totalClicksSession: 0,
                 inventory: resetInventory, activeBuff: null, activeQuests: updatedQuests,
                 notification: { title: "Ascended!", message: `Prestige ${nextPrestige} reached!`, type: "success" }
             });
@@ -1332,7 +1332,7 @@
             if (skinLevel < 2) return;
 
             const imgUrl = isDemon
-                ? 'https://static.wikia.nocookie.net/the-battle-bricks-rgb/images/e/e8/Tumore.webp/revision/latest/scale-to-width-down/123?cb=20230516032327'
+                ? 'https://i.postimg.cc/t1tGR6Pk/image.png'
                 : 'https://i.postimg.cc/wMh33rP2/image.png';
             const baseSize = isDemon ? 60 : 24;
             const sizeRange = isDemon ? 40 : 24;
