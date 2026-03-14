@@ -817,12 +817,10 @@
                     SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
                     changes.inventory = newInv; message = `Accio Omnia`;
                 } else {
-                    // Category map
                     const catMap = { weak:'small', ordinary:'medium', strong:'large', powerful:'op', small:'small', medium:'medium', large:'large', op:'op', skin:'skin' };
                     const tierMap = { 'i':1, 'ii':2, 'iii':3, '1':1, '2':2, '3':3 };
                     const catArg = parts[1]?.toLowerCase();
                     const tierArg = parts[2]?.toLowerCase();
-                    // Merchant boosts: accio sky [n] / accio crystal [n]
                     if (catArg === 'sky') {
                         const n = parseInt(tierArg) || 1;
                         changes.skyBoost = (state.skyBoost || 0) + n;
@@ -832,32 +830,32 @@
                         changes.crystalBoost = (state.crystalBoost || 0) + n;
                         message = `Accio Crystal x${n}`;
                     } else {
-                    const cat = catMap[catArg];
-                    if (cat) {
-                        const tier = tierMap[tierArg] || null;
-                        const matched = SHOP_ITEMS.filter(i => i.category === cat && (tier === null || i.name.trim().endsWith(['I','II','III'][tier-1])));
-                        if (matched.length > 0) {
-                            const newInv = { ...state.inventory };
-                            matched.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
-                            changes.inventory = newInv;
-                            message = `Accio ${matched.map(i=>i.name).join(', ')}`;
-                        } else { message = `Accio — no match`; }
-                    } else {
-                        // fallback: old id-based give
-                        const rawArgs = parts.slice(1);
-                        const lastArg = rawArgs[rawArgs.length - 1];
-                        const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
-                        const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
-                        const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
-                        if (ids.length === 0) { message = 'Accio [category] [i/ii/iii]'; }
-                        else {
-                            const newInv = { ...state.inventory }, given = [], missing = [];
-                            ids.forEach(id => { const item = SHOP_ITEMS.find(i => i.id === id); if (item) { newInv[id] = (newInv[id]||0) + amount; given.push(item.name); } else missing.push(id); });
-                            if (given.length) changes.inventory = newInv;
-                            message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
+                        const cat = catMap[catArg];
+                        if (cat) {
+                            const tier = tierMap[tierArg] || null;
+                            const matched = SHOP_ITEMS.filter(i => i.category === cat && (tier === null || i.name.trim().endsWith(['I','II','III'][tier-1])));
+                            if (matched.length > 0) {
+                                const newInv = { ...state.inventory };
+                                matched.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
+                                changes.inventory = newInv;
+                                message = `Accio ${matched.map(i=>i.name).join(', ')}`;
+                            } else { message = `Accio — no match`; }
+                        } else {
+                            const rawArgs = parts.slice(1);
+                            const lastArg = rawArgs[rawArgs.length - 1];
+                            const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
+                            const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
+                            const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
+                            if (ids.length === 0) { message = 'Accio [category] [i/ii/iii]'; }
+                            else {
+                                const newInv = { ...state.inventory }, given = [], missing = [];
+                                ids.forEach(id => { const item = SHOP_ITEMS.find(i => i.id === id); if (item) { newInv[id] = (newInv[id]||0) + amount; given.push(item.name); } else missing.push(id); });
+                                if (given.length) changes.inventory = newInv;
+                                message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
+                            }
                         }
                     }
-                    }
+                }
             } else if (command === '/quest') {
                 if (state.activeQuests.length > 0) {
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
