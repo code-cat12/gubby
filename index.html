@@ -297,6 +297,7 @@
         .potion-img { width:80px; height:80px; image-rendering:pixelated; margin:0 auto 16px; display:block; filter:drop-shadow(0 4px 16px rgba(100,180,255,0.5)); }
         #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
         #crash-overlay.active { display:block; }
+
         @keyframes epilepsy { 0%{background:#ff0000} 14%{background:#00cc00} 28%{background:#0055ff} 42%{background:#ffee00} 56%{background:#ff00ff} 70%{background:#00ffee} 85%{background:#ff6600} 100%{background:#ff0000} }
         #crash-flash-bg { position:fixed; inset:0; z-index:99997; display:none; pointer-events:none; }
         #crash-flash-bg.active { display:block; animation: epilepsy 0.12s infinite; }
@@ -553,7 +554,7 @@
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
             prestigeLevel: 0, marketMultiplier: 1, marketTrend: 'stable', marketQueue: [1.1, 0.8, 1.4],
             xpSurgeUntil: 0, marketCategory: null, notification: null,
-            showAdmin: false, adminLog: [], discoEventTimer: 0,
+            showAdmin: false, adminLog: [], discoEventTimer: 0, playerRole: null,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
@@ -623,6 +624,7 @@
                     purpleAccent: state.purpleAccent,
                     // Boss
                     bossDefeated: state.bossDefeated,
+                    playerRole: state.playerRole || null,
                     infiniteMoney: state.infiniteMoney,
                     bossClicks: state.bossClicks || 0,
                     // Permanent boosts
@@ -778,6 +780,7 @@
                 'fragmentum omnia': '/fragments all',
                 'fragmentum': '/fragments',
                 'chaos ruino': '/crash',
+                'rolum': '/role',
             };
 
             let normalized = cmdText;
@@ -852,6 +855,18 @@
             } else if (command === '/fragments') {
                 if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `Fragmentum Omnia`; }
                 else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Fragmentum ${n}`; } else message = `Fragmentum ${n} — already known`; } else message = `Fragmentum [1-6]`; }
+            } else if (command === '/role') {
+                const roleName = parts[1]?.toLowerCase();
+                const rolePasswords = { owner: 'icyowner', admin: 'icyadmin', member: 'icymember' };
+                const roleInput = parts.slice(2).join(' ');
+                if (!roleName || !rolePasswords[roleName]) {
+                    message = 'Rolum [owner/admin/member] [password]';
+                } else if (roleInput === rolePasswords[roleName]) {
+                    changes.playerRole = roleName;
+                    message = `Rolum — ${roleName.charAt(0).toUpperCase() + roleName.slice(1)} role granted`;
+                } else {
+                    message = `Rolum — wrong password`;
+                }
             } else if (command === '/crash') {
                 message = 'Chaos Ruino';
                 updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
@@ -876,13 +891,14 @@
             _crashClicksLeft = 3;
             const overlay = document.getElementById('crash-overlay');
             const flashBg = document.getElementById('crash-flash-bg');
+
             const counter = document.getElementById('crash-click-counter');
             overlay.classList.add('active');
             if (flashBg) flashBg.classList.add('active');
+
             if (counter) counter.textContent = _crashClicksLeft;
 
             function onCrashClick(e) {
-                // Don't count clicks on the BSOD box itself as "recovery"
                 const bsod = document.getElementById('crash-bsod');
                 if (bsod && bsod.contains(e.target)) return;
                 _crashClicksLeft--;
@@ -891,6 +907,7 @@
                     document.removeEventListener('click', onCrashClick, true);
                     overlay.classList.remove('active');
                     if (flashBg) flashBg.classList.remove('active');
+
                     startBossFight();
                 }
             }
@@ -1686,6 +1703,7 @@
                                     { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
                                     { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
                                     { spell: 'Fragmentum Omnia', cmd: '/fragments all', desc: 'Reveal all fragments' },
+                                    { spell: 'Rolum [role] [password]', cmd: '/role', desc: 'Set your role tag' },
                                 ].map(s => `<div class="flex items-baseline gap-2">
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:14px;color:#c4b5fd;font-weight:900;" class="flex-shrink-0">${s.spell}</span>
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#7c3aed;font-weight:700;">— ${s.desc}</span>
@@ -1985,8 +2003,9 @@
                             <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>
                             <span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>
                             ${state.demonMode?`<span class="pixel-badge bg-red-700 border-red-900 text-white flex-1 text-center" style="text-shadow:0 0 8px rgba(255,0,0,0.8);">Demon Mode</span>`:''}
-
-                        </div>
+                            ${state.playerRole==='owner'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#a855f7;border-color:#7e22ce;text-shadow:0 0 8px rgba(168,85,247,0.8);">Owner</span>`:''}
+                            ${state.playerRole==='admin'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#3b82f6;border-color:#1d4ed8;text-shadow:0 0 8px rgba(59,130,246,0.8);">Admin</span>`:''}
+                            ${state.playerRole==='member'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#10b981;border-color:#065f46;text-shadow:0 0 8px rgba(16,185,129,0.8);">Member</span>`:''}                        </div>
 
                         <div class="w-full max-w-6xl pixel-card mt-2 px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start stats-row">
@@ -2039,6 +2058,8 @@
                             <span class="text-xs font-bold text-slate-500">${state.unlockedLore.length} / ${LORE_FRAGMENTS.length}${state.unlockedLore.length === LORE_FRAGMENTS.length ? ' · Journal Unlocked' : ''}</span>
                         </button>
                     </div>
+
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;" >v0.53 — Latest</p>
 
                 </div>
             `;
@@ -2135,3 +2156,4 @@
     </script>
 </body>
 </html>
+<!-- 2,000+ lines of code!!! -->
