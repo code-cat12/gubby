@@ -493,9 +493,12 @@
             { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
             { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
             { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
-            { id: 'skin_demon_1',  name: 'Demon Gubby I',  category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
-            { id: 'skin_demon_2',  name: 'Demon Gubby II', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
-            { id: 'skin_demon_3',  name: 'Demon Gubby III',category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon', skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
+            { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
+            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'A fluffy pancake form of Gubby.' },
+            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
+            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
         ];
 
         const WORLD_LORE = {
@@ -553,7 +556,8 @@
             showAdmin: false, adminLog: [], discoEventTimer: 0,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
-            equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1,
+            equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
+            storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
             showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false, showMerchantInfo: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
@@ -577,22 +581,53 @@
         function saveGame() {
             try {
                 const save = {
-                    clicks: state.clicks, lifetimeClicks: state.lifetimeClicks,
-                    gold: state.gold, theme: state.theme,
-                    prestigeLevel: state.prestigeLevel, infinityRebirth: state.infinityRebirth,
-                    inventory: state.inventory,
-                    equippedSkin: state.equippedSkin,
-                    completedQuests: state.completedQuests, completedQuestIds: state.completedQuestIds,
-                    unlockedLore: state.unlockedLore, visitedWorlds: state.visitedWorlds,
+                    // Core progress
+                    clicks: state.clicks,
+                    lifetimeClicks: state.lifetimeClicks,
+                    gold: state.gold,
+                    theme: state.theme,
+                    prestigeLevel: state.prestigeLevel,
+                    infinityRebirth: state.infinityRebirth,
                     demonMode: state.demonMode,
-                    largeText: state.largeText, floatingStars: state.floatingStars,
-                    soundEnabled: state.soundEnabled, musicEnabled: state.musicEnabled, clickSound: state.clickSound,
-                    showParticles: state.showParticles, questNotif: state.questNotif,
-                    marketFlash: state.marketFlash, purpleAccent: state.purpleAccent,
-                    skinShopTab: state.skinShopTab,
-                    bossDefeated: state.bossDefeated, infiniteMoney: state.infiniteMoney,
+                    // Inventory & quests
+                    inventory: state.inventory,
+                    activeQuests: state.activeQuests,
+                    completedQuests: state.completedQuests,
+                    completedQuestIds: state.completedQuestIds,
                     totalSells: state.totalSells || 0,
-                    skyBoost: state.skyBoost || 0, crystalBoost: state.crystalBoost || 0,
+                    // Market
+                    marketMultiplier: state.marketMultiplier,
+                    marketTrend: state.marketTrend,
+                    marketQueue: state.marketQueue,
+                    xpSurgeUntil: state.xpSurgeUntil || 0,
+                    // Skins
+                    equippedSkin: state.equippedSkin,
+                    skinShopTab: state.skinShopTab,
+                    skinShopTabDemon: state.skinShopTabDemon || 1,
+                    skinShopTabPancake: state.skinShopTabPancake || 1,
+                    storageSkinTab_star: state.storageSkinTab_star || 1,
+                    storageSkinTab_demon: state.storageSkinTab_demon || 1,
+                    storageSkinTab_pancake: state.storageSkinTab_pancake || 1,
+                    // Lore & worlds
+                    unlockedLore: state.unlockedLore,
+                    visitedWorlds: state.visitedWorlds,
+                    // Settings
+                    largeText: state.largeText,
+                    floatingStars: state.floatingStars,
+                    soundEnabled: state.soundEnabled,
+                    musicEnabled: state.musicEnabled,
+                    clickSound: state.clickSound,
+                    showParticles: state.showParticles,
+                    questNotif: state.questNotif,
+                    marketFlash: state.marketFlash,
+                    purpleAccent: state.purpleAccent,
+                    // Boss
+                    bossDefeated: state.bossDefeated,
+                    infiniteMoney: state.infiniteMoney,
+                    bossClicks: state.bossClicks || 0,
+                    // Permanent boosts
+                    skyBoost: state.skyBoost || 0,
+                    crystalBoost: state.crystalBoost || 0,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -1086,7 +1121,8 @@
 
             const isStar = state.equippedSkin && state.equippedSkin.startsWith('skin_season_');
             const isDemon = state.equippedSkin && state.equippedSkin.startsWith('skin_demon_');
-            const skinLevel = isStar ? parseInt(state.equippedSkin.slice(-1)) : isDemon ? parseInt(state.equippedSkin.slice(-1)) : 0;
+            const isPancake = state.equippedSkin && state.equippedSkin.startsWith('skin_pancake_');
+            const skinLevel = isStar || isDemon || isPancake ? parseInt(state.equippedSkin.slice(-1)) : 0;
 
             // Level III only: level III image flies out on click
             if (skinLevel >= 3) {
@@ -1094,7 +1130,9 @@
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
                 const imgIII = isDemon
                     ? 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
-                    : 'https://i.postimg.cc/nzCdK6z1/image.png';
+                    : isPancake
+                        ? 'https://i.postimg.cc/QKSNz721/image.png'
+                        : 'https://i.postimg.cc/nzCdK6z1/image.png';
                 const count = 3;
                 for (let i = 0; i < count; i++) {
                     const plush = document.createElement('img');
@@ -1360,22 +1398,25 @@
             if (state.floatingStars === false) return;
             const isStar = state.equippedSkin && state.equippedSkin.startsWith('skin_season_');
             const isDemon = state.equippedSkin && state.equippedSkin.startsWith('skin_demon_');
-            const skinLevel = isStar ? parseInt(state.equippedSkin.slice(-1)) : isDemon ? parseInt(state.equippedSkin.slice(-1)) : 0;
+            const isPancake = state.equippedSkin && state.equippedSkin.startsWith('skin_pancake_');
+            const skinLevel = isStar || isDemon || isPancake ? parseInt(state.equippedSkin.slice(-1)) : 0;
             if (skinLevel < 2) return;
 
             const imgUrl = isDemon
                 ? 'https://i.postimg.cc/t1tGR6Pk/image.png'
-                : 'https://i.postimg.cc/wMh33rP2/image.png';
-            const baseSize = isDemon ? 60 : 24;
-            const sizeRange = isDemon ? 40 : 24;
-            const baseDur = isDemon ? 17 : 11;
-            const durRange = isDemon ? 7 : 6;
+                : isPancake
+                    ? 'https://i.postimg.cc/G9f0hqbX/image.png'
+                    : 'https://i.postimg.cc/wMh33rP2/image.png';
+            const baseSize = isDemon ? 60 : isPancake ? 48 : 24;
+            const sizeRange = isDemon ? 40 : isPancake ? 24 : 24;
+            const baseDur = isDemon ? 17 : isPancake ? 12 : 11;
+            const durRange = isDemon ? 7 : isPancake ? 5 : 6;
             for (let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     const star = document.createElement('img');
                     star.src = imgUrl; star.className = 'floating-star'; star.style.imageRendering = 'pixelated';
                     const size = baseSize + Math.random() * sizeRange;
-                    star.style.width = size + 'px'; star.style.height = size + 'px';
+                    star.style.width = size + 'px'; star.style.height = 'auto';
                     star.style.left = (Math.random() * 95) + 'vw';
                     star.style.top = '-80px';
                     star.style.setProperty('--drift', (Math.random()-0.5)*100 + 'px');
@@ -1455,8 +1496,9 @@
                     + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-3">Skins <span class="text-slate-400 font-bold normal-case text-xs">· Cosmetic · Equip in Storage</span></p>'
                     + (() => {
                         const skinSets = [
-                            { key: 'star',  label: 'Star Gubby',  stateTab: 'skinShopTab',      bg: 'https://i.redd.it/8hr60jort3w91.gif' },
-                            { key: 'demon', label: 'Demon Gubby', stateTab: 'skinShopTabDemon',  bg: 'https://i.pinimg.com/originals/aa/04/0e/aa040ec6845c62139afbfa67c7988540.jpg' },
+                            { key: 'star',    label: 'Star Gubby',    stateTab: 'skinShopTab',         bg: 'https://i.redd.it/8hr60jort3w91.gif',                                                               darkText: false },
+                            { key: 'demon',   label: 'Demon Gubby',   stateTab: 'skinShopTabDemon',    bg: 'https://i.pinimg.com/originals/aa/04/0e/aa040ec6845c62139afbfa67c7988540.jpg',                      darkText: false },
+                            { key: 'pancake', label: 'Pancake Gubby', stateTab: 'skinShopTabPancake',  bg: 'https://i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif',                                                   darkText: true  },
                         ];
                         return skinSets.map(set => {
                             const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin' && i.skinSet === set.key);
@@ -1470,8 +1512,9 @@
                             const locked = !prevOwned;
                             const isEquipped = state.equippedSkin === tabItem.id;
                             const perksMap = {
-                                star:  { 1: '✦ Star Gubby skin', 2: '✦ Stars fall from the sky', 3: '✦ Opal stars fly out on click' },
-                                demon: { 1: '✦ Demon Gubby skin', 2: '✦ Dark images fall from the sky', 3: '✦ Demon images fly out on click' },
+                                star:    { 1: 'Star Gubby skin', 2: 'Stars fall from the sky', 3: 'Opal stars fly out on click' },
+                                demon:   { 1: 'Demon Gubby skin', 2: 'Dark images fall from the sky', 3: 'Demon images fly out on click' },
+                                pancake: { 1: 'Pancake Gubby skin', 2: 'Pancakes fall from the sky', 3: 'Pancakes fly out on click' },
                             };
                             const perks = perksMap[set.key][tab] || '';
                             const tabBtns = skinItems.map(s => {
@@ -1479,7 +1522,7 @@
                                 return `<button onclick="updateState({${set.stateTab}:${s.skinLevel}})" class="flex-1 py-2 font-black uppercase text-xs tracking-widest border-t-4 transition-colors ${active?'border-purple-600 text-purple-700 bg-purple-50':'border-slate-200 text-slate-400 hover:text-slate-600 bg-white'}">Level ${s.skinLevel === 1 ? 'I' : s.skinLevel === 2 ? 'II' : 'III'}</button>`;
                             }).join('');
 
-                            return `<div class="mb-4 overflow-hidden border-4 ${isEquipped?'border-purple-500':owned?'border-emerald-400':'border-slate-200'} relative" style="background:linear-gradient(rgba(255,255,255,0.10),rgba(255,255,255,0.10)),url('${set.bg}') center/cover no-repeat;">
+                            return `<div class="mb-4 overflow-hidden border-4 ${isEquipped?'border-purple-500':owned?'border-emerald-400':'border-slate-200'} relative" style="background:linear-gradient(${set.darkText?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.15)'},${set.darkText?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.15)'}),url('${set.bg}') center/cover no-repeat;">
                                 <div class="flex items-stretch gap-0">
                                     <div class="flex-shrink-0 flex items-center justify-center relative overflow-hidden" style="width:140px;height:140px;">
                                         <img src="${levelOneItem.skinImg}" class="w-full h-full object-contain" style="image-rendering:pixelated;" />
@@ -1487,17 +1530,17 @@
                                     <div class="flex-1 p-4 flex flex-col justify-between min-w-0">
                                         <div>
                                             <div class="flex items-center gap-2 flex-wrap mb-0.5">
-                                                <p class="font-black text-base uppercase text-white" style="text-shadow:1px 1px 3px rgba(0,0,0,0.5);">${tabItem.name}</p>
+                                                <p class="font-black text-base uppercase ${set.darkText?'text-slate-900':'text-white'}" style="text-shadow:${set.darkText?'none':'1px 1px 3px rgba(0,0,0,0.5)'};">${tabItem.name}</p>
                                                 ${isEquipped?'<span class="text-xs font-black bg-purple-600 text-white px-2 py-0.5">EQUIPPED</span>':''}
                                             </div>
-                                            <p class="text-xs font-bold text-white/80">${perks}</p>
-                                            ${locked ? `<p class="text-xs font-bold text-red-300 mt-1">⚠ Requires ${SHOP_ITEMS.find(i=>i.id===prevSkinId)?.name||'previous level'}</p>` : ''}
-                                            ${!owned && !locked ? `<p class="text-xs font-bold text-white/70 mt-1">${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}</p>` : ''}
+                                            <p class="text-xs font-bold ${set.darkText?'text-slate-700':'text-white/80'}">${perks}</p>
+                                            ${locked ? `<p class="text-xs font-bold ${set.darkText?'text-red-600':'text-red-300'} mt-1">Requires ${SHOP_ITEMS.find(i=>i.id===prevSkinId)?.name||'previous level'}</p>` : ''}
+                                            ${!owned && !locked ? `<p class="text-xs font-bold ${set.darkText?'text-slate-600':'text-white/70'} mt-1">${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}</p>` : ''}
                                         </div>
                                         <button onclick="${locked||owned?'':'buySpecialItem(\''+tabItem.id+'\')'}" class="pixel-button mt-3 px-5 py-2 font-black text-sm self-end ${locked?'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed':owned?'bg-emerald-500 border-emerald-700 text-white cursor-default':canAfford?'bg-purple-600 border-purple-800 text-white':'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'}">${locked?'LOCKED':owned?'OWNED':'BUY'}</button>
                                     </div>
                                 </div>
-                                <div class="flex border-t-4 border-white/20">${tabBtns}</div>
+                                <div class="flex border-t-4 ${set.darkText?'border-slate-300':'border-white/20'}">${tabBtns}</div>
                             </div>`;
                         }).join('');
                     })()
@@ -1544,18 +1587,41 @@
             return '<div class="flex flex-col gap-6">' + Object.entries(cats).map(([catKey, catData]) => {
                 if (catData.items.length === 0) return '';
                 if (catKey === 'skin') {
-                    return `<div class="border-4 ${catData.color} p-4 sm:p-6"><h5 class="font-black text-base sm:text-lg uppercase mb-3 sm:mb-4 text-slate-900">${catData.name}</h5>
-                        <div class="flex flex-col gap-3">
-                            ${catData.items.map(item => {
-                                const isEquipped = state.equippedSkin === item.id;
-                                return `<div class="flex items-center gap-4 p-3 border-4 bg-white ${isEquipped?'border-purple-500 bg-purple-50':'border-slate-200'}">
+                    // Group owned skins by set
+                    const sets = {};
+                    catData.items.forEach(item => {
+                        if (!sets[item.skinSet]) sets[item.skinSet] = [];
+                        sets[item.skinSet].push(item);
+                    });
+                    const setNames = { star: 'Star Gubby', demon: 'Demon Gubby', pancake: 'Pancake Gubby' };
+                    return `<div class="border-4 ${catData.color} p-4 sm:p-6">
+                        <h5 class="font-black text-base sm:text-lg uppercase mb-4 text-slate-900">${catData.name}</h5>
+                        <div class="flex flex-col gap-4">
+                        ${Object.entries(sets).map(([setKey, items]) => {
+                            items.sort((a,b) => a.skinLevel - b.skinLevel);
+                            const stateTabKey = setKey === 'star' ? 'storageSkinTab_star' : setKey === 'demon' ? 'storageSkinTab_demon' : 'storageSkinTab_pancake';
+                            const activeLevel = state[stateTabKey] || items[0].skinLevel;
+                            const activeItem = items.find(i => i.skinLevel === activeLevel) || items[0];
+                            const isEquipped = state.equippedSkin === activeItem.id;
+                            const levelOne = items.find(i => i.skinLevel === 1) || items[0];
+                            return `<div class="border-4 ${isEquipped ? 'border-purple-500 bg-purple-50' : 'border-slate-200 bg-white'}">
+                                <div class="flex items-center gap-4 p-4">
+                                    <img src="${levelOne.skinImg}" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />
                                     <div class="flex-1 min-w-0">
-                                        <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
-                                        <p class="text-xs font-bold text-slate-500">${item.description.replace(/^Season [IVX]+ — /,'')}</p>
+                                        <p class="font-black text-sm uppercase text-slate-900">${setNames[setKey] || setKey}</p>
+                                        <p class="text-xs font-bold text-slate-500 mt-0.5">${activeItem.description}</p>
                                     </div>
-                                    <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped?'bg-purple-600 border-purple-800 text-white':'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped?'UNEQUIP':'EQUIP'}</button>
-                                </div>`;
-                            }).join('')}
+                                    <button onclick="toggleEquip('${activeItem.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? 'bg-purple-600 border-purple-800 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
+                                </div>
+                                <div class="flex border-t-4 border-slate-200">
+                                    ${items.map(item => {
+                                        const active = item.skinLevel === activeLevel;
+                                        const roman = item.skinLevel === 1 ? 'I' : item.skinLevel === 2 ? 'II' : 'III';
+                                        return `<button onclick="updateState({${stateTabKey}:${item.skinLevel}})" class="flex-1 py-2 font-black uppercase text-xs tracking-widest border-r-4 last:border-r-0 border-slate-200 transition-colors ${active ? 'bg-purple-600 text-white' : 'bg-white text-slate-400 hover:text-slate-700'}">Level ${roman}</button>`;
+                                    }).join('')}
+                                </div>
+                            </div>`;
+                        }).join('')}
                         </div>
                     </div>`;
                 }
