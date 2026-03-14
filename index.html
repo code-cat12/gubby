@@ -274,7 +274,7 @@
         .merchant-screen.slide-below { transform:translateY(100%); }
         #sky-screen { background-image:url('https://i.postimg.cc/4NKRv014/image.png'); }
         #crystal-screen { background-image:url('https://cdnb.artstation.com/p/assets/images/images/056/756/425/original/bencin-studios-pixelartbackground.gif?1670002516'); }
-        .merchant-card { background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:3px solid rgba(255,255,255,0.4); padding:40px 48px; text-align:center; max-width:460px; width:90vw; }
+        .merchant-card { background:rgba(255,255,255,0.92); border:3px solid rgba(255,255,255,0.9); padding:40px 48px; text-align:center; max-width:460px; width:90vw; }
         /* Sky — dark gold text */
         #sky-screen .merchant-title { font-family:'Pixelify Sans',monospace; font-size:30px; font-weight:900; color:#92600a; text-shadow:0 2px 8px rgba(0,0,0,0.2); letter-spacing:3px; margin-bottom:6px; }
         #sky-screen .merchant-sub   { font-family:'Pixelify Sans',monospace; font-size:13px; color:#a97c30; margin-bottom:24px; letter-spacing:1px; }
@@ -554,7 +554,7 @@
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1,
-            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
+            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false, showMerchantInfo: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
             showFragmentsModal: false, showJournalModal: false, showWorldLore: null,
@@ -682,6 +682,8 @@
             _musicStarted = true;
             syncMusic();
         }
+        // Try immediately (works in some browsers/contexts)
+        window.addEventListener('load', () => { setTimeout(() => syncMusic(), 100); });
         document.addEventListener('click', tryStartMusic, { once: true });
         document.addEventListener('keydown', tryStartMusic, { once: true });
         document.addEventListener('touchstart', tryStartMusic, { once: true });
@@ -689,6 +691,7 @@
         function getPermanentMult() {
             return 1 + (state.skyBoost || 0) * 5 + (state.crystalBoost || 0) * 7.5;
         }
+
         function getDemonMult() { return state.demonMode ? 20 : 1; }
 
         function getItemPrice(item) {
@@ -773,17 +776,35 @@
                     SHOP_ITEMS.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
                     changes.inventory = newInv; message = `Accio Omnia`;
                 } else {
-                    const rawArgs = parts.slice(1);
-                    const lastArg = rawArgs[rawArgs.length - 1];
-                    const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
-                    const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
-                    const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
-                    if (ids.length === 0) { message = 'Accio [id] [amt]'; }
-                    else {
-                        const newInv = { ...state.inventory }, given = [], missing = [];
-                        ids.forEach(id => { const item = SHOP_ITEMS.find(i => i.id === id); if (item) { newInv[id] = (newInv[id]||0) + amount; given.push(item.name); } else missing.push(id); });
-                        if (given.length) changes.inventory = newInv;
-                        message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
+                    // Category map
+                    const catMap = { weak:'small', ordinary:'medium', strong:'large', powerful:'op', small:'small', medium:'medium', large:'large', op:'op', skin:'skin' };
+                    const tierMap = { 'i':1, 'ii':2, 'iii':3, '1':1, '2':2, '3':3 };
+                    const catArg = parts[1]?.toLowerCase();
+                    const tierArg = parts[2]?.toLowerCase();
+                    const cat = catMap[catArg];
+                    if (cat) {
+                        const tier = tierMap[tierArg] || null;
+                        const matched = SHOP_ITEMS.filter(i => i.category === cat && (tier === null || i.name.trim().endsWith(['I','II','III'][tier-1])));
+                        if (matched.length > 0) {
+                            const newInv = { ...state.inventory };
+                            matched.forEach(i => { newInv[i.id] = (newInv[i.id] || 0) + 1; });
+                            changes.inventory = newInv;
+                            message = `Accio ${matched.map(i=>i.name).join(', ')}`;
+                        } else { message = `Accio — no match`; }
+                    } else {
+                        // fallback: old id-based give
+                        const rawArgs = parts.slice(1);
+                        const lastArg = rawArgs[rawArgs.length - 1];
+                        const amount = !isNaN(parseInt(lastArg)) && SHOP_ITEMS.every(i => i.id !== lastArg.toLowerCase()) ? parseInt(lastArg) : 1;
+                        const itemArgs = (amount > 1 || (!isNaN(parseInt(lastArg)) && !SHOP_ITEMS.find(i => i.id === lastArg.toLowerCase()))) ? rawArgs.slice(0, -1) : rawArgs;
+                        const ids = itemArgs.slice(0, 25).map(a => a.toLowerCase());
+                        if (ids.length === 0) { message = 'Accio [category] [i/ii/iii]'; }
+                        else {
+                            const newInv = { ...state.inventory }, given = [], missing = [];
+                            ids.forEach(id => { const item = SHOP_ITEMS.find(i => i.id === id); if (item) { newInv[id] = (newInv[id]||0) + amount; given.push(item.name); } else missing.push(id); });
+                            if (given.length) changes.inventory = newInv;
+                            message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
+                        }
                     }
                 }
             } else if (command === '/quest') {
@@ -1619,6 +1640,46 @@
                     <button onclick="updateState({showSettings:true})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="settings" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-90 transition-transform duration-300"></i>
                     </button>
+                    <button onclick="updateState({showMerchantInfo:!state.showMerchantInfo})" class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
+                        <i data-lucide="circle-help" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7"></i>
+                    </button>
+                    ${state.showMerchantInfo ? `
+                    <div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showMerchantInfo:false})">
+                        <div class="bg-white pixel-card max-w-lg w-full modal-content">
+                            <div class="flex justify-between items-center p-6 border-b-4 border-slate-200">
+                                <div>
+                                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Hidden</p>
+                                    <h3 class="font-black text-2xl uppercase text-slate-900">Secret Merchants</h3>
+                                </div>
+                                <button onclick="updateState({showMerchantInfo:false})" class="text-slate-400 hover:text-slate-900 text-2xl font-black">✕</button>
+                            </div>
+                            <div class="p-6 flex flex-col gap-6">
+                                <div class="border-4 border-amber-300 bg-amber-50 p-5">
+                                    <p class="font-black text-base uppercase text-amber-900 tracking-wider mb-1">Sky Merchant</p>
+                                    <p class="text-xs font-black text-amber-600 uppercase tracking-widest mb-3">Scroll up from the main screen</p>
+                                    <p class="text-sm font-bold text-slate-700 mb-3">A mysterious merchant floating above the clouds. Sells Sky Potions that permanently increase your click power — the boost never expires and survives every ascension.</p>
+                                    <div class="bg-white border-2 border-amber-200 p-3 flex flex-col gap-1">
+                                        <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Sky Potion</p>
+                                        <p class="text-sm font-bold text-slate-800">+5x permanent click power per purchase</p>
+                                        <p class="text-sm font-bold text-slate-800">Stacks — buy as many times as you can afford</p>
+                                        <p class="text-sm font-black text-amber-700">500,000 Gold per potion</p>
+                                    </div>
+                                </div>
+                                <div class="border-4 border-red-300 bg-red-50 p-5">
+                                    <p class="font-black text-base uppercase text-red-900 tracking-wider mb-1">Crystal Merchant</p>
+                                    <p class="text-xs font-black text-red-600 uppercase tracking-widest mb-3">Scroll down from the main screen</p>
+                                    <p class="text-sm font-bold text-slate-700 mb-3">A shadowy merchant emerging from deep below. Sells Crystal Potions — stronger than Sky Potions and more expensive, but the permanent power boost is worth every coin.</p>
+                                    <div class="bg-white border-2 border-red-200 p-3 flex flex-col gap-1">
+                                        <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Crystal Potion</p>
+                                        <p class="text-sm font-bold text-slate-800">+7.5x permanent click power per purchase</p>
+                                        <p class="text-sm font-bold text-slate-800">Stacks — buy as many times as you can afford</p>
+                                        <p class="text-sm font-black text-red-700">750,000 Gold per potion</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs font-bold text-slate-400 text-center">Both boosts are permanent and stack with each other, potions, and demon mode.</p>
+                            </div>
+                        </div>
+                    </div>` : ''}
 
                     ${state.showItemPopup && state.itemPopupId ? (() => {
                         const popupItem = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
