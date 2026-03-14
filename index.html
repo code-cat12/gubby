@@ -822,6 +822,16 @@
                     const tierMap = { 'i':1, 'ii':2, 'iii':3, '1':1, '2':2, '3':3 };
                     const catArg = parts[1]?.toLowerCase();
                     const tierArg = parts[2]?.toLowerCase();
+                    // Merchant boosts: accio sky [n] / accio crystal [n]
+                    if (catArg === 'sky') {
+                        const n = parseInt(tierArg) || 1;
+                        changes.skyBoost = (state.skyBoost || 0) + n;
+                        message = `Accio Sky x${n}`;
+                    } else if (catArg === 'crystal') {
+                        const n = parseInt(tierArg) || 1;
+                        changes.crystalBoost = (state.crystalBoost || 0) + n;
+                        message = `Accio Crystal x${n}`;
+                    } else {
                     const cat = catMap[catArg];
                     if (cat) {
                         const tier = tierMap[tierArg] || null;
@@ -847,7 +857,7 @@
                             message = given.length ? `Accio ${amount}x ${given.join(', ')}` : `Accio ${missing.join(', ')} — not found`;
                         }
                     }
-                }
+                    }
             } else if (command === '/quest') {
                 if (state.activeQuests.length > 0) {
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
@@ -1709,7 +1719,8 @@
                                     { spell: 'Ascensio [n]', cmd: '/rebirth', desc: 'Set prestige level' },
                                     { spell: 'Ascensio Infinitus', cmd: '/rebirth infinity', desc: 'Infinity rebirth' },
                                     { spell: 'Accio [id] [amt]', cmd: '/give', desc: 'Summon item by ID' },
-                                    { spell: 'Accio Omnia', cmd: '/give all', desc: 'Summon all items' },
+                                    { spell: 'Accio Sky [n]', cmd: '/give sky', desc: 'Grant sky potion boosts' },
+                                    { spell: 'Accio Crystal [n]', cmd: '/give crystal', desc: 'Grant crystal potion boosts' },
                                     { spell: 'Finite Quaestum', cmd: '/quest', desc: 'Complete all quests' },
                                     { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
                                     { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
@@ -2140,6 +2151,7 @@
         }
 
         function finishLoading() {
+            console.log('%c ___      _    _            ___ _ _    _              ___                _                __        ___ ____\n  / __|_  _| |__| |__ _  _   / __| (_)__| |_____ _ _   / __|_ __  __ _ _ _| |__  ___  __ __/  \\      | __|__ /\n | (_ | || | \'_ \\ \'_ \\ || | | (__| | / _| / / -_) \'_|  \\__ \\ \'_ \\/ _` | \'_| / / |___| \\ V / () |  _  |__ \\|_ \\\n  \\___|\\_, |_.__/_.__/\\_, |  \\___|_|_\\__|_\\_\\___|_|    |___/ .__/\\__,_|_| |_\\_\\        \\_/ \\__/  (_) |___/___/\n        |__/           |__/                                 |_|                                                  ', 'color:#fbbf24;font-family:monospace;font-size:11px;font-weight:bold;');
             if (state.loadingDone) return;
             loadGame();
             createFloatingStars();
