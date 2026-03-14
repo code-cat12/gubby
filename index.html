@@ -554,7 +554,7 @@
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
             prestigeLevel: 0, marketMultiplier: 1, marketTrend: 'stable', marketQueue: [1.1, 0.8, 1.4],
             xpSurgeUntil: 0, marketCategory: null, notification: null,
-            showAdmin: false, adminLog: [], discoEventTimer: 0, playerRole: null,
+            showAdmin: false, adminLog: [], discoEventTimer: 0, playerRole: null, gradientTags: false,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
@@ -625,6 +625,7 @@
                     // Boss
                     bossDefeated: state.bossDefeated,
                     playerRole: state.playerRole || null,
+                    gradientTags: state.gradientTags || false,
                     infiniteMoney: state.infiniteMoney,
                     bossClicks: state.bossClicks || 0,
                     // Permanent boosts
@@ -779,8 +780,10 @@
                 'tenebris invoco': '/demon',
                 'fragmentum omnia': '/fragments all',
                 'fragmentum': '/fragments',
-                'chaos ruino': '/crash',
+                'avada kedavra': '/crash',
                 'rolum': '/role',
+                'expelliarmus': '/disarm',
+                'chroma': '/gradient',
             };
 
             let normalized = cmdText;
@@ -855,12 +858,20 @@
             } else if (command === '/fragments') {
                 if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `Fragmentum Omnia`; }
                 else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Fragmentum ${n}`; } else message = `Fragmentum ${n} — already known`; } else message = `Fragmentum [1-6]`; }
+            } else if (command === '/gradient') {
+                const on = !state.gradientTags;
+                changes.gradientTags = on;
+                message = on ? 'Chroma — gradient tags enabled' : 'Chroma — gradient tags disabled';
+            } else if (command === '/disarm') {
+                const emptyInv = SHOP_ITEMS.reduce((acc, item) => ({ ...acc, [item.id]: 0 }), {});
+                changes.inventory = emptyInv;
+                message = 'Expelliarmus — all items disarmed';
             } else if (command === '/role') {
                 const roleName = parts[1]?.toLowerCase();
-                const rolePasswords = { owner: 'icyowner', admin: 'icyadmin', member: 'icymember' };
+                const rolePasswords = { owner: 'icyowner', admin: 'icyadmin', member: 'icymember', founder: 'icyfounder' };
                 const roleInput = parts.slice(2).join(' ');
                 if (!roleName || !rolePasswords[roleName]) {
-                    message = 'Rolum [owner/admin/member] [password]';
+                    message = 'Rolum [role] [password]';
                 } else if (roleInput === rolePasswords[roleName]) {
                     changes.playerRole = roleName;
                     message = `Rolum — ${roleName.charAt(0).toUpperCase() + roleName.slice(1)} role granted`;
@@ -868,7 +879,7 @@
                     message = `Rolum — wrong password`;
                 }
             } else if (command === '/crash') {
-                message = 'Chaos Ruino';
+                message = 'Avada Kedavra';
                 updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
                 e.target.value = "";
                 setTimeout(() => startCrashSequence(), 200);
@@ -887,7 +898,7 @@
         let _crashClicksLeft = 3;
 
         function startCrashSequence() {
-            if (state.bossDefeated) { updateState({ adminLog: ['Chaos Ruino — boss already slain', ...state.adminLog].slice(0,10) }); return; }
+            if (state.bossDefeated) { updateState({ adminLog: ['Avada Kedavra — boss already slain', ...state.adminLog].slice(0,10) }); return; }
             _crashClicksLeft = 3;
             const overlay = document.getElementById('crash-overlay');
             const flashBg = document.getElementById('crash-flash-bg');
@@ -936,7 +947,7 @@
                     clearInterval(_bossTimerInterval);
                     state.bossActive = false;
                     overlay.classList.remove('active');
-                    updateState({ notification: { title: 'DEFEATED', message: 'Gubby Lord escaped. Cast Chaos Ruino again to challenge him.', type: 'error' } });
+                    updateState({ notification: { title: 'DEFEATED', message: 'Gubby Lord escaped. Cast Avada Kedavra again to challenge him.', type: 'error' } });
                 }
             }, 1000);
         }
@@ -1704,6 +1715,9 @@
                                     { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
                                     { spell: 'Fragmentum Omnia', cmd: '/fragments all', desc: 'Reveal all fragments' },
                                     { spell: 'Rolum [role] [password]', cmd: '/role', desc: 'Set your role tag' },
+                                    { spell: 'Chroma', cmd: '/gradient', desc: 'Toggle gradient tags' },
+                                    { spell: 'Expelliarmus', cmd: '/disarm', desc: 'Lose all items' },
+                                    { spell: 'Avada Kedavra', cmd: '/crash', desc: 'Secret boss encounter' },
                                 ].map(s => `<div class="flex items-baseline gap-2">
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:14px;color:#c4b5fd;font-weight:900;" class="flex-shrink-0">${s.spell}</span>
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#7c3aed;font-weight:700;">— ${s.desc}</span>
@@ -2000,13 +2014,13 @@
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;" />
                         </div>
                         <div class="w-full max-w-6xl flex gap-3 mb-2 flex-wrap">
-                            <span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>
-                            <span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>
+                            ${state.gradientTags ? `<span class="pixel-badge flex-1 text-center" style="background:linear-gradient(90deg,#bae6fd,#3b82f6,#c4b5fd,#7c3aed);border-color:#4c1d95;color:#1a0040;">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>` : `<span class="pixel-badge bg-indigo-600 border-indigo-800 text-white flex-1 text-center">${state.infinityRebirth?'Prestige ∞':`Prestige ${state.prestigeLevel}`}</span>`}
+                            ${state.gradientTags ? `<span class="pixel-badge flex-1 text-center" style="background:linear-gradient(90deg,#fef9c3,#fbbf24,#fed7aa,#f97316);border-color:#92400e;color:#1a0a00;">${currentWorld?.name}</span>` : `<span class="pixel-badge bg-amber-500 border-amber-700 text-white flex-1 text-center">${currentWorld?.name}</span>`}
                             ${state.demonMode?`<span class="pixel-badge bg-red-700 border-red-900 text-white flex-1 text-center" style="text-shadow:0 0 8px rgba(255,0,0,0.8);">Demon Mode</span>`:''}
-                            ${state.playerRole==='owner'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#a855f7;border-color:#7e22ce;text-shadow:0 0 8px rgba(168,85,247,0.8);">Owner</span>`:''}
-                            ${state.playerRole==='admin'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#3b82f6;border-color:#1d4ed8;text-shadow:0 0 8px rgba(59,130,246,0.8);">Admin</span>`:''}
-                            ${state.playerRole==='member'?`<span class="pixel-badge text-white flex-1 text-center" style="background:#10b981;border-color:#065f46;text-shadow:0 0 8px rgba(16,185,129,0.8);">Member</span>`:''}                        </div>
-
+                            ${state.playerRole==='owner'?`<span class="pixel-badge flex-1 text-center" style="background:#a855f7;border-color:#7e22ce;color:#1a0040;">Owner</span>`:''}
+                            ${state.playerRole==='admin'?`<span class="pixel-badge flex-1 text-center" style="background:#3b82f6;border-color:#1d4ed8;color:#00153d;">Admin</span>`:''}
+                            ${state.playerRole==='member'?`<span class="pixel-badge flex-1 text-center" style="background:#10b981;border-color:#065f46;color:#002918;">Member</span>`:''}
+                            ${state.playerRole==='founder'?`<span class="pixel-badge flex-1 text-center" style="background:linear-gradient(90deg,#fdf6e3,#ffb7c5,#bae6fd,#0077b6);border-color:#7a9ab0;color:#1a1a2e;font-weight:900;">Founder</span>`:''}
                         <div class="w-full max-w-6xl pixel-card mt-2 px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 sm:gap-6">
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start stats-row">
                                 <div class="stat-display"><p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Clicks</p><span class="clicks-live text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.clicks, 0)}</span></div>
@@ -2156,4 +2170,3 @@
     </script>
 </body>
 </html>
-<!-- 2,000+ lines of code!!! -->
