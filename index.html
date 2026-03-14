@@ -675,6 +675,17 @@
             }
         }
 
+        // Autoplay fix — play on first user interaction
+        let _musicStarted = false;
+        function tryStartMusic() {
+            if (_musicStarted) return;
+            _musicStarted = true;
+            syncMusic();
+        }
+        document.addEventListener('click', tryStartMusic, { once: true });
+        document.addEventListener('keydown', tryStartMusic, { once: true });
+        document.addEventListener('touchstart', tryStartMusic, { once: true });
+
         function getPermanentMult() {
             return 1 + (state.skyBoost || 0) * 5 + (state.crystalBoost || 0) * 7.5;
         }
@@ -1711,7 +1722,7 @@
                             </div>
                             <div class="flex gap-3 mb-6">
                                 <button onclick="generateQuest()" class="pixel-button bg-amber-500 border-amber-700 text-white px-6 py-3 font-black uppercase flex-1">Get New Quest</button>
-                                ${state.activeQuests.length > 0 ? `<button onclick="rerollQuests()" class="${state.gold >= 10000 ? 'pixel-button bg-rose-500 border-rose-700 text-white' : 'pixel-button bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-6 py-3 font-black uppercase flex-1">Reroll All · 10k</button>` : ''}
+                                <button onclick="rerollQuests()" class="${state.gold >= 10000 ? 'pixel-button bg-rose-500 border-rose-700 text-white' : 'pixel-button bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-6 py-3 font-black uppercase flex-1">Reroll All · 10k</button>
                             </div>
                             ${state.activeQuests.length > 0 ? `
                                 <div class="flex flex-col gap-4 mb-6">
