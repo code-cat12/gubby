@@ -267,34 +267,6 @@
         #loading-click-hint.heating { color: #dc2626; animation: hintPulse 0.4s ease-in-out infinite alternate; }
         @keyframes hintPulse { from { opacity: 0.6; } to { opacity: 1; } }
 
-        /* ── MERCHANT SLIDES ── */
-        .merchant-screen { position:fixed; inset:0; z-index:88888; transition:transform 0.55s cubic-bezier(0.77,0,0.18,1); pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; background-size:cover; background-position:center; }
-        .merchant-screen.slide-above { transform:translateY(-100%); }
-        .merchant-screen.slide-visible { transform:translateY(0); pointer-events:all; }
-        .merchant-screen.slide-below { transform:translateY(100%); }
-        #sky-screen { background-image:url('https://i.postimg.cc/4NKRv014/image.png'); }
-        #crystal-screen { background-image:url('https://cdnb.artstation.com/p/assets/images/images/056/756/425/original/bencin-studios-pixelartbackground.gif?1670002516'); }
-        .merchant-card { background:rgba(255,255,255,0.92); border:3px solid rgba(255,255,255,0.9); padding:40px 48px; text-align:center; max-width:460px; width:90vw; }
-        /* Sky — dark gold text */
-        #sky-screen .merchant-title { font-family:'Pixelify Sans',monospace; font-size:30px; font-weight:900; color:#92600a; text-shadow:0 2px 8px rgba(0,0,0,0.2); letter-spacing:3px; margin-bottom:6px; }
-        #sky-screen .merchant-sub   { font-family:'Pixelify Sans',monospace; font-size:13px; color:#a97c30; margin-bottom:24px; letter-spacing:1px; }
-        #sky-screen .potion-name    { font-family:'Pixelify Sans',monospace; font-size:18px; font-weight:900; color:#7a4f0a; margin-bottom:4px; }
-        #sky-screen .potion-desc    { font-family:'Pixelify Sans',monospace; font-size:12px; color:#9a7030; margin-bottom:20px; }
-        #sky-screen .potion-price   { font-family:'Pixelify Sans',monospace; font-size:22px; font-weight:900; color:#92600a; margin-bottom:20px; }
-        #sky-screen .merchant-owned { font-family:'Pixelify Sans',monospace; font-size:12px; color:#9a7030; margin-top:10px; }
-        #sky-screen .close-hint     { font-family:'Pixelify Sans',monospace; font-size:11px; color:#b8903a; letter-spacing:1px; margin-top:8px; }
-        #sky-screen .buy-btn        { font-family:'Pixelify Sans',monospace; background:#fde68a; border:3px solid #b45309; color:#1a0000; padding:12px 36px; font-size:15px; font-weight:900; cursor:pointer; letter-spacing:2px; text-transform:uppercase; }
-        /* Crystal — red text */
-        #crystal-screen .merchant-title { font-family:'Pixelify Sans',monospace; font-size:30px; font-weight:900; color:#7f0000; text-shadow:0 2px 8px rgba(0,0,0,0.3); letter-spacing:3px; margin-bottom:6px; }
-        #crystal-screen .merchant-sub   { font-family:'Pixelify Sans',monospace; font-size:13px; color:#b91c1c; margin-bottom:24px; letter-spacing:1px; }
-        #crystal-screen .potion-name    { font-family:'Pixelify Sans',monospace; font-size:18px; font-weight:900; color:#7f0000; margin-bottom:4px; }
-        #crystal-screen .potion-desc    { font-family:'Pixelify Sans',monospace; font-size:12px; color:#b91c1c; margin-bottom:20px; }
-        #crystal-screen .potion-price   { font-family:'Pixelify Sans',monospace; font-size:22px; font-weight:900; color:#7f0000; margin-bottom:20px; }
-        #crystal-screen .merchant-owned { font-family:'Pixelify Sans',monospace; font-size:12px; color:#b91c1c; margin-top:10px; }
-        #crystal-screen .close-hint     { font-family:'Pixelify Sans',monospace; font-size:11px; color:#dc2626; letter-spacing:1px; margin-top:8px; }
-        #crystal-screen .buy-btn        { font-family:'Pixelify Sans',monospace; background:#dc2626; border:3px solid #7f1d1d; color:#fff; padding:12px 36px; font-size:15px; font-weight:900; cursor:pointer; letter-spacing:2px; text-transform:uppercase; }
-        .buy-btn:disabled { background:#aaa !important; border-color:#777 !important; color:#555 !important; cursor:not-allowed !important; }
-        .potion-img { width:80px; height:80px; image-rendering:pixelated; margin:0 auto 16px; display:block; filter:drop-shadow(0 4px 16px rgba(100,180,255,0.5)); }
         #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
         #crash-overlay.active { display:block; }
 
@@ -349,36 +321,6 @@
         <source src="https://files.catbox.moe/ujfzdw.mp3" type="audio/mpeg">
     </audio>
     <div id="demon-flash"></div>
-
-    <!-- SKY MERCHANT -->
-    <div id="sky-screen" class="merchant-screen slide-above">
-        <div class="merchant-card">
-            <div class="merchant-title">Sky Merchant</div>
-            <div class="merchant-sub">A stranger from above...</div>
-            <img class="potion-img" src="https://i.postimg.cc/CKJwrqn0/potion-339.png" />
-            <div class="potion-name">Sky Potion</div>
-            <div class="potion-desc">Permanently boosts your click power by +5x<br>Stacks with every purchase. Forever.</div>
-            <div class="potion-price">500,000 Gold</div>
-            <button class="buy-btn" onclick="buySkyPotion()">Purchase</button>
-            <div class="merchant-owned" id="sky-owned"></div>
-        </div>
-        <div class="close-hint">↓ Scroll down to return</div>
-    </div>
-
-    <!-- CRYSTAL MERCHANT -->
-    <div id="crystal-screen" class="merchant-screen slide-below">
-        <div class="merchant-card">
-            <div class="merchant-title">Crystal Merchant</div>
-            <div class="merchant-sub">From the depths below...</div>
-            <img class="potion-img" src="https://i.postimg.cc/XZGMpXgD/potion-211.png" />
-            <div class="potion-name">Crystal Potion</div>
-            <div class="potion-desc">Permanently boosts your click power by +7.5x<br>A different power. Same permanence.</div>
-            <div class="potion-price">750,000 Gold</div>
-            <button class="buy-btn" onclick="buyCrystalPotion()">Purchase</button>
-            <div class="merchant-owned" id="crystal-owned"></div>
-        </div>
-        <div class="close-hint">↑ Scroll up to return</div>
-    </div>
 
     <!-- CRASH FLASH BG -->
     <div id="crash-flash-bg"></div>
@@ -559,14 +501,13 @@
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
             storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
-            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false, showMerchantInfo: false,
+            showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
             showFragmentsModal: false, showJournalModal: false, showWorldLore: null,
             questLastRefresh: Date.now(),
             bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false,
             crashPhase: false, crashClickCount: 0,
-            skyBoost: 0, showSkyMerchant: false, crystalBoost: 0,
         };
 
         let titleClickCount = 0;
@@ -628,9 +569,6 @@
                     gradientTags: state.gradientTags || false,
                     infiniteMoney: state.infiniteMoney,
                     bossClicks: state.bossClicks || 0,
-                    // Permanent boosts
-                    skyBoost: state.skyBoost || 0,
-                    crystalBoost: state.crystalBoost || 0,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -727,7 +665,7 @@
         document.addEventListener('touchstart', tryStartMusic, { once: true });
 
         function getPermanentMult() {
-            return 1 + (state.skyBoost || 0) * 5 + (state.crystalBoost || 0) * 7.5;
+            return 1;
         }
 
         function getDemonMult() { return state.demonMode ? 20 : 1; }
@@ -821,15 +759,7 @@
                     const tierMap = { 'i':1, 'ii':2, 'iii':3, '1':1, '2':2, '3':3 };
                     const catArg = parts[1]?.toLowerCase();
                     const tierArg = parts[2]?.toLowerCase();
-                    if (catArg === 'sky') {
-                        const n = parseInt(tierArg) || 1;
-                        changes.skyBoost = (state.skyBoost || 0) + n;
-                        message = `Accio Sky x${n}`;
-                    } else if (catArg === 'crystal') {
-                        const n = parseInt(tierArg) || 1;
-                        changes.crystalBoost = (state.crystalBoost || 0) + n;
-                        message = `Accio Crystal x${n}`;
-                    } else {
+                    {
                         const cat = catMap[catArg];
                         if (cat) {
                             const tier = tierMap[tierArg] || null;
@@ -1037,82 +967,6 @@
             updateState({ gold: state.gold + 1e100, notification: { title: 'INFINITE GOLD', message: 'The Gubby Lord\'s treasure is yours forever.', type: 'success' } });
         }
 
-        // ── MERCHANT SLIDES ─────────────────────────────────────
-        // slide: 0=game, 1=sky(up), 2=crystal(down)
-        let _slide = 0;
-        let _wheelAccum = 0;
-        let _wheelTimer = null;
-        let _touchStartY = 0;
-        let _slideCooldown = false;
-
-        function setSlide(n) {
-            _slide = n;
-            _wheelAccum = 0;
-            _slideCooldown = true;
-            setTimeout(() => { _slideCooldown = false; }, 800);
-            const sky = document.getElementById('sky-screen');
-            const crystal = document.getElementById('crystal-screen');
-            sky.className = 'merchant-screen ' + (n === 1 ? 'slide-visible' : 'slide-above');
-            crystal.className = 'merchant-screen ' + (n === 2 ? 'slide-visible' : 'slide-below');
-            if (n === 1) updateSkyUI();
-            if (n === 2) updateCrystalUI();
-        }
-
-        function updateSkyUI() {
-            const owned = state.skyBoost || 0;
-            const el = document.getElementById('sky-owned');
-            if (el) el.textContent = owned > 0 ? `Owned: ${owned} · Boost: +${owned*5}x permanent` : '';
-            const btn = document.querySelector('#sky-screen .buy-btn');
-            if (btn) btn.disabled = state.gold < 500000;
-        }
-        function updateCrystalUI() {
-            const owned = state.crystalBoost || 0;
-            const el = document.getElementById('crystal-owned');
-            if (el) el.textContent = owned > 0 ? `Owned: ${owned} · Boost: +${owned*7.5}x permanent` : '';
-            const btn = document.querySelector('#crystal-screen .buy-btn');
-            if (btn) btn.disabled = state.gold < 750000;
-        }
-
-        function buySkyPotion() {
-            if (state.gold < 500000) return;
-            const next = (state.skyBoost || 0) + 1;
-            updateState({ gold: state.gold - 500000, skyBoost: next,
-                notification: { title: 'Sky Potion!', message: `Permanent +${next*5}x click boost!`, type: 'success' } });
-            updateSkyUI(); SFX.useItem();
-        }
-        function buyCrystalPotion() {
-            if (state.gold < 750000) return;
-            const next = (state.crystalBoost || 0) + 1;
-            updateState({ gold: state.gold - 750000, crystalBoost: next,
-                notification: { title: 'Crystal Potion!', message: `Permanent +${next*7.5}x click boost!`, type: 'success' } });
-            updateCrystalUI(); SFX.useItem();
-        }
-
-        window.addEventListener('wheel', (e) => {
-            if (_slide !== 0) e.preventDefault();
-            const anyModalOpen = state.showMarketModal || state.showStorageModal || state.showQuestModal || state.showFragmentsModal || state.showJournalModal || state.showSettings || state.showItemPopup;
-            if (anyModalOpen || state.bossActive || _slideCooldown) return;
-
-            _wheelAccum += e.deltaY;
-            clearTimeout(_wheelTimer);
-            _wheelTimer = setTimeout(() => { _wheelAccum = 0; }, 300);
-
-            if (_slide === 0 && _wheelAccum < -180)      { setSlide(1); }  // scroll up → sky
-            else if (_slide === 1 && _wheelAccum > 180)  { setSlide(0); }  // scroll down from sky → game
-            else if (_slide === 0 && _wheelAccum > 180)  { setSlide(2); }  // scroll down → crystal
-            else if (_slide === 2 && _wheelAccum < -180) { setSlide(0); }  // scroll up from crystal → game
-        }, { passive: false });
-
-        window.addEventListener('touchstart', (e) => { _touchStartY = e.touches[0].clientY; }, { passive: true });
-        window.addEventListener('touchend', (e) => {
-            const anyModalOpen = state.showMarketModal || state.showStorageModal || state.showQuestModal || state.showFragmentsModal || state.showJournalModal || state.showSettings || state.showItemPopup;
-            if (anyModalOpen || state.bossActive || _slideCooldown) return;
-            const dy = e.changedTouches[0].clientY - _touchStartY;
-            if (_slide === 0 && dy > 120)       setSlide(1);
-            else if (_slide === 1 && dy < -120) setSlide(0);
-            else if (_slide === 0 && dy < -120) setSlide(2);
-            else if (_slide === 2 && dy > 120)  setSlide(0);
-        }, { passive: true });
 
         function triggerTitleClick() {
             titleClickCount++;
@@ -1717,8 +1571,6 @@
                                     { spell: 'Ascensio [n]', cmd: '/rebirth', desc: 'Set prestige level' },
                                     { spell: 'Ascensio Infinitus', cmd: '/rebirth infinity', desc: 'Infinity rebirth' },
                                     { spell: 'Accio [id] [amt]', cmd: '/give', desc: 'Summon item by ID' },
-                                    { spell: 'Accio Sky [n]', cmd: '/give sky', desc: 'Grant sky potion boosts' },
-                                    { spell: 'Accio Crystal [n]', cmd: '/give crystal', desc: 'Grant crystal potion boosts' },
                                     { spell: 'Finite Quaestum', cmd: '/quest', desc: 'Complete all quests' },
                                     { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
                                     { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
@@ -1747,46 +1599,6 @@
                     <button onclick="updateState({showSettings:true})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="settings" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-90 transition-transform duration-300"></i>
                     </button>
-                    <button onclick="updateState({showMerchantInfo:!state.showMerchantInfo})" class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
-                        <i data-lucide="circle-help" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7"></i>
-                    </button>
-                    ${state.showMerchantInfo ? `
-                    <div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showMerchantInfo:false})">
-                        <div class="bg-white pixel-card max-w-lg w-full modal-content">
-                            <div class="flex justify-between items-center p-6 border-b-4 border-slate-200">
-                                <div>
-                                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Hidden</p>
-                                    <h3 class="font-black text-2xl uppercase text-slate-900">Secret Merchants</h3>
-                                </div>
-                                <button onclick="updateState({showMerchantInfo:false})" class="text-slate-400 hover:text-slate-900 text-2xl font-black">✕</button>
-                            </div>
-                            <div class="p-6 flex flex-col gap-6">
-                                <div class="border-4 border-amber-300 bg-amber-50 p-5">
-                                    <p class="font-black text-base uppercase text-amber-900 tracking-wider mb-1">Sky Merchant</p>
-                                    <p class="text-xs font-black text-amber-600 uppercase tracking-widest mb-3">Scroll up from the main screen</p>
-                                    <p class="text-sm font-bold text-slate-700 mb-3">A mysterious merchant floating above the clouds. Sells Sky Potions that permanently increase your click power — the boost never expires and survives every ascension.</p>
-                                    <div class="bg-white border-2 border-amber-200 p-3 flex flex-col gap-1">
-                                        <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Sky Potion</p>
-                                        <p class="text-sm font-bold text-slate-800">+5x permanent click power per purchase</p>
-                                        <p class="text-sm font-bold text-slate-800">Stacks — buy as many times as you can afford</p>
-                                        <p class="text-sm font-black text-amber-700">500,000 Gold per potion</p>
-                                    </div>
-                                </div>
-                                <div class="border-4 border-red-300 bg-red-50 p-5">
-                                    <p class="font-black text-base uppercase text-red-900 tracking-wider mb-1">Crystal Merchant</p>
-                                    <p class="text-xs font-black text-red-600 uppercase tracking-widest mb-3">Scroll down from the main screen</p>
-                                    <p class="text-sm font-bold text-slate-700 mb-3">A shadowy merchant emerging from deep below. Sells Crystal Potions — stronger than Sky Potions and more expensive, but the permanent power boost is worth every coin.</p>
-                                    <div class="bg-white border-2 border-red-200 p-3 flex flex-col gap-1">
-                                        <p class="text-xs font-black uppercase text-slate-500 tracking-wider">Crystal Potion</p>
-                                        <p class="text-sm font-bold text-slate-800">+7.5x permanent click power per purchase</p>
-                                        <p class="text-sm font-bold text-slate-800">Stacks — buy as many times as you can afford</p>
-                                        <p class="text-sm font-black text-red-700">750,000 Gold per potion</p>
-                                    </div>
-                                </div>
-                                <p class="text-xs font-bold text-slate-400 text-center">Both boosts are permanent and stack with each other, potions, and demon mode.</p>
-                            </div>
-                        </div>
-                    </div>` : ''}
 
                     ${state.showItemPopup && state.itemPopupId ? (() => {
                         const popupItem = SHOP_ITEMS.find(i => i.id === state.itemPopupId);
