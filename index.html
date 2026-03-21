@@ -495,7 +495,7 @@
             showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             visitedWorlds: ['plains'], showWorldLore: null,
-            unlockedFlames: [], showFlameModal: null, showFlamesPanel: false, allFlamesCollected: false,
+            unlockedFlames: [], showFlamesPanel: false, allFlamesCollected: false,
             questLastRefresh: Date.now(),
             bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false,
             crashPhase: false, crashClickCount: 0,
@@ -708,6 +708,7 @@
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
+                'ignis omnia': '/flame',
                 'avada kedavra': '/crash',
                 'rolum': '/role',
                 'expelliarmus': '/disarm',
@@ -781,6 +782,11 @@
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
                     message = `Finite Quaestum ${state.activeQuests.length}`;
                 } else message = "No active quests";
+            } else if (command === '/flame') {
+                const allIds = FLAMES.map(f => f.id);
+                changes.unlockedFlames = allIds; changes.allFlamesCollected = true;
+                setTimeout(() => triggerAllFlamesAnimation(), 300);
+                message = 'Ignis Omnia — all flames unlocked';
             } else if (command === '/demon') {
                 changes.demonMode = true; startDemonFlash(); message = 'Tenebris Invoco';
             } else if (command === '/gradient') {
@@ -1248,13 +1254,13 @@
                             const withElemental = [...newFlames, 'flame_elemental'];
                             const allSeven = FLAMES.every(f => withElemental.includes(f.id));
                             setTimeout(() => {
-                                updateState({ unlockedFlames: withElemental, showFlameModal: 'flame_elemental', allFlamesCollected: allSeven });
+                                updateState({ unlockedFlames: withElemental, allFlamesCollected: allSeven });
                                 if (allSeven) triggerAllFlamesAnimation();
                             }, 1500);
-                            updateState({ unlockedFlames: newFlames, showFlameModal: flame.id });
+                            updateState({ unlockedFlames: newFlames });
                         } else {
                             const allSeven = FLAMES.every(f => newFlames.includes(f.id));
-                            updateState({ unlockedFlames: newFlames, showFlameModal: flame.id, allFlamesCollected: allSeven });
+                            updateState({ unlockedFlames: newFlames, allFlamesCollected: allSeven });
                             if (allSeven) triggerAllFlamesAnimation();
                         }
                     }, 600);
@@ -1625,7 +1631,7 @@
             const prevValue = prevActiveId === 'admin-input' ? document.activeElement.value : '';
 
             root.innerHTML = `
-                <div style="display:flex;flex-direction:row;min-height:100vh;width:200vw;max-width:none;">
+                <div style="display:flex;flex-direction:row;min-height:100vh;width:500vw;max-width:none;">
                 <div class="min-h-screen flex flex-col items-center px-4 py-4 select-none pb-16 transition-colors duration-500" style="width:100vw;min-width:100vw;flex-shrink:0;box-sizing:border-box;">
 
                     ${state.showAdmin ? `
@@ -1651,6 +1657,7 @@
                                     { spell: 'Accio [id] [amt]', cmd: '/give', desc: 'Summon item by ID' },
                                     { spell: 'Finite Quaestum', cmd: '/quest', desc: 'Complete all quests' },
                                     { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
+                                    { spell: 'Ignis Omnia', cmd: '/flame', desc: 'Unlock all flames' },
                                     { spell: 'Rolum [role] [password]', cmd: '/role', desc: 'Set your role tag' },
                                     { spell: 'Chroma', cmd: '/gradient', desc: 'Toggle gradient tags' },
                                     { spell: 'Expelliarmus', cmd: '/disarm', desc: 'Lose all items' },
@@ -1829,20 +1836,6 @@
 
                     ${state.showSettings ? renderSettings() : ''}
 
-                    ${state.showFlameModal ? (() => {
-                        const flame = FLAMES.find(f => f.id === state.showFlameModal);
-                        return flame ? `<div class="fixed inset-0 z-[98] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                            <div class="border-4 max-w-md w-full p-8 flex flex-col items-center gap-4" style="background:#1a0a00;border-color:${flame.color};box-shadow:0 0 40px ${flame.color}66;">
-                                <p class="text-xs font-black uppercase tracking-widest" style="color:${flame.color};">Flame Discovered!</p>
-                                <img src="${flame.unlockedImg}" style="width:96px;height:96px;image-rendering:pixelated;filter:drop-shadow(0 0 16px ${flame.color});" />
-                                <p class="font-black text-xl text-white uppercase text-center">${flame.name}</p>
-                                <p class="text-xs text-slate-400 font-bold text-center">${state.unlockedFlames.length} / ${FLAMES.length} flames collected</p>
-                                ${flame.elemental ? `<p class="text-xs font-bold text-center" style="color:${flame.color};">All 6 flames combined — this is the ultimate power!</p>` : ''}
-                                <button onclick="updateState({showFlameModal:null})" class="mt-2 text-white font-black uppercase text-xs px-6 py-3 tracking-widest transition-colors" style="background:${flame.color};border:3px solid #1a0a00;">Claim!</button>
-                            </div>
-                        </div>` : '';
-                    })() : ''}
-
                     ${state.showFlamesPanel ? (() => {
                         return `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showFlamesPanel:false})">
                             <div class="pixel-card w-full max-h-[90vh] flex flex-col modal-content overflow-hidden" style="max-width:820px;background:#0d0500;border-color:#f97316;">
@@ -1856,11 +1849,10 @@
                                 <div class="overflow-y-auto flex-1 p-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     ${FLAMES.map(f => {
                                         const found = state.unlockedFlames.includes(f.id);
-                                        const locked = f.elemental && !FLAMES.filter(x=>!x.elemental).every(x=>state.unlockedFlames.includes(x.id));
-                                        return `<div class="flex flex-col items-center gap-2 p-4 border-4 ${found?'':'border-slate-700 opacity-60'}" style="${found?'border-color:'+f.color+';background:#1a0800;box-shadow:0 0 12px '+f.color+'44;':'background:#0a0500;'}">
-                                            <img src="${found?f.unlockedImg:f.lockedImg}" style="width:72px;height:72px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 8px '+f.color+');':'filter:grayscale(1) brightness(0.4);'}" />
-                                            <p class="font-black text-xs uppercase text-center ${found?'text-white':'text-slate-600'}">${found?f.name:'???'}</p>
-                                            <p class="text-[10px] font-bold text-center ${found?'text-orange-400':'text-slate-700'}">${found?'Collected':f.elemental&&locked?'Collect all 6 flames':f.hint}</p>
+                                        return `<div class="flex flex-col items-center gap-2 p-4 border-4" style="background:#0d0500;border-color:${found?f.color:'#1e293b'};${found?'box-shadow:0 0 12px '+f.color+'44;':''}">
+                                            <img src="${found?f.unlockedImg:f.lockedImg}" style="width:72px;height:72px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 8px '+f.color+');':''}" />
+                                            <p class="font-black text-xs uppercase text-center" style="color:${found?f.color:'#475569'};">${found?f.name:'???'}</p>
+                                            <p class="text-[10px] font-bold text-center" style="color:${found?'#fb923c':'#334155'};">${found?'Collected':'Not Found'}</p>
                                         </div>`;
                                     }).join('')}
                                 </div>
@@ -1939,7 +1931,10 @@
 
                 </div>
 
-                <!-- FLAME & CRYSTAL PANEL (scroll right to see) -->
+                <!-- spacer to make scroll hard -->
+                <div style="width:300vw;min-width:300vw;min-height:100vh;flex-shrink:0;"></div>
+
+                <!-- FLAME & CRYSTAL PANEL (scroll far right to see) -->
                 <div style="width:100vw;min-width:100vw;min-height:100vh;flex-shrink:0;position:relative;overflow-y:auto;background:url('https://i.pinimg.com/originals/43/d4/d7/43d4d7e5ba1cfa7959a1fab8d64f22ea.gif') center/cover no-repeat fixed;">
                     <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);pointer-events:none;z-index:0;"></div>
                     <div style="position:relative;z-index:1;padding:40px 24px 80px;max-width:900px;margin:0 auto;font-family:'Pixelify Sans',sans-serif;">
@@ -1952,23 +1947,13 @@
                         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;">
                             ${FLAMES.map(f => {
                                 const found = state.unlockedFlames.includes(f.id);
-                                const elemLocked = f.elemental && !FLAMES.filter(x=>!x.elemental).every(x=>state.unlockedFlames.includes(x.id));
-                                return `<div style="background:rgba(0,0,0,0.7);border:4px solid ${found?f.color:'#334155'};padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;${found?'box-shadow:0 0 20px '+f.color+'55;transition:all 0.2s;':'opacity:0.7;'}">
-                                    <img src="${found?f.unlockedImg:f.lockedImg}" style="width:96px;height:96px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 12px '+f.color+');':'filter:grayscale(1) brightness(0.3);'}" />
-                                    <p style="font-size:13px;font-weight:900;color:${found?f.color:'#64748b'};text-transform:uppercase;text-align:center;letter-spacing:1px;">${found?f.name:'??? Flame ???'}</p>
-                                    <p style="font-size:11px;font-weight:700;color:${found?'#fed7aa':'#475569'};text-align:center;line-height:1.5;">${found?(f.elemental?'The ultimate flame — all 6 flames combined into one.':'Obtained from a quest drop.'):(elemLocked?'Collect all 6 other flames to unlock.':f.hint)}</p>
+                                return `<div style="background:#0d0500;border:4px solid ${found?f.color:'#1e293b'};padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;${found?'box-shadow:0 0 20px '+f.color+'55;':''}">
+                                    <img src="${found?f.unlockedImg:f.lockedImg}" style="width:96px;height:96px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 12px '+f.color+');':''}" />
+                                    <p style="font-size:13px;font-weight:900;color:${found?f.color:'#475569'};text-transform:uppercase;text-align:center;letter-spacing:1px;">${found?f.name:'??? Flame ???'}</p>
                                     <div style="width:100%;height:3px;background:${found?f.color:'#1e293b'};"></div>
                                     <span style="font-size:10px;font-weight:900;color:${found?'#22c55e':'#ef4444'};text-transform:uppercase;letter-spacing:2px;">${found?'✓ Collected':'Not Found'}</span>
                                 </div>`;
                             }).join('')}
-                        </div>
-                        <div style="margin-top:40px;padding:24px;background:rgba(0,0,0,0.8);border:4px solid #f97316;">
-                            <h3 style="font-size:16px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;">How to Get Flames</h3>
-                            <div style="display:flex;flex-direction:column;gap:10px;">
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">🔥</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">Flame of Gold, Poison, Lightning, Cursed, Lightning II, Cursed II:</strong> Each has a 30% chance to drop when you complete any quest. Complete quests in the Quests menu and claim your rewards — you may get lucky!</p></div>
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">⚡</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">Elemental Flame:</strong> Automatically unlocks once you have collected all 6 other flames. It combines their power into one ultimate flame.</p></div>
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">✨</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">All 7 Flames:</strong> When all flames are collected, special energy bursts from the screen and grants a permanent <strong style="color:#f97316;">15x multiplier</strong> to all your gold earnings!</p></div>
-                            </div>
                         </div>
                     </div>
                 </div>
