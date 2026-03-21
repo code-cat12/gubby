@@ -316,7 +316,7 @@
         @keyframes demonRedFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
-<body class="bg-emerald-50" style="overflow-x:auto;">
+<body class="bg-emerald-50 overflow-x-hidden">
     <audio id="bg-music" loop style="display:none;">
         <source src="https://files.catbox.moe/ujfzdw.mp3" type="audio/mpeg">
     </audio>
@@ -439,9 +439,9 @@
             { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
             { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
             { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
-            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/66jcPMyp/image.png', description: 'A fluffy pancake form of Gubby.' },
-            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/66jcPMyp/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
-            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/66jcPMyp/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
+            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'A fluffy pancake form of Gubby.' },
+            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
+            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/Vry16g9z/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
         ];
 
         const WORLD_LORE = {
@@ -452,20 +452,29 @@
             paradise: { text: "An island suspended in perpetual golden hour. The water is warm, the air is sweet, and everything glitters. Nobody who arrives ever wants to ask how they got here." },
         };
 
-        const FLAMES = [
-            { id: 'flame_gold',       name: 'Flame of Gold',       lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/NGHkjmDm/3.png',        hint: '30% chance drop from any quest',          elemental: false, color: '#f59e0b' },
-            { id: 'flame_poison',     name: 'Flame of Poison',     lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/VdyBDHsK/4.png',        hint: '30% chance drop from any quest',          elemental: false, color: '#22c55e' },
-            { id: 'flame_lightning',  name: 'Flame of Lightning',  lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/jLVQZkqg/5.png',        hint: '30% chance drop from any quest',          elemental: false, color: '#eab308' },
-            { id: 'flame_cursed',     name: 'Flame of the Cursed', lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/dk6LMBzc/7.png',        hint: '30% chance drop from any quest',          elemental: false, color: '#a855f7' },
-            { id: 'flame_lightning2', name: 'Flame of Lightning II',lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/XpMcQDN2/10.png',      hint: '30% chance drop from any quest',          elemental: false, color: '#3b82f6' },
-            { id: 'flame_cursed2',    name: 'Flame of Cursed II',  lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/tYhdft7h/11.png',        hint: '30% chance drop from any quest',          elemental: false, color: '#dc2626' },
-            { id: 'flame_elemental',  name: 'Elemental Flame',     lockedImg: 'https://i.postimg.cc/ppDQ7Yp2/1.png', unlockedImg: 'https://i.postimg.cc/2V4dJF3Q/12.png',        hint: 'Collect all 6 other flames to unlock',    elemental: true,  color: '#f97316' },
+        const LORE_FRAGMENTS = [
+            { id: 'lore_1', text: "Fragment I — 'Gubby did not arrive. Gubby was always here. We simply started noticing.'", hint: "12% chance drop from any normal quest", order: 1 },
+            { id: 'lore_2', text: "Fragment II — 'The clicks do not generate gold. The clicks generate something older than gold. The gold is just what we can see.'", hint: "12% chance drop from any normal quest", order: 2 },
+            { id: 'lore_3', text: "Fragment III — 'Every world has a scar. Plains, Forest, Glaciers, Castle. Each one left by the same event. Each one shaped like a small round figure.'", hint: "12% chance drop from any normal quest", order: 3 },
+            { id: 'lore_4', text: "Fragment IV — 'The demon does not corrupt Gubby. The demon IS Gubby. The friendly face is the mask. This is the face underneath.'", hint: "Complete the Blood Tribute demon quest", order: 4 },
+            { id: 'lore_5', text: "Fragment V — 'When the corruption meter fills — we do not know what happens. No record exists of anyone reaching it. No record exists of anyone trying more than once.'", hint: "Complete the Corrupted Ascension demon quest", order: 5 },
+            { id: 'lore_6', text: "Fragment VI — 'You have all five pieces. You understand now. Gubby is not a creature. Gubby is the act of clicking itself — ancient, purposeless, eternal. You have been feeding it since the beginning. You will never stop. Neither will it.'", hint: "Collect all 5 other fragments", order: 6, secret: true },
+        ];
+
+
+        const JOURNAL_ENTRIES = [
+            { id: 'j1', title: 'Day One', date: 'The Beginning', text: "I started clicking today. I don't know why. There's something about Gubby — those eyes — that makes me want to keep going. I earned my first gold. It felt like more than gold." },
+            { id: 'j2', title: 'The Market', date: 'Some Time Later', text: "Discovered I can sell my clicks. Turns out there's a whole marketplace. Who buys clicks? What do they do with them? I asked Gubby. It just stared. I kept clicking." },
+            { id: 'j3', title: 'First Ascension', date: 'After the Reset', text: "I ascended for the first time. Everything reset. My clicks, my gold — gone. But I feel stronger somehow. Gubby looks... pleased? Its expression hasn't changed. Maybe it never changes." },
+            { id: 'j4', title: 'The Worlds', date: 'Far From Home', text: "I've been traveling. Plains, forests, glaciers, castles. Gubby comes with me everywhere. I've started to notice something — each place has a scar in the ground. Circular. About Gubby-sized." },
+            { id: 'j5', title: 'The Other Face', date: 'A Dark Night', text: "I found the demon mode. I won't write how. Gubby looks different now — but the clicking feels the same. Maybe it always felt this way and I just couldn't see it. I'm not sure I want to stop." },
+            { id: 'j6', title: 'The Last Entry', date: 'No Date', text: "I understand now. Gubby isn't the one clicking. I am. And I can't stop. The journal ends here — not because I have nothing left to write, but because my hands won't leave the screen." },
         ];
 
         const DEMON_QUESTS = [
-            { id: 'demon_clicks_1', name: 'Blood Tribute',       description: 'Click 10,000 times in demon mode',  type: 'clicks',  target: 10000,   reward: 13999999,   demonOnly: true },
+            { id: 'demon_clicks_1', name: 'Blood Tribute',       description: 'Click 10,000 times in demon mode',  type: 'clicks',  target: 10000,   reward: 13999999,   demonOnly: true, loreReward: 'lore_4' },
             { id: 'demon_gold_1',   name: 'Sin Tax',             description: 'Earn 1,000,000 gold in demon mode', type: 'gold',    target: 1000000, reward: 70000000,   demonOnly: true },
-            { id: 'demon_prestige', name: 'Corrupted Ascension', description: 'Prestige 3 times with demon mode',  type: 'prestige',target: 3,       reward: 1399999999, demonOnly: true },
+            { id: 'demon_prestige', name: 'Corrupted Ascension', description: 'Prestige 3 times with demon mode',  type: 'prestige',target: 3,       reward: 1399999999, demonOnly: true, loreReward: 'lore_5' },
         ];
 
         const QUESTS = [
@@ -494,8 +503,8 @@
             storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
             showSettings: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
-            visitedWorlds: ['plains'], showWorldLore: null,
-            unlockedFlames: [], showFlameModal: null, showFlamesPanel: false, allFlamesCollected: false,
+            unlockedLore: [], visitedWorlds: ['plains'], showLoreModal: null,
+            showFragmentsModal: false, showJournalModal: false, showWorldLore: null,
             questLastRefresh: Date.now(),
             bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false,
             crashPhase: false, crashClickCount: 0,
@@ -541,9 +550,8 @@
                     storageSkinTab_star: state.storageSkinTab_star || 1,
                     storageSkinTab_demon: state.storageSkinTab_demon || 1,
                     storageSkinTab_pancake: state.storageSkinTab_pancake || 1,
-                    // Flames & worlds
-                    unlockedFlames: state.unlockedFlames,
-                    allFlamesCollected: state.allFlamesCollected,
+                    // Lore & worlds
+                    unlockedLore: state.unlockedLore,
                     visitedWorlds: state.visitedWorlds,
                     // Settings
                     largeText: state.largeText,
@@ -708,6 +716,8 @@
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
+                'fragmentum omnia': '/fragments all',
+                'fragmentum': '/fragments',
                 'avada kedavra': '/crash',
                 'rolum': '/role',
                 'expelliarmus': '/disarm',
@@ -783,6 +793,9 @@
                 } else message = "No active quests";
             } else if (command === '/demon') {
                 changes.demonMode = true; startDemonFlash(); message = 'Tenebris Invoco';
+            } else if (command === '/fragments') {
+                if (parts[1] === 'all') { changes.unlockedLore = LORE_FRAGMENTS.map(f => f.id); message = `Fragmentum Omnia`; }
+                else { const n = parseInt(parts[1]); if (!isNaN(n) && n >= 1 && n <= LORE_FRAGMENTS.length) { const frag = LORE_FRAGMENTS[n-1]; if (!state.unlockedLore.includes(frag.id)) { const nl = [...state.unlockedLore, frag.id]; changes.unlockedLore = nl; changes.showLoreModal = frag.id; message = `Fragmentum ${n}`; } else message = `Fragmentum ${n} — already known`; } else message = `Fragmentum [1-6]`; }
             } else if (command === '/gradient') {
                 const on = !state.gradientTags;
                 changes.gradientTags = on;
@@ -992,7 +1005,6 @@
                 p.textContent = `+${currentPower}`;
                 document.body.appendChild(p);
                 setTimeout(() => p.remove(), 600);
-                spawnGemParticles(clientX, clientY);
             }
 
 
@@ -1045,48 +1057,11 @@
             if (state.clicks > 0) {
                 const world = DESTINATIONS.find(d => d.id === state.theme);
                 const worldMult = world ? world.mult : 1;
-                const flameMult = state.allFlamesCollected ? 15 : 1;
-                const earned = (state.clicks * state.marketMultiplier * worldMult * flameMult) / CONVERSION_RATES[state.theme];
+                const earned = (state.clicks * state.marketMultiplier * worldMult) / CONVERSION_RATES[state.theme];
                 state.totalSells = (state.totalSells || 0) + 1;
-                spawnGemParticles(window.innerWidth / 2, window.innerHeight / 2);
-                updateState({ gold: state.gold + earned, clicks: 0, notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(earned, 2)} ${CURRENCIES[state.theme].name}s!${flameMult>1?' (15x Flame Bonus!)':''}`, type: "success" } });
+                updateState({ gold: state.gold + earned, clicks: 0, notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(earned, 2)} ${CURRENCIES[state.theme].name}s!`, type: "success" } });
                 SFX.sell(); checkQuestProgress();
             }
-        }
-
-        function triggerAllFlamesAnimation() {
-            const imgs = [
-                'https://i.postimg.cc/3wxzsngS/row-1-column-1.png',
-                'https://i.postimg.cc/nLhNy0v3/row-1-column-2.png',
-                'https://i.postimg.cc/43xjDBz8/row-1-column-3.png',
-                'https://i.postimg.cc/nLSNpBkq/row-2-column-1.png',
-                'https://i.postimg.cc/yNp2scPy/row-2-column-2.png',
-                'https://i.postimg.cc/HLvFdX2t/row-2-column-3.png',
-            ];
-            const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-            imgs.forEach((src, i) => {
-                setTimeout(() => {
-                    const img = document.createElement('img');
-                    img.src = src;
-                    const size = 80 + Math.random() * 40;
-                    const angle = (Math.PI * 2 * i / imgs.length) + (Math.random() - 0.5) * 0.5;
-                    const dist = 120 + Math.random() * 160;
-                    const tx = Math.cos(angle) * dist, ty = Math.sin(angle) * dist - 80;
-                    img.style.cssText = `position:fixed;left:${cx-size/2}px;top:${cy-size/2}px;width:${size}px;height:${size}px;pointer-events:none;z-index:9999;image-rendering:pixelated;`;
-                    document.body.appendChild(img);
-                    const start = performance.now(), dur = 1200 + Math.random() * 400;
-                    (function animImg(el, tx, ty, dur, start) {
-                        function frame(now) {
-                            const t = Math.min(1, (now - start) / dur);
-                            const ease = 1 - Math.pow(1 - t, 3);
-                            el.style.transform = `translate(${tx*ease}px,${ty*ease}px) scale(${1+ease*0.5}) rotate(${ease*360}deg)`;
-                            el.style.opacity = t < 0.8 ? '1' : String(1 - (t - 0.8) / 0.2);
-                            if (t < 1) requestAnimationFrame(frame); else el.remove();
-                        }
-                        requestAnimationFrame(frame);
-                    })(img, tx, ty, dur, start);
-                }, i * 150);
-            });
         }
 
         function travelTo(destId) {
@@ -1236,27 +1211,27 @@
             updateState(updates);
             SFX.questClaim();
 
-            // 30% chance to drop a flame on quest completion
-            if (Math.random() < 0.30) {
-                const nonElemental = FLAMES.filter(f => !f.elemental && !state.unlockedFlames.includes(f.id));
-                if (nonElemental.length > 0) {
-                    const flame = nonElemental[Math.floor(Math.random() * nonElemental.length)];
+            const loreReward = quest.loreReward;
+            if (loreReward && !state.unlockedLore.includes(loreReward)) {
+                setTimeout(() => {
+                    const newLore = [...state.unlockedLore, loreReward];
+                    const baseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'];
+                    if (baseFive.every(id => newLore.includes(id)) && !newLore.includes('lore_6')) {
+                        setTimeout(() => updateState({ unlockedLore: [...newLore, 'lore_6'], showLoreModal: 'lore_6' }), 3000);
+                    }
+                    updateState({ unlockedLore: newLore, showLoreModal: loreReward });
+                }, 600);
+            } else if (Math.random() < 0.12 && !quest.demonOnly) {
+                const unowned = LORE_FRAGMENTS.filter(f => !state.unlockedLore.includes(f.id) && !f.secret && f.id !== 'lore_4' && f.id !== 'lore_5');
+                if (unowned.length > 0) {
+                    const frag = unowned[Math.floor(Math.random() * unowned.length)];
                     setTimeout(() => {
-                        const newFlames = [...state.unlockedFlames, flame.id];
-                        const allSix = FLAMES.filter(f => !f.elemental).every(f => newFlames.includes(f.id));
-                        if (allSix && !newFlames.includes('flame_elemental')) {
-                            const withElemental = [...newFlames, 'flame_elemental'];
-                            const allSeven = FLAMES.every(f => withElemental.includes(f.id));
-                            setTimeout(() => {
-                                updateState({ unlockedFlames: withElemental, showFlameModal: 'flame_elemental', allFlamesCollected: allSeven });
-                                if (allSeven) triggerAllFlamesAnimation();
-                            }, 1500);
-                            updateState({ unlockedFlames: newFlames, showFlameModal: flame.id });
-                        } else {
-                            const allSeven = FLAMES.every(f => newFlames.includes(f.id));
-                            updateState({ unlockedFlames: newFlames, showFlameModal: flame.id, allFlamesCollected: allSeven });
-                            if (allSeven) triggerAllFlamesAnimation();
+                        const newLore = [...state.unlockedLore, frag.id];
+                        const baseFive = ['lore_1','lore_2','lore_3','lore_4','lore_5'];
+                        if (baseFive.every(id => newLore.includes(id)) && !newLore.includes('lore_6')) {
+                            setTimeout(() => updateState({ unlockedLore: [...newLore, 'lore_6'], showLoreModal: 'lore_6' }), 3000);
                         }
+                        updateState({ unlockedLore: newLore, showLoreModal: frag.id });
                     }, 600);
                 }
             }
@@ -1308,40 +1283,6 @@
         setInterval(() => { createFloatingStars(); }, 8000);
 
 
-
-        const GEM_COLORS = {
-            quartz:   { bg: '#f1f5f9', border: '#94a3b8' },
-            opal:     { bg: '#fdf4ff', border: '#c084fc' },
-            sapphire: { bg: '#eff6ff', border: '#3b82f6' },
-            ruby:     { bg: '#fff1f2', border: '#f43f5e' },
-            topaz:    { bg: '#fffbeb', border: '#f59e0b' },
-            emerald:  { bg: '#f0fdf4', border: '#22c55e' },
-        };
-        function spawnGemParticles(cx, cy) {
-            const gemId = (state.marketCategory && GEM_COLORS[state.marketCategory]) ? state.marketCategory : 'quartz';
-            const gem = GEM_COLORS[gemId];
-            const count = 5;
-            for (let i = 0; i < count; i++) {
-                const el = document.createElement('div');
-                const size = 14 + Math.random() * 10;
-                el.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;pointer-events:none;z-index:9998;background:${gem.bg};border:3px solid ${gem.border};transform:rotate(45deg);`;
-                document.body.appendChild(el);
-                const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5);
-                const dist = 60 + Math.random() * 80;
-                const tx = Math.cos(angle) * dist, ty = Math.sin(angle) * dist - 50;
-                const start = performance.now(), dur = 600 + Math.random() * 200;
-                (function animGem(g, tx, ty, dur, start) {
-                    function frame(now) {
-                        const t = Math.min(1, (now - start) / dur);
-                        const ease = 1 - Math.pow(1 - t, 2);
-                        g.style.transform = `translate(${tx*ease}px,${ty*ease}px) rotate(${45+ease*360}deg) scale(${1-ease*0.4})`;
-                        g.style.opacity = t < 0.7 ? '1' : String(1-(t-0.7)/0.3);
-                        if (t < 1) requestAnimationFrame(frame); else g.remove();
-                    }
-                    requestAnimationFrame(frame);
-                })(el, tx, ty, dur, start);
-            }
-        }
 
         function createFloatingStars() {
             if (state.floatingStars === false) return;
@@ -1431,25 +1372,15 @@
         }
 
         // ── MARKET / STORAGE RENDER ──────────────────────────────
-        const GEM_TABS = [
-            { id: 'quartz',  label: 'Milky Quartz', category: 'small',  color: '#e2e8f0', activeColor: '#94a3b8', textColor: '#1e293b' },
-            { id: 'opal',    label: 'Opal',         category: 'medium', color: '#f5d0fe', activeColor: '#a855f7', textColor: '#3b0764' },
-            { id: 'sapphire',label: 'Sapphire',     category: 'large',  color: '#bfdbfe', activeColor: '#3b82f6', textColor: '#1e3a5f' },
-            { id: 'ruby',    label: 'Ruby',         category: 'op',     color: '#fecaca', activeColor: '#ef4444', textColor: '#450a0a' },
-            { id: 'topaz',   label: 'Topaz',        category: 'skin',   color: '#fde68a', activeColor: '#f59e0b', textColor: '#451a03' },
-            { id: 'emerald', label: 'Emerald',      category: 'all',    color: '#bbf7d0', activeColor: '#22c55e', textColor: '#052e16' },
-        ];
         function renderMarketContent() {
-            const activeGem = GEM_TABS.find(g => g.id === state.marketCategory) || GEM_TABS[0];
+            const showingSpecialTab = state.marketCategory === 'special';
             const tabBar = `
-                <div class="flex flex-wrap gap-1.5 mb-5">
-                    ${GEM_TABS.map(g => {
-                        const isActive = (g.id === state.marketCategory) || (!state.marketCategory && g.id === 'quartz');
-                        return `<button onclick="updateState({marketCategory:'${g.id}'})" class="flex-1 py-2.5 font-black uppercase text-xs tracking-widest border-4 transition-colors" style="min-width:80px;background:${isActive?g.activeColor:g.color};border-color:${isActive?g.activeColor:'#cbd5e1'};color:${isActive?'#fff':g.textColor};">${g.label}</button>`;
-                    }).join('')}
+                <div class="flex gap-2 mb-5">
+                    <button onclick="updateState({marketCategory:null})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Potions</button>
+                    <button onclick="updateState({marketCategory:'special'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Skins</button>
                 </div>`;
 
-            if (activeGem.id === 'topaz') {
+            if (showingSpecialTab) {
                 return tabBar
                     + '<div class="flex flex-col gap-0">'
                     + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-3">Skins <span class="text-slate-400 font-bold normal-case text-xs">· Cosmetic · Equip in Storage</span></p>'
@@ -1506,26 +1437,18 @@
                     + '</div>';
             }
 
-            // Emerald tab: show all potions
-            if (activeGem.id === 'emerald') {
-                const allPotions = SHOP_ITEMS.filter(i => i.category !== 'skin');
-                return tabBar + '<div class="flex flex-col gap-3"><p class="font-black text-xs uppercase text-slate-500 tracking-wider mb-1">All Potions</p>'
-                    + allPotions.map(item => {
-                        const price = getItemPrice(item), canAfford = state.gold >= price;
-                        return `<div class="flex items-center justify-between p-4 border-4 bg-white ${canAfford?'border-slate-300':'border-slate-200 opacity-50'}">
-                            ${item.icon ? `<img src="${item.icon}" style="width:44px;height:44px;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />` : ''}
-                            <div class="text-left flex-1 mr-3">
-                                <p class="font-black text-base uppercase text-slate-900">${item.name}</p>
-                                <p class="text-xs font-bold text-slate-400 mt-0.5">${item.power>1?item.power+'x power · '+item.duration+'s':item.description||'Special'}</p>
-                                <p class="text-xs font-bold text-indigo-600 mt-0.5">${formatLargeNumber(price,0)} ${CURRENCIES[state.theme].name}s</p>
-                            </div>
-                            <button onclick="event.stopPropagation();openItemPopup('${item.id}')" class="pixel-button shrink-0 ${canAfford?'bg-emerald-600 border-emerald-800 text-white':'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">BUY</button>
-                        </div>`;
-                    }).join('') + '</div>';
+            if (!state.marketCategory) {
+                const cats = [
+                    { id:'small',  label:'Weak Potions',  color:'border-blue-500 text-blue-600' },
+                    { id:'medium', label:'Ordinary Potions', color:'border-purple-500 text-purple-600' },
+                    { id:'large',  label:'Strong Potions',  color:'border-orange-500 text-orange-600' },
+                    { id:'op',     label:'Powerful Potions',     color:'border-red-500 text-red-600' },
+                ];
+                return tabBar + '<div class="flex flex-col gap-3">' + cats.map(c => `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 p-4 flex justify-center items-center market-item ${c.color}"><span class="font-black text-base uppercase tracking-widest">${c.label}</span></button>`).join('') + '</div>';
             }
 
-            const items = SHOP_ITEMS.filter(i => i.category === activeGem.category);
-            return tabBar + '<div class="flex flex-col gap-3">'
+            const items = SHOP_ITEMS.filter(i => i.category === state.marketCategory);
+            return tabBar + '<div class="flex flex-col gap-3"><button onclick="updateState({marketCategory:null})" class="w-full text-left text-xs font-black uppercase text-slate-500 mb-2 flex items-center gap-2 hover:text-slate-700 tracking-wider">← Back</button>'
                 + items.map(item => {
                     const price = getItemPrice(item), canAfford = state.gold >= price;
                     return `<div class="flex items-center justify-between p-4 border-4 bg-white ${canAfford?'border-slate-300':'border-slate-200 opacity-50'}">
@@ -1615,8 +1538,8 @@
             const totalItems = Object.values(state.inventory).reduce((s, c) => s + c, 0);
 
             // Theme
-            if (state.discoEventTimer > 0) { document.body.className = "disco-bg"; document.body.style.setProperty('--bg-image','none'); }
-            else { document.body.className = "bg-emerald-50"; document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4'; document.body.style.setProperty('--bg-image', currentWorld?.bgImage ? `url('${currentWorld.bgImage}')` : 'none'); }
+            if (state.discoEventTimer > 0) { document.body.className = "disco-bg overflow-x-hidden"; document.body.style.setProperty('--bg-image','none'); }
+            else { document.body.className = "bg-emerald-50 overflow-x-hidden"; document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4'; document.body.style.setProperty('--bg-image', currentWorld?.bgImage ? `url('${currentWorld.bgImage}')` : 'none'); }
             document.body.classList.toggle('dark-mode', !!state.darkMode);
             document.body.classList.toggle('large-text', !!state.largeText);
             document.body.classList.toggle('reduced-motion', !!state.reducedMotion);
@@ -1625,8 +1548,7 @@
             const prevValue = prevActiveId === 'admin-input' ? document.activeElement.value : '';
 
             root.innerHTML = `
-                <div style="display:flex;flex-direction:row;min-height:100vh;width:200vw;max-width:none;">
-                <div class="min-h-screen flex flex-col items-center px-4 py-4 select-none pb-16 transition-colors duration-500" style="width:100vw;min-width:100vw;flex-shrink:0;box-sizing:border-box;">
+                <div class="min-h-screen flex flex-col items-center px-4 py-4 select-none overflow-x-hidden pb-16 transition-colors duration-500">
 
                     ${state.showAdmin ? `
                     <div id="admin-console" class="fixed bottom-24 left-4 right-4 z-[100] max-w-md mx-auto" style="background:#1a0a2e;border:4px solid #6d28d9;box-shadow:0 0 24px rgba(109,40,217,0.5);">
@@ -1651,6 +1573,8 @@
                                     { spell: 'Accio [id] [amt]', cmd: '/give', desc: 'Summon item by ID' },
                                     { spell: 'Finite Quaestum', cmd: '/quest', desc: 'Complete all quests' },
                                     { spell: 'Tenebris Invoco', cmd: '/demon', desc: 'Activate demon mode' },
+                                    { spell: 'Fragmentum [1-6]', cmd: '/fragments', desc: 'Reveal a fragment' },
+                                    { spell: 'Fragmentum Omnia', cmd: '/fragments all', desc: 'Reveal all fragments' },
                                     { spell: 'Rolum [role] [password]', cmd: '/role', desc: 'Set your role tag' },
                                     { spell: 'Chroma', cmd: '/gradient', desc: 'Toggle gradient tags' },
                                     { spell: 'Expelliarmus', cmd: '/disarm', desc: 'Lose all items' },
@@ -1829,40 +1753,75 @@
 
                     ${state.showSettings ? renderSettings() : ''}
 
-                    ${state.showFlameModal ? (() => {
-                        const flame = FLAMES.find(f => f.id === state.showFlameModal);
-                        return flame ? `<div class="fixed inset-0 z-[98] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                            <div class="border-4 max-w-md w-full p-8 flex flex-col items-center gap-4" style="background:#1a0a00;border-color:${flame.color};box-shadow:0 0 40px ${flame.color}66;">
-                                <p class="text-xs font-black uppercase tracking-widest" style="color:${flame.color};">Flame Discovered!</p>
-                                <img src="${flame.unlockedImg}" style="width:96px;height:96px;image-rendering:pixelated;filter:drop-shadow(0 0 16px ${flame.color});" />
-                                <p class="font-black text-xl text-white uppercase text-center">${flame.name}</p>
-                                <p class="text-xs text-slate-400 font-bold text-center">${state.unlockedFlames.length} / ${FLAMES.length} flames collected</p>
-                                ${flame.elemental ? `<p class="text-xs font-bold text-center" style="color:${flame.color};">All 6 flames combined — this is the ultimate power!</p>` : ''}
-                                <button onclick="updateState({showFlameModal:null})" class="mt-2 text-white font-black uppercase text-xs px-6 py-3 tracking-widest transition-colors" style="background:${flame.color};border:3px solid #1a0a00;">Claim!</button>
+                    ${state.showLoreModal ? (() => {
+                        const frag = LORE_FRAGMENTS.find(f => f.id === state.showLoreModal);
+                        return frag ? `<div class="fixed inset-0 z-[98] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <div class="bg-slate-900 border-4 border-amber-600 max-w-md w-full p-8 flex flex-col gap-4" style="box-shadow:0 0 40px rgba(180,130,0,0.4);">
+                                <p class="text-xs font-black text-amber-500 uppercase tracking-widest">Lore Fragment Discovered</p>
+                                <p class="text-amber-200 font-bold text-sm leading-relaxed italic">${frag.text}</p>
+                                <p class="text-xs text-slate-500 font-bold">${state.unlockedLore.length} / ${LORE_FRAGMENTS.length} fragments found</p>
+                                <button onclick="updateState({showLoreModal:null})" class="mt-2 bg-amber-600 text-white font-black uppercase text-xs px-6 py-3 tracking-widest hover:bg-amber-500 transition-colors">Close</button>
                             </div>
                         </div>` : '';
                     })() : ''}
 
-                    ${state.showFlamesPanel ? (() => {
-                        return `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showFlamesPanel:false})">
-                            <div class="pixel-card w-full max-h-[90vh] flex flex-col modal-content overflow-hidden" style="max-width:820px;background:#0d0500;border-color:#f97316;">
-                                <div class="flex justify-between items-center px-8 pt-7 pb-5 border-b-2 border-orange-900 flex-shrink-0">
+
+
+                    ${(state.showFragmentsModal || state.showJournalModal) ? (() => {
+                        const allSix = LORE_FRAGMENTS.every(f => state.unlockedLore.includes(f.id));
+                        const activeTab = state.showJournalModal ? 'journal' : 'fragments';
+                        return `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showFragmentsModal:false,showJournalModal:false})">
+                            <div class="bg-white pixel-card w-full max-h-[90vh] flex flex-col modal-content" style="max-width:820px;border-width:2px;margin:8px;">
+                                <!-- Header -->
+                                <div class="flex justify-between items-center px-8 pt-7 pb-5 border-b-2 border-slate-200 flex-shrink-0">
                                     <div>
-                                        <h4 class="font-black text-2xl uppercase text-orange-400">Flames</h4>
-                                        <p class="text-xs font-bold text-orange-700 uppercase tracking-widest mt-1">${state.unlockedFlames.length} / ${FLAMES.length} collected${state.allFlamesCollected?' · 15x Multiplier Active!':''}</p>
+                                        <h4 class="font-black text-2xl uppercase text-slate-900">${activeTab === 'journal' ? "Gubby's Journal" : 'Lore Fragments'}</h4>
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">${activeTab === 'fragments' ? state.unlockedLore.length + ' / ' + LORE_FRAGMENTS.length + ' discovered' : 'Personal notes. Found near the clicking station.'}</p>
                                     </div>
-                                    <button onclick="updateState({showFlamesPanel:false})" class="text-orange-700 hover:text-orange-400 text-3xl font-black">✕</button>
+                                    <button onclick="updateState({showFragmentsModal:false,showJournalModal:false})" class="text-slate-500 hover:text-slate-900 text-3xl font-black">✕</button>
                                 </div>
-                                <div class="overflow-y-auto flex-1 p-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    ${FLAMES.map(f => {
-                                        const found = state.unlockedFlames.includes(f.id);
-                                        const locked = f.elemental && !FLAMES.filter(x=>!x.elemental).every(x=>state.unlockedFlames.includes(x.id));
-                                        return `<div class="flex flex-col items-center gap-2 p-4 border-4 ${found?'':'border-slate-700 opacity-60'}" style="${found?'border-color:'+f.color+';background:#1a0800;box-shadow:0 0 12px '+f.color+'44;':'background:#0a0500;'}">
-                                            <img src="${found?f.unlockedImg:f.lockedImg}" style="width:72px;height:72px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 8px '+f.color+');':'filter:grayscale(1) brightness(0.4);'}" />
-                                            <p class="font-black text-xs uppercase text-center ${found?'text-white':'text-slate-600'}">${found?f.name:'???'}</p>
-                                            <p class="text-[10px] font-bold text-center ${found?'text-orange-400':'text-slate-700'}">${found?'Collected':f.elemental&&locked?'Collect all 6 flames':f.hint}</p>
-                                        </div>`;
-                                    }).join('')}
+                                <!-- Tabs -->
+                                <div class="flex flex-shrink-0 px-6 pt-4 gap-2 bg-white">
+                                    <button onclick="updateState({showFragmentsModal:true,showJournalModal:false})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeTab==='fragments'?'bg-indigo-600 border-indigo-700 border-b-0 text-white':'bg-white border-slate-200 border-b-slate-300 text-slate-500 hover:bg-slate-50'}">Fragments</button>
+                                    <button onclick="${allSix ? 'updateState({showFragmentsModal:false,showJournalModal:true})' : ''}" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeTab==='journal'?'bg-indigo-600 border-indigo-700 border-b-0 text-white':allSix?'bg-white border-slate-200 border-b-slate-300 text-slate-500 hover:bg-slate-50':'bg-slate-50 border-slate-200 border-b-slate-300 text-slate-300 cursor-not-allowed'}">Journal</button>
+                                </div>
+                                <!-- Content -->
+                                <div class="overflow-y-auto flex-1 px-8 py-6 flex flex-col gap-4" style="${activeTab==='journal'?'background:linear-gradient(#fffdf5,#fff9e6);':''}">
+                                    ${activeTab === 'fragments' ? `
+                                        ${LORE_FRAGMENTS.filter(f=>!f.secret).map(f => {
+                                            const found = state.unlockedLore.includes(f.id);
+                                            return `<div class="border-4 ${found?'border-amber-400 bg-amber-50':'border-slate-200 bg-slate-50'} p-4">
+                                                <div class="flex justify-between items-start mb-2 gap-4">
+                                                    <p class="text-xs font-black uppercase tracking-widest flex-shrink-0 ${found?'text-amber-600':'text-slate-400'}">${found?'Discovered':'Undiscovered'}</p>
+                                                    <span class="text-xs font-bold text-right ${found?'text-slate-400':'text-slate-300'} italic">${f.hint}</span>
+                                                </div>
+                                                <p class="font-bold text-sm leading-relaxed ${found?'text-slate-800 italic':'text-slate-300'}">${found?f.text:'??? ??? ??? ??? ???'}</p>
+                                            </div>`;
+                                        }).join('')}
+                                        ${(() => {
+                                            const f6 = LORE_FRAGMENTS.find(f=>f.secret);
+                                            if (!f6) return '';
+                                            const found = state.unlockedLore.includes(f6.id);
+                                            return `<div class="border-4 ${found?'border-violet-500 bg-violet-50':'border-slate-300 bg-slate-100'} p-4">
+                                                <div class="flex justify-between items-start mb-2 gap-4">
+                                                    <p class="text-xs font-black uppercase tracking-widest flex-shrink-0 ${found?'text-violet-600':'text-slate-400'}">${found?'Secret Fragment':'??? Secret Fragment'}</p>
+                                                    <span class="text-xs font-bold text-right ${found?'text-slate-400':'text-slate-300'} italic">${found?f6.hint:'Unknown'}</span>
+                                                </div>
+                                                <p class="font-bold text-sm leading-relaxed ${found?'text-violet-900 italic':'text-slate-300'}">${found?f6.text:'??? ??? ??? ??? ???'}</p>
+                                            </div>`;
+                                        })()}
+                                    ` : `
+                                        ${JOURNAL_ENTRIES.map((entry, i) => `
+                                            <div class="border-l-4 border-amber-400 pl-5">
+                                                <div class="flex items-baseline gap-3 mb-2">
+                                                    <p class="font-black text-base uppercase text-slate-900">${entry.title}</p>
+                                                    <span class="text-xs font-bold text-amber-500 italic">${entry.date}</span>
+                                                </div>
+                                                <p class="text-sm font-bold leading-relaxed text-slate-700 italic">"${entry.text}"</p>
+                                            </div>
+                                            ${i < JOURNAL_ENTRIES.length-1 ? '<div class="border-t-2 border-dashed border-amber-100"></div>' : ''}
+                                        `).join('')}
+                                    `}
                                 </div>
                             </div>
                         </div>`;
@@ -1928,50 +1887,15 @@
                             <span class="text-xs font-bold text-slate-500">${state.completedQuests} Completed</span>
                             ${state.activeQuests.some(q=>q.completed) ? `<span class="absolute -top-2 -right-2 bg-emerald-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow:3px 3px 0 rgba(0,0,0,0.3);"><i data-lucide="check" class="w-6 h-6"></i></span>` : state.activeQuests.length > 0 ? `<span class="absolute -top-2 -right-2 bg-amber-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow:3px 3px 0 rgba(0,0,0,0.3);">${state.activeQuests.length}</span>` : ''}
                         </button>
-                        <button onclick="updateState({showFlamesPanel:true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative" style="${state.allFlamesCollected?'border-color:#f97316;box-shadow:4px 4px 0 rgba(249,115,22,0.4);':''}">
-                            <i data-lucide="flame" class="w-12 h-12 ${state.allFlamesCollected?'text-orange-500':'text-orange-600'}"></i>
-                            <span class="font-black text-lg uppercase text-slate-900">Flames</span>
-                            <span class="text-xs font-bold text-slate-500">${state.unlockedFlames.length} / ${FLAMES.length}${state.allFlamesCollected ? ' · 15x Active!' : ''}</span>
+                        <button onclick="updateState({showFragmentsModal:true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative">
+                            <i data-lucide="book-marked" class="w-12 h-12 text-violet-600"></i>
+                            <span class="font-black text-lg uppercase text-slate-900">Fragments</span>
+                            <span class="text-xs font-bold text-slate-500">${state.unlockedLore.length} / ${LORE_FRAGMENTS.length}${state.unlockedLore.length === LORE_FRAGMENTS.length ? ' · Journal Unlocked' : ''}</span>
                         </button>
                     </div>
 
                     <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;" >v0.53 — Latest</p>
 
-                </div>
-
-                <!-- FLAME & CRYSTAL PANEL (scroll right to see) -->
-                <div style="width:100vw;min-width:100vw;min-height:100vh;flex-shrink:0;position:relative;overflow-y:auto;background:url('https://i.pinimg.com/originals/43/d4/d7/43d4d7e5ba1cfa7959a1fab8d64f22ea.gif') center/cover no-repeat fixed;">
-                    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);pointer-events:none;z-index:0;"></div>
-                    <div style="position:relative;z-index:1;padding:40px 24px 80px;max-width:900px;margin:0 auto;font-family:'Pixelify Sans',sans-serif;">
-                        <div style="text-align:center;margin-bottom:32px;">
-                            <p style="font-size:11px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:4px;margin-bottom:8px;">← Scroll right to explore →</p>
-                            <h2 style="font-size:42px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:4px;text-shadow:0 0 24px #f97316,0 0 48px #f9731688;margin-bottom:8px;">Flame & Crystal</h2>
-                            <p style="font-size:13px;font-weight:700;color:#fed7aa;letter-spacing:2px;">Collect all 7 flames to ignite the Elemental Flame</p>
-                            ${state.allFlamesCollected ? `<div style="margin-top:12px;padding:10px 24px;background:rgba(249,115,22,0.2);border:3px solid #f97316;display:inline-block;"><p style="font-size:14px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:2px;">🔥 15x Multiplier Active! 🔥</p></div>` : ''}
-                        </div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;">
-                            ${FLAMES.map(f => {
-                                const found = state.unlockedFlames.includes(f.id);
-                                const elemLocked = f.elemental && !FLAMES.filter(x=>!x.elemental).every(x=>state.unlockedFlames.includes(x.id));
-                                return `<div style="background:rgba(0,0,0,0.7);border:4px solid ${found?f.color:'#334155'};padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;${found?'box-shadow:0 0 20px '+f.color+'55;transition:all 0.2s;':'opacity:0.7;'}">
-                                    <img src="${found?f.unlockedImg:f.lockedImg}" style="width:96px;height:96px;image-rendering:pixelated;${found?'filter:drop-shadow(0 0 12px '+f.color+');':'filter:grayscale(1) brightness(0.3);'}" />
-                                    <p style="font-size:13px;font-weight:900;color:${found?f.color:'#64748b'};text-transform:uppercase;text-align:center;letter-spacing:1px;">${found?f.name:'??? Flame ???'}</p>
-                                    <p style="font-size:11px;font-weight:700;color:${found?'#fed7aa':'#475569'};text-align:center;line-height:1.5;">${found?(f.elemental?'The ultimate flame — all 6 flames combined into one.':'Obtained from a quest drop.'):(elemLocked?'Collect all 6 other flames to unlock.':f.hint)}</p>
-                                    <div style="width:100%;height:3px;background:${found?f.color:'#1e293b'};"></div>
-                                    <span style="font-size:10px;font-weight:900;color:${found?'#22c55e':'#ef4444'};text-transform:uppercase;letter-spacing:2px;">${found?'✓ Collected':'Not Found'}</span>
-                                </div>`;
-                            }).join('')}
-                        </div>
-                        <div style="margin-top:40px;padding:24px;background:rgba(0,0,0,0.8);border:4px solid #f97316;">
-                            <h3 style="font-size:16px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;">How to Get Flames</h3>
-                            <div style="display:flex;flex-direction:column;gap:10px;">
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">🔥</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">Flame of Gold, Poison, Lightning, Cursed, Lightning II, Cursed II:</strong> Each has a 30% chance to drop when you complete any quest. Complete quests in the Quests menu and claim your rewards — you may get lucky!</p></div>
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">⚡</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">Elemental Flame:</strong> Automatically unlocks once you have collected all 6 other flames. It combines their power into one ultimate flame.</p></div>
-                                <div style="display:flex;align-items:flex-start;gap:12px;"><span style="color:#f97316;font-size:18px;flex-shrink:0;">✨</span><p style="font-size:12px;font-weight:700;color:#fed7aa;line-height:1.6;"><strong style="color:#fff;">All 7 Flames:</strong> When all flames are collected, special energy bursts from the screen and grants a permanent <strong style="color:#f97316;">15x multiplier</strong> to all your gold earnings!</p></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 </div>
             `;
             lucide.createIcons();
@@ -2037,7 +1961,6 @@
         }
 
         function finishLoading() {
-            console.log('%c ___      _    _            ___ _ _    _              ___                _                __        ___ ____\n  / __|_  _| |__| |__ _  _   / __| (_)__| |_____ _ _   / __|_ __  __ _ _ _| |__  ___  __ __/  \\      | __|__ /\n | (_ | || | \'_ \\ \'_ \\ || | | (__| | / _| / / -_) \'_|  \\__ \\ \'_ \\/ _` | \'_| / / |___| \\ V / () |  _  |__ \\|_ \\\n  \\___|\\_, |_.__/_.__/\\_, |  \\___|_|_\\__|_\\_\\___|_|    |___/ .__/\\__,_|_| |_\\_\\        \\_/ \\__/  (_) |___/___/\n        |__/           |__/                                 |_|                                                  ', 'color:#fbbf24;font-family:monospace;font-size:11px;font-weight:bold;');
             if (state.loadingDone) return;
             loadGame();
             createFloatingStars();
