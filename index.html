@@ -413,12 +413,12 @@
         };
 
         const DESTINATIONS = [
-            { id: 'plains',   name: 'Peaceful Grasslands', chapter: 'I',   req: 0,  mult: 1,   priceMod: 1,    color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887' },
-            { id: 'paradise', name: 'Paradise',            chapter: 'II',  req: 5,  mult: 5,   priceMod: 0.75, color: 'bg-cyan-50',    themeColor: '#ecfeff', bgImage: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif' },
-            { id: 'forest',   name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 15,  priceMod: 0.75, color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
-            { id: 'glacier',  name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.5,  color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
-            { id: 'medieval',      name: 'Medieval Times',   chapter: 'V',   req: 35, mult: 50,  priceMod: 0.25, color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
-            { id: 'golden_jungle', name: 'Golden Jungle',    chapter: 'VI',  req: 0,  mult: 75,  priceMod: 0.25, color: 'bg-yellow-900', themeColor: '#1a1200', bgImage: 'https://64.media.tumblr.com/a98bc710b6f5bc7aebb47b3049d7adf8/36411de566e70065-44/s1280x1920/5b433ba28aafd75aef4ca3e05fe45147474fb17f.gif', gloryReq: true },
+            { id: 'plains',        name: 'Peaceful Grasslands', chapter: 'I',   req: 0,  mult: 1,   priceMod: 1,    priceRatio: 1,       color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887' },
+            { id: 'paradise',      name: 'Paradise',            chapter: 'II',  req: 5,  mult: 5,   priceMod: 0.75, priceRatio: 0.75,    color: 'bg-cyan-50',    themeColor: '#ecfeff', bgImage: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif' },
+            { id: 'forest',        name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 15,  priceMod: 0.75, priceRatio: 0.5,     color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
+            { id: 'glacier',       name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.5,  priceRatio: 0.25,    color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
+            { id: 'medieval',      name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 50,  priceMod: 0.25, priceRatio: 0.125,   color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
+            { id: 'golden_jungle', name: 'Golden Jungle',       chapter: 'VI',  req: 0,  mult: 75,  priceMod: 0.25, priceRatio: 0.01125, color: 'bg-yellow-900', themeColor: '#1a1200', bgImage: 'https://64.media.tumblr.com/a98bc710b6f5bc7aebb47b3049d7adf8/36411de566e70065-44/s1280x1920/5b433ba28aafd75aef4ca3e05fe45147474fb17f.gif', gloryReq: true },
         ];
 
         const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50, golden_jungle: 300 };
@@ -694,11 +694,9 @@
         function getDemonMult() { return state.demonMode ? 20 : 1; }
 
         function getItemPrice(item) {
-            if (item.isGlory || item.isSpecialItem) return item.baseCost;
             const world = DESTINATIONS.find(d => d.id === state.theme);
-            const priceMod = world ? world.priceMod : 1;
-            const rate = CONVERSION_RATES[state.theme];
-            return (item.baseCost * priceMod * 1.25) / rate;
+            const ratio = world ? world.priceRatio : 1;
+            return item.baseCost * ratio;
         }
         function getAscensionCost() {
             const rate = CONVERSION_RATES[state.theme];
