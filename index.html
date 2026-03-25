@@ -409,7 +409,6 @@
             glacier:       { name: 'Crystal', icon: '' },
             medieval:      { name: 'Crown',   icon: '' },
             paradise:      { name: 'Pearl',   icon: '' },
-            golden_jungle: { name: 'Gleam',   icon: '' },
         };
 
         const DESTINATIONS = [
@@ -418,10 +417,9 @@
             { id: 'forest',        name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 15,  priceMod: 0.75, priceRatio: 0.5,     color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
             { id: 'glacier',       name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.5,  priceRatio: 0.25,    color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
             { id: 'medieval',      name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 50,  priceMod: 0.25, priceRatio: 0.125,   color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
-            { id: 'golden_jungle', name: 'Golden Jungle',       chapter: 'VI',  req: 0,  mult: 75,  priceMod: 0.25, priceRatio: 0.01125, color: 'bg-yellow-900', themeColor: '#1a1200', bgImage: 'https://64.media.tumblr.com/a98bc710b6f5bc7aebb47b3049d7adf8/36411de566e70065-44/s1280x1920/5b433ba28aafd75aef4ca3e05fe45147474fb17f.gif', gloryReq: true },
         ];
 
-        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50, golden_jungle: 300 };
+        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
             { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15,  icon: 'https://i.postimg.cc/Dzpccx68/potion-259.png'  },
@@ -445,13 +443,13 @@
             { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
             { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
             { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
-            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'special', baseCost: 500000, isSpecialItem: true, icon: 'https://i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
             { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
             { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
             { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
-            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'glory', baseCost: 250000,  permanent: true, isGlory: true, glorySet: 'tickets', gloryImg: 'https://i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'A bronze ticket of valor. Part of the Ticket Collection.' },
-            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'glory', baseCost: 500000,  permanent: true, isGlory: true, glorySet: 'tickets', gloryImg: 'https://i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'A silver ticket of valor. Part of the Ticket Collection.' },
-            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'tickets', gloryImg: 'https://i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'A gold ticket of valor. Part of the Ticket Collection.' },
+            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'ticket', baseCost: 500000, isSpecialItem: true, icon: 'https://i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
+            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'ticket', baseCost: 250000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'ticket', baseCost: 500000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'ticket', baseCost: 1000000, permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'Equip for 2.5x click power + sell bonus.' },
         ];
 
         const WORLD_LORE = {
@@ -460,7 +458,6 @@
             glacier:       { text: "Ancient ice stretching beyond the horizon. Somewhere beneath the surface, something has been counting every click you've ever made. Waiting." },
             medieval:      { text: "Crumbling castles. Crowns abandoned mid-war. The kingdom collapsed overnight and no one knows why. The locals say Gubby was here before the fall." },
             paradise:      { text: "An island suspended in perpetual golden hour. The water is warm, the air is sweet, and everything glitters. Nobody who arrives ever wants to ask how they got here." },
-            golden_jungle: { text: "Deep within this radiant jungle, trees drip liquid gold and the air hums with ancient glory. Only those who have gathered all three relics of glory may enter. It is said the jungle has always been here — waiting for someone worthy enough to find it." },
         };
 
 
@@ -504,7 +501,7 @@
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
             storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
-            showSettings: false, showCredits: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
+            showSettings: false, showCredits: false, showHamburger: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             visitedWorlds: ['plains'],
             showFragmentsModal: false, showWorldLore: null,
@@ -780,13 +777,13 @@
                     changes.inventory = newInv; message = `Accio Omnia`;
                 } else {
                     if (sub === 'tickets') {
-                        const ticketItems = SHOP_ITEMS.filter(i => i.glorySet === 'tickets');
+                        const ticketItems = SHOP_ITEMS.filter(i => i.category === 'ticket');
                         const newInv = { ...state.inventory };
-                        ticketItems.forEach(i => { newInv[i.id] = 1; });
+                        ticketItems.forEach(i => { newInv[i.id] = (i.permanent ? 1 : (newInv[i.id] || 0) + 1); });
                         changes.inventory = newInv;
-                        message = 'Accio Tickets — Bronze, Silver & Gold VP Tickets granted';
+                        message = 'Accio Tickets — all tickets granted';
                     } else {
-                    const catMap = { weak:'small', ordinary:'medium', strong:'large', powerful:'op', small:'small', medium:'medium', large:'large', op:'op', skin:'skin', glory:'glory' };
+                    const catMap = { weak:'small', ordinary:'medium', strong:'large', powerful:'op', small:'small', medium:'medium', large:'large', op:'op', skin:'skin', glory:'glory', ticket:'ticket' };
                     const tierMap = { 'i':1, 'ii':2, 'iii':3, '1':1, '2':2, '3':3 };
                     const catArg = parts[1]?.toLowerCase();
                     const tierArg = parts[2]?.toLowerCase();
@@ -1181,7 +1178,7 @@
             const updatedQuests = state.activeQuests.map(q => q.type === 'prestige' ? { ...q, progress: (q.progress||0) + 1 } : q);
             const resetInventory = SHOP_ITEMS.reduce((acc, item) => ({
                 ...acc,
-                [item.id]: (item.category === 'skin' || item.category === 'glory') ? (state.inventory[item.id] || 0) : 0
+                [item.id]: (item.category === 'skin' || item.category === 'glory' || item.category === 'ticket') ? (state.inventory[item.id] || 0) : 0
             }), {});
             const isMilestone = [5,10,25,50].includes(nextPrestige);
             updateState({
@@ -1453,35 +1450,41 @@
 
         // ── MARKET / STORAGE RENDER ──────────────────────────────
         function renderMarketContent() {
-            const showingSpecialTab = state.marketCategory === 'special';
-            const showingGloryTab = state.marketCategory === 'glory';
+            const showingSkinsTab   = state.marketCategory === 'special';
+            const showingGloryTab   = state.marketCategory === 'glory';
+            const showingTicketsTab = state.marketCategory === 'ticket';
             const tabBar = `
                 <div class="flex gap-2 mb-5">
-                    <button onclick="updateState({marketCategory:null})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSpecialTab&&!showingGloryTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Potions</button>
-                    <button onclick="updateState({marketCategory:'special'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSpecialTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Special Items</button>
+                    <button onclick="updateState({marketCategory:null})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${!showingSkinsTab&&!showingGloryTab&&!showingTicketsTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Potions</button>
+                    <button onclick="updateState({marketCategory:'special'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingSkinsTab?'bg-indigo-600 border-indigo-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Skins</button>
+                    <button onclick="updateState({marketCategory:'ticket'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingTicketsTab?'bg-amber-500 border-amber-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Tickets</button>
                     <button onclick="updateState({marketCategory:'glory'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${showingGloryTab?'bg-yellow-500 border-yellow-700 text-white':'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}">Collectibles</button>
                 </div>`;
 
-            if (showingSpecialTab) {
-                const rtItem = SHOP_ITEMS.find(i => i.id === 'roulette_ticket');
-                const rtOwned = state.inventory['roulette_ticket'] || 0;
-                const rtPrice = rtItem ? rtItem.baseCost : 500000;
-                const rtCanAfford = state.gold >= rtPrice;
-                const rtSection = rtItem ? `<div class="mb-5 p-4 border-4 border-slate-300 bg-white">
-                    <p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-3">Special Items <span class="text-slate-400 font-bold normal-case text-xs">· Consumable · Use in Storage to bet</span></p>
-                    <div class="flex items-center justify-between gap-3">
-                        <img src="${rtItem.icon}" style="width:52px;height:52px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />
+            if (showingTicketsTab) {
+                const ticketItems = SHOP_ITEMS.filter(i => i.category === 'ticket');
+                return tabBar + '<div class="flex flex-col gap-3">' + ticketItems.map(item => {
+                    const price = getItemPrice(item);
+                    const canAfford = state.gold >= price;
+                    const owned = state.inventory[item.id] || 0;
+                    const isPerm = item.permanent;
+                    const isOwned = isPerm && owned > 0;
+                    const img = item.gloryImg || item.icon;
+                    return `<div class="flex items-center gap-3 p-3 border-4 bg-white ${canAfford && !isOwned ? 'border-slate-300' : 'border-slate-200'}">
+                        <img src="${img}" style="width:48px;height:48px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />
                         <div class="flex-1 min-w-0">
-                            <p class="font-black text-base uppercase text-slate-900">${rtItem.name}</p>
-                            <p class="text-xs font-bold text-slate-400 mt-0.5">${rtItem.description}</p>
-                            <p class="text-xs font-bold text-indigo-600 mt-0.5">${formatLargeNumber(rtPrice, 0)} ${CURRENCIES[state.theme].name} · Owned: ${rtOwned}</p>
+                            <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">${item.description}</p>
+                            <p class="text-xs font-bold ${isOwned ? 'text-emerald-600' : 'text-indigo-600'} mt-0.5">${isOwned ? 'Owned' : formatLargeNumber(price, 0) + ' ' + CURRENCIES[state.theme].name + (isPerm ? '' : ' · Owned: ' + owned)}</p>
                         </div>
-                        <button onclick="event.stopPropagation();openItemPopup('roulette_ticket')" class="pixel-button shrink-0 ${rtCanAfford ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-5 py-2 font-black text-sm">BUY</button>
-                    </div>
-                </div>` : '';
+                        <button onclick="${isOwned ? '' : isPerm ? 'buySpecialItem(\''+item.id+'\')' : 'event.stopPropagation();openItemPopup(\''+item.id+'\')'}" class="pixel-button shrink-0 px-4 py-2 font-black text-sm ${isOwned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">${isOwned ? 'OWNED' : 'BUY'}</button>
+                    </div>`;
+                }).join('') + '</div>';
+            }
+
+            if (showingSkinsTab) {
                 return tabBar
                     + '<div class="flex flex-col gap-0">'
-                    + rtSection
                     + '<p class="font-black text-xs uppercase text-slate-700 tracking-widest mb-3">Skins <span class="text-slate-400 font-bold normal-case text-xs">· Cosmetic · Equip in Storage</span></p>'
                     + (() => {
                         const skinSets = [
@@ -1541,20 +1544,11 @@
                     {
                         key: 'glory',
                         label: 'Glory Set',
-                        bonus: '5x click power per item (max 15x) · Unlocks Golden Jungle',
+                        bonus: '5x click power per item (max 15x)',
                         bg: 'https://64.media.tumblr.com/a98bc710b6f5bc7aebb47b3049d7adf8/36411de566e70065-44/s1280x1920/5b433ba28aafd75aef4ca3e05fe45147474fb17f.gif',
                         border: 'border-yellow-500',
                         btnColor: 'bg-yellow-500 border-yellow-700 text-white',
                         darkText: false,
-                    },
-                    {
-                        key: 'tickets',
-                        label: 'Ticket Collection',
-                        bonus: '2.5x click power per item · sell bonus per item · 3 tickets = 10x sell',
-                        bg: 'https://i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',
-                        border: 'border-amber-500',
-                        btnColor: 'bg-amber-500 border-amber-700 text-white',
-                        darkText: true,
                     },
                 ];
                 return tabBar + '<div class="flex flex-col gap-5">' + glorySets.map(set => {
@@ -1622,6 +1616,7 @@
                 op:         { name: 'OP Boosts',        color: 'border-red-500 bg-red-50',        items: [] },
                 skin:       { name: 'Skins',          color: 'border-purple-500 bg-purple-50',  items: [] },
                 special:    { name: 'Special Items',  color: 'border-slate-500 bg-slate-50',    items: [] },
+                ticket:     { name: 'Tickets',        color: 'border-amber-500 bg-amber-50',    items: [] },
                 glory:      { name: 'Glory Items',    color: 'border-yellow-500 bg-yellow-50',  items: [] },
             };
             SHOP_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
@@ -1687,37 +1682,57 @@
                         </div>
                     </div>`;
                 }
+                if (catKey === 'ticket') {
+                    const ticketIds = ['ticket_bronze','ticket_silver','ticket_gold'];
+                    return `<div class="border-4 ${catData.color} p-4 sm:p-6">
+                        <h5 class="font-black text-base sm:text-lg uppercase mb-3 text-slate-900">Tickets</h5>
+                        <div class="flex flex-col gap-2">
+                        ${catData.items.map(item => {
+                            const isEquipped = (state.equippedGlory||[]).includes(item.id);
+                            const qty = state.inventory[item.id] || 0;
+                            if (item.isGlory) {
+                                return `<div class="flex items-center justify-between p-3 border-4 ${isEquipped ? 'border-amber-500 bg-amber-50' : 'border-slate-200 bg-white'}">
+                                    <img src="${item.gloryImg}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
+                                    <div class="flex-1">
+                                        <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                                        <p class="text-xs font-bold text-slate-500">${item.description}</p>
+                                    </div>
+                                    <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
+                                </div>`;
+                            }
+                            return `<div class="flex items-center justify-between p-3 border-4 border-slate-200 bg-white">
+                                <img src="${item.icon}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
+                                <div class="flex-1">
+                                    <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-500">${item.description}</p>
+                                    <p class="text-xs font-bold text-slate-400 mt-0.5">x${qty} owned</p>
+                                </div>
+                                <button onclick="useRouletteTicket()" ${qty <= 0 ? 'disabled' : ''} class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${qty > 0 ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">BET</button>
+                            </div>`;
+                        }).join('')}
+                        </div>
+                    </div>`;
+                }
                 if (catKey === 'glory') {
-                    const glorySetItems   = catData.items.filter(i => i.glorySet === 'glory');
-                    const ticketSetItems  = catData.items.filter(i => i.glorySet === 'tickets');
-                    const gloryIds        = ['glory_ticket','glory_aura','glory_diary'];
-                    const ticketIds       = ['ticket_bronze','ticket_silver','ticket_gold'];
-                    const allGloryEq      = gloryIds.every(id => (state.equippedGlory||[]).includes(id));
-                    const allTicketsEq    = ticketIds.every(id => (state.equippedGlory||[]).includes(id));
-                    function storageGloryCard(item, equippedBorder, equippedBtn) {
-                        const isEquipped = (state.equippedGlory||[]).includes(item.id);
-                        return `<div class="flex items-center justify-between p-3 border-4 ${isEquipped ? equippedBorder : 'border-slate-200 bg-white'}">
-                            <img src="${item.gloryImg}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
-                            <div class="flex-1">
-                                <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
-                                <p class="text-xs font-bold text-slate-500">${item.description}</p>
-                            </div>
-                            <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? equippedBtn : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
-                        </div>`;
-                    }
-                    return `<div class="border-4 ${catData.color} p-4 sm:p-6 flex flex-col gap-5">
-                        ${glorySetItems.length > 0 ? `<div>
-                            <p class="font-black text-sm uppercase text-yellow-800 mb-1">Glory Set</p>
-                            <p class="text-xs font-bold text-yellow-700 mb-2">5x click power per item · max 15x · Unlocks Golden Jungle</p>
-                            ${allGloryEq ? '<p class="text-xs font-black text-emerald-600 mb-2">All equipped — 15x click power!</p>' : ''}
-                            <div class="flex flex-col gap-2">${glorySetItems.map(i => storageGloryCard(i,'border-yellow-500 bg-yellow-50','bg-yellow-500 border-yellow-700 text-white')).join('')}</div>
-                        </div>` : ''}
-                        ${ticketSetItems.length > 0 ? `<div>
-                            <p class="font-black text-sm uppercase text-amber-800 mb-1">Ticket Collection</p>
-                            <p class="text-xs font-bold text-amber-700 mb-2">2.5x click power per item · 3 tickets = 10x sell gold</p>
-                            ${allTicketsEq ? '<p class="text-xs font-black text-emerald-600 mb-2">All equipped — 7.5x clicks · 10x sell!</p>' : ''}
-                            <div class="flex flex-col gap-2">${ticketSetItems.map(i => storageGloryCard(i,'border-amber-500 bg-amber-50','bg-amber-500 border-amber-700 text-white')).join('')}</div>
-                        </div>` : ''}
+                    const gloryIds = ['glory_ticket','glory_aura','glory_diary'];
+                    const allGloryEq = gloryIds.every(id => (state.equippedGlory||[]).includes(id));
+                    return `<div class="border-4 ${catData.color} p-4 sm:p-6">
+                        <h5 class="font-black text-base sm:text-lg uppercase mb-1 text-slate-900">Glory Set</h5>
+                        <p class="text-xs font-bold text-yellow-700 mb-2">5x click power per item · max 15x</p>
+                        ${allGloryEq ? '<p class="text-xs font-black text-emerald-600 mb-2">All equipped — 15x click power!</p>' : ''}
+                        <div class="flex flex-col gap-2">
+                        ${catData.items.map(item => {
+                            const isEquipped = (state.equippedGlory||[]).includes(item.id);
+                            return `<div class="flex items-center justify-between p-3 border-4 ${isEquipped ? 'border-yellow-500 bg-yellow-50' : 'border-slate-200 bg-white'}">
+                                <img src="${item.gloryImg}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
+                                <div class="flex-1">
+                                    <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                                    <p class="text-xs font-bold text-slate-500">${item.description}</p>
+                                </div>
+                                <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? 'bg-yellow-500 border-yellow-700 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
+                            </div>`;
+                        }).join('')}
+                        </div>
                     </div>`;
                 }
                 return `<div class="border-4 ${catData.color} p-4 sm:p-6"><h5 class="font-black text-base sm:text-lg uppercase mb-3 sm:mb-4 text-slate-900">${catData.name}</h5>
@@ -1802,12 +1817,17 @@
                     <button onclick="updateState({showTravelModal:true})" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="book-open" class="text-indigo-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform"></i>
                     </button>
-                    <button onclick="updateState({showSettings:true})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
-                        <i data-lucide="settings" class="text-slate-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-90 transition-transform duration-300"></i>
+                    <button onclick="updateState({showHamburger:!state.showHamburger})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
+                        <i data-lucide="menu" class="text-slate-600 w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
-                    <button onclick="updateState({showCredits:true})" class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group" title="Credits">
-                        <i data-lucide="award" class="text-yellow-500 w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform duration-200"></i>
-                    </button>
+                    ${state.showHamburger ? `<div class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] flex flex-col gap-2">
+                        <button onclick="updateState({showSettings:true,showHamburger:false})" class="bg-white pixel-button flex items-center gap-2 px-4 py-2 font-black text-sm uppercase text-slate-700 hover:bg-slate-50 whitespace-nowrap">
+                            <i data-lucide="settings" class="text-slate-500 w-4 h-4"></i> Settings
+                        </button>
+                        <button onclick="updateState({showCredits:true,showHamburger:false})" class="bg-white pixel-button flex items-center gap-2 px-4 py-2 font-black text-sm uppercase text-slate-700 hover:bg-slate-50 whitespace-nowrap">
+                            <i data-lucide="award" class="text-yellow-500 w-4 h-4"></i> Credits
+                        </button>
+                    </div>` : ''}
                     ${state.showCredits ? `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showCredits:false})">
                         <div class="bg-white pixel-card w-full modal-content overflow-hidden" style="max-width:520px;">
                             <div class="bg-slate-800 px-6 py-4 flex justify-between items-center">
@@ -1858,10 +1878,10 @@
                                     <button onclick="updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})" class="text-white/70 hover:text-white text-2xl font-black w-8 h-8 flex items-center justify-center">✕</button>
                                 </div>
                                 <div class="p-6">
-                                    <div class="grid grid-cols-2 gap-2 mb-5">
+                                    ${popupItem.category !== 'ticket' ? `<div class="grid grid-cols-2 gap-2 mb-5">
                                         <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Power</p><p class="font-black text-slate-900 text-sm">${popupItem.power>1?popupItem.power+'x':'Special'}</p>${popupItem.category==='small'?'<p class="text-[9px] text-slate-400 mt-0.5">75% efficiency</p>':popupItem.category==='medium'?'<p class="text-[9px] text-slate-400 mt-0.5">82.5% efficiency</p>':popupItem.category==='large'?'<p class="text-[9px] text-slate-400 mt-0.5">90% efficiency</p>':popupItem.category==='op'?'<p class="text-[9px] text-slate-400 mt-0.5">95% efficiency</p>':''}</div>
                                         <div class="bg-slate-50 border-3 border-slate-200 p-3 text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Duration</p><p class="font-black text-slate-900 text-sm">${popupItem.duration+'s'}</p></div>
-                                    </div>
+                                    </div>` : `<p class="text-sm font-bold text-slate-500 mb-5">${popupItem.description}</p>`}
                                     <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Quantity <span class="text-slate-300">(max 25)</span></p>
                                     <div class="flex items-stretch gap-0 mb-5 border-4 border-slate-300 overflow-hidden">
                                         <button onclick="setItemQty(-5)" class="bg-slate-100 hover:bg-slate-200 font-black text-slate-700 px-3 py-3 text-sm border-r-3 border-slate-300 transition-colors">-5</button>
@@ -1897,20 +1917,16 @@
                         <div class="bg-white p-6 sm:p-10 pixel-card max-w-4xl w-full modal-content max-h-[90vh] overflow-y-auto">
                             <div class="flex items-center justify-center gap-3 mb-2"><i data-lucide="book-open" class="w-7 h-7 text-indigo-500"></i><h4 class="font-black text-2xl sm:text-3xl text-center uppercase text-slate-900">Chapters</h4></div>
                             <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Select a chapter to travel to</p>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-5">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5">
                                 ${DESTINATIONS.map(dest => {
-                                    const gloryOwned = ['glory_ticket','glory_aura','glory_diary'].every(id => state.inventory[id] > 0);
-                                    const gloryLocked = dest.gloryReq && !gloryOwned;
-                                    const isLocked = state.prestigeLevel < dest.req || gloryLocked;
+                                    const isLocked = state.prestigeLevel < dest.req;
                                     const isCurrent = state.theme === dest.id;
-                                    const isGlory = dest.id === 'golden_jungle';
-                                    return `<button ${isLocked?'disabled':''} onclick="travelTo('${dest.id}')" style="box-shadow:${isLocked?'0 0 0':'4px 4px 0 rgba(0,0,0,0.2)'};min-height:110px;${isGlory&&!isLocked?'background:linear-gradient(135deg,#fef9c3,#fef08a);border-color:#ca8a04;':''}" class="p-4 flex flex-col items-center justify-center gap-1.5 transition-all border-4 ${isLocked?'opacity-40 grayscale bg-slate-100 border-slate-400':`${isCurrent?'border-indigo-500 bg-indigo-50':'border-slate-600'} hover:border-slate-900`} ${!isLocked&&!isCurrent?'hover:-translate-y-1':''}">
-                                        <span class="text-xs font-black ${isGlory&&!isLocked?'text-yellow-700':'text-indigo-400'} uppercase tracking-widest">Chapter ${dest.chapter}</span>
+                                    return `<button ${isLocked?'disabled':''} onclick="travelTo('${dest.id}')" style="box-shadow:${isLocked?'0 0 0':'4px 4px 0 rgba(0,0,0,0.2)'};min-height:110px;" class="p-4 flex flex-col items-center justify-center gap-1.5 transition-all border-4 ${isLocked?'opacity-40 grayscale bg-slate-100 border-slate-400':`${isCurrent?'border-indigo-500 bg-indigo-50':'border-slate-600'} hover:border-slate-900`} ${!isLocked&&!isCurrent?'hover:-translate-y-1':''}">
+                                        <span class="text-xs font-black text-indigo-400 uppercase tracking-widest">Chapter ${dest.chapter}</span>
                                         <span class="font-black text-sm sm:text-base uppercase text-center text-slate-900 leading-tight">${dest.name}</span>
-                                        <span class="text-xs font-black ${isGlory&&!isLocked?'text-yellow-600':'text-indigo-600'}">x${dest.mult} Profit</span>
+                                        <span class="text-xs font-black text-indigo-600">x${dest.mult} Profit</span>
                                         ${isCurrent?'<span class="text-xs font-bold text-emerald-600 mt-1">Current</span>':''}
-                                        ${gloryLocked?'<span class="text-xs font-bold text-yellow-700 mt-1">Requires Glory Set</span>':''}
-                                        ${!gloryLocked&&isLocked?`<span class="text-xs font-bold text-red-600 mt-1">Prestige ${dest.req}</span>`:''}
+                                        ${isLocked?`<span class="text-xs font-bold text-red-600 mt-1">Prestige ${dest.req}</span>`:''}
                                     </button>`;
                                 }).join('')}
                             </div>
@@ -2067,6 +2083,7 @@
                     </div>
 
                     <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;" >v0.53 — Latest</p>
+                    <a href="https://x.com/@gubbyclicker" target="_blank" rel="noopener" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;" onclick="event.stopPropagation()"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></a>
 
                 </div>
             `;
