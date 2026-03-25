@@ -314,9 +314,61 @@
         #demon-flash { position: fixed; inset: 0; z-index: 99990; background: rgba(220,38,38,0.35); pointer-events: none; opacity: 0; }
         #demon-flash.flashing { animation: demonRedFlash 0.18s ease-out forwards; }
         @keyframes demonRedFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* Page layout — horizontal snap scroll */
+        html { overflow: hidden; height: 100%; }
+        #page-wrapper {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex;
+            overflow-x: auto; overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        #root {
+            min-width: 100vw; width: 100vw; flex-shrink: 0;
+            height: 100vh; overflow-y: auto;
+            scroll-snap-align: start;
+        }
+        /* Secret Zone */
+        #secret-zone {
+            min-width: 100vw; width: 100vw; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh;
+            scroll-snap-align: start;
+            background-image: url('https://64.media.tumblr.com/bac5c3d9da830185b59e5562c4ac59c6/214b017599bc7496-0a/s1280x1920/0dd6550313f9d50356bbea628452aafa88089013.gif');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+        }
+        #chip-wrap {
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+        }
+        #data-chip {
+            width: 280px; height: 280px; object-fit: contain; image-rendering: pixelated;
+            cursor: pointer; user-select: none; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+            filter: drop-shadow(0 0 24px rgba(251,191,36,0.6));
+        }
+        #data-chip:active { filter: drop-shadow(0 0 40px rgba(251,191,36,1)); }
+        #chip-status-text {
+            color: #fde68a; font-weight: 900; font-size: 14px; text-align: center;
+            text-transform: uppercase; letter-spacing: 1px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+        }
+        #chip-progress-bar {
+            width: 240px; height: 10px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2);
+        }
+        #chip-progress-fill {
+            height: 100%; width: 0%; background: linear-gradient(90deg,#fbbf24,#f59e0b);
+            transition: width 0.3s ease;
+        }
+        #chip-claimed-text {
+            color: #6ee7b7; font-weight: 900; font-size: 13px; text-align: center;
+            text-transform: uppercase; letter-spacing: 1px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+        }
     </style>
 </head>
-<body class="bg-emerald-50 overflow-x-hidden">
+<body class="bg-emerald-50 overflow-hidden">
     <audio id="bg-music" loop style="display:none;">
         <source src="https://files.catbox.moe/ujfzdw.mp3" type="audio/mpeg">
     </audio>
@@ -385,7 +437,18 @@
             <div id="demon-intro-sub">You have awakened something dark.<br>20x multiplier — stacks with everything.<br>The screen bleeds red. There is no going back.</div>
             <button id="demon-intro-close" onclick="closeDemonIntro()">Enter ›</button>
         </div>
-    </div><div id="root"></div>
+    </div>
+    <div id="page-wrapper" style="display:flex;min-height:100vh;align-items:stretch;">
+        <div id="root" style="min-width:100vw;width:100vw;flex-shrink:0;"></div>
+        <div id="secret-zone">
+            <div id="chip-wrap">
+                <img id="data-chip" src="https://i.postimg.cc/WDHfm418/Data-Chip.webp" onclick="clickDataChip()" draggable="false" />
+                <div id="chip-status-text">Spin the chip — full rotation = 1.5x for 10 min</div>
+                <div id="chip-progress-bar"><div id="chip-progress-fill"></div></div>
+                <div id="chip-claimed-text" style="display:none;">Claimed today — come back tomorrow!</div>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -496,6 +559,7 @@
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
             prestigeLevel: 0, marketMultiplier: 1, marketTrend: 'stable', marketQueue: [1.1, 0.8, 1.4],
             xpSurgeUntil: 0, marketCategory: null, notification: null,
+            dataChipBuffUntil: 0, dataChipLastClaim: '',
             showAdmin: false, adminLog: [], discoEventTimer: 0, playerRole: null, gradientTags: false,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
@@ -687,8 +751,60 @@
         }
         function getPermanentMult() { return getCombinedSetMult(); }
         function getTicketBonus()   { return getSellMult(); }
+        function getDataChipMult()  { return (state.dataChipBuffUntil && Date.now() < state.dataChipBuffUntil) ? 1.5 : 1; }
 
         function getDemonMult() { return state.demonMode ? 20 : 1; }
+
+        // ── DATA CHIP ──────────────────────────────────────────
+        let _chipRotation = 0;
+        function clickDataChip() {
+            const today = new Date().toISOString().split('T')[0];
+            const claimed = document.getElementById('chip-claimed-text');
+            const statusText = document.getElementById('chip-status-text');
+            const fill = document.getElementById('chip-progress-fill');
+            const chip = document.getElementById('data-chip');
+            if (state.dataChipLastClaim === today) {
+                if (claimed) claimed.style.display = 'block';
+                if (statusText) statusText.style.display = 'none';
+                if (fill) fill.style.display = 'none';
+                return;
+            }
+            const deg = 7.2;
+            _chipRotation += deg;
+            const progress = Math.min(_chipRotation / 360, 1);
+            if (chip) {
+                chip.style.transform = `rotate(${_chipRotation}deg) scale(1.08)`;
+                setTimeout(() => { if (chip) chip.style.transform = `rotate(${_chipRotation}deg) scale(1)`; }, 180);
+            }
+            if (fill) fill.style.width = (progress * 100) + '%';
+            if (statusText) statusText.textContent = `${Math.round(progress * 100)}% — keep spinning!`;
+            if (_chipRotation >= 360) {
+                _chipRotation = 0;
+                if (fill) fill.style.width = '0%';
+                const until = Date.now() + 10 * 60 * 1000;
+                updateState({ dataChipBuffUntil: until, dataChipLastClaim: today, notification: { title: 'Data Chip!', message: '1.5x click power active for 10 minutes!', type: 'success' } });
+                if (chip) chip.style.transform = `rotate(0deg) scale(1)`;
+                if (statusText) statusText.style.display = 'none';
+                if (fill) fill.style.display = 'none';
+                if (claimed) claimed.style.display = 'block';
+            }
+        }
+        function updateChipStatusUI() {
+            const today = new Date().toISOString().split('T')[0];
+            const claimed = document.getElementById('chip-claimed-text');
+            const statusText = document.getElementById('chip-status-text');
+            const fill = document.getElementById('chip-progress-fill');
+            if (!claimed || !statusText) return;
+            if (state.dataChipLastClaim === today) {
+                claimed.style.display = 'block';
+                statusText.style.display = 'none';
+                if (fill) fill.style.display = 'none';
+            } else {
+                claimed.style.display = 'none';
+                statusText.style.display = 'block';
+                if (fill) fill.style.display = 'block';
+            }
+        }
 
         function getItemPrice(item) {
             const world = DESTINATIONS.find(d => d.id === state.theme);
@@ -735,6 +851,7 @@
                 'accio omnia': '/give all',
                 'accio gloria': '/give glory',
                 'accio tickets': '/give tickets',
+                'accio chip': '/chip reset',
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
@@ -815,6 +932,16 @@
                     }
                     }
                 }
+            } else if (command === '/chip') {
+                _chipRotation = 0;
+                changes.dataChipLastClaim = '';
+                changes.dataChipBuffUntil = 0;
+                const fill = document.getElementById('chip-progress-fill');
+                const chip = document.getElementById('data-chip');
+                if (fill) { fill.style.width = '0%'; fill.style.display = 'block'; }
+                if (chip) chip.style.transform = 'rotate(0deg) scale(1)';
+                updateChipStatusUI();
+                message = 'Accio Chip — data chip reset';
             } else if (command === '/quest') {
                 if (state.activeQuests.length > 0) {
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
@@ -1024,8 +1151,8 @@
             if (e.type === 'mousedown' && e.button !== 0) return;
 
             const currentPower = state.infinityRebirth
-                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult()
-                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult();
+                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult() * getDataChipMult()
+                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult() * getDataChipMult();
 
             const gubbyEl = document.querySelector('.gubby-container');
             if (gubbyEl) { gubbyEl.classList.remove('animate-squish'); void gubbyEl.offsetWidth; gubbyEl.classList.add('animate-squish'); setTimeout(() => gubbyEl.classList.remove('animate-squish'), 400); }
@@ -1758,8 +1885,8 @@
             const totalItems = Object.values(state.inventory).reduce((s, c) => s + c, 0);
 
             // Theme
-            if (state.discoEventTimer > 0) { document.body.className = "disco-bg overflow-x-hidden"; document.body.style.setProperty('--bg-image','none'); }
-            else { document.body.className = "bg-emerald-50 overflow-x-hidden"; document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4'; document.body.style.setProperty('--bg-image', currentWorld?.bgImage ? `url('${currentWorld.bgImage}')` : 'none'); }
+            if (state.discoEventTimer > 0) { document.body.className = "disco-bg overflow-hidden"; document.body.style.setProperty('--bg-image','none'); }
+            else { document.body.className = "bg-emerald-50 overflow-hidden"; document.body.style.backgroundColor = currentWorld?.themeColor || '#f0fdf4'; document.body.style.setProperty('--bg-image', currentWorld?.bgImage ? `url('${currentWorld.bgImage}')` : 'none'); }
             document.body.classList.toggle('dark-mode', !!state.darkMode);
             document.body.classList.toggle('large-text', !!state.largeText);
             document.body.classList.toggle('reduced-motion', !!state.reducedMotion);
@@ -2088,6 +2215,7 @@
                 </div>
             `;
             lucide.createIcons();
+            updateChipStatusUI();
             if (prevActiveId === 'admin-input') {
                 const el = document.getElementById('admin-input');
                 if (el) { el.focus(); el.value = prevValue; el.setSelectionRange(prevValue.length, prevValue.length); }
