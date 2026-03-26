@@ -331,41 +331,6 @@
             height: 100vh; overflow-y: auto;
             scroll-snap-align: start;
         }
-        /* Secret Zone */
-        #secret-zone {
-            min-width: 100vw; width: 100vw; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh;
-            scroll-snap-align: start;
-            background-image: url('https://64.media.tumblr.com/bac5c3d9da830185b59e5562c4ac59c6/214b017599bc7496-0a/s1280x1920/0dd6550313f9d50356bbea628452aafa88089013.gif');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-        }
-        #chip-wrap {
-            display: flex; flex-direction: column; align-items: center; gap: 16px;
-        }
-        #data-chip {
-            width: 280px; height: 280px; object-fit: contain; image-rendering: pixelated;
-            cursor: pointer; user-select: none; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
-            filter: drop-shadow(0 0 24px rgba(251,191,36,0.6));
-        }
-        #data-chip:active { filter: drop-shadow(0 0 40px rgba(251,191,36,1)); }
-        #chip-status-text {
-            color: #fde68a; font-weight: 900; font-size: 14px; text-align: center;
-            text-transform: uppercase; letter-spacing: 1px;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
-        }
-        #chip-progress-bar {
-            width: 240px; height: 10px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2);
-        }
-        #chip-progress-fill {
-            height: 100%; width: 0%; background: linear-gradient(90deg,#fbbf24,#f59e0b);
-            transition: width 0.3s ease;
-        }
-        #chip-claimed-text {
-            color: #6ee7b7; font-weight: 900; font-size: 13px; text-align: center;
-            text-transform: uppercase; letter-spacing: 1px;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
-        }
     </style>
 </head>
 <body class="bg-emerald-50 overflow-hidden">
@@ -430,6 +395,7 @@
         <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
         <div id="loading-sub">Loading...</div>
         <div id="loading-click-hint"></div>
+        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:700;color:#1e293b;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Made by Icy Games</div>
     </div>
     <div id="demon-intro" style="display:none;">
         <div id="demon-intro-inner">
@@ -440,14 +406,6 @@
     </div>
     <div id="page-wrapper" style="display:flex;min-height:100vh;align-items:stretch;">
         <div id="root" style="min-width:100vw;width:100vw;flex-shrink:0;"></div>
-        <div id="secret-zone">
-            <div id="chip-wrap">
-                <img id="data-chip" src="https://i.postimg.cc/WDHfm418/Data-Chip.webp" onclick="clickDataChip()" draggable="false" />
-                <div id="chip-status-text">Spin the chip — full rotation = 1.5x for 10 min</div>
-                <div id="chip-progress-bar"><div id="chip-progress-fill"></div></div>
-                <div id="chip-claimed-text" style="display:none;">Claimed today — come back tomorrow!</div>
-            </div>
-        </div>
     </div>
 
 
@@ -694,6 +652,8 @@
             useItem:    () => playTone({ type:'sine', freq:700, freq2:900, gain:0.14, attack:0.01, decay:0.2, duration:0.25 }),
         };
         window.addEventListener('DOMContentLoaded', () => {
+            console.log('%c Gubby Clicker ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
+            console.log('%c v0.91 Beta — Made by Icy Games ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
             startSpinLoop();
             startLoadingBar();
@@ -751,60 +711,11 @@
         }
         function getPermanentMult() { return getCombinedSetMult(); }
         function getTicketBonus()   { return getSellMult(); }
-        function getDataChipMult()  { return (state.dataChipBuffUntil && Date.now() < state.dataChipBuffUntil) ? 1.5 : 1; }
 
         function getDemonMult() { return state.demonMode ? 20 : 1; }
 
-        // ── DATA CHIP ──────────────────────────────────────────
-        let _chipRotation = 0;
-        function clickDataChip() {
-            const today = new Date().toISOString().split('T')[0];
-            const claimed = document.getElementById('chip-claimed-text');
-            const statusText = document.getElementById('chip-status-text');
-            const fill = document.getElementById('chip-progress-fill');
-            const chip = document.getElementById('data-chip');
-            if (state.dataChipLastClaim === today) {
-                if (claimed) claimed.style.display = 'block';
-                if (statusText) statusText.style.display = 'none';
-                if (fill) fill.style.display = 'none';
-                return;
-            }
-            const deg = 7.2;
-            _chipRotation += deg;
-            const progress = Math.min(_chipRotation / 360, 1);
-            if (chip) {
-                chip.style.transform = `rotate(${_chipRotation}deg) scale(1.08)`;
-                setTimeout(() => { if (chip) chip.style.transform = `rotate(${_chipRotation}deg) scale(1)`; }, 180);
-            }
-            if (fill) fill.style.width = (progress * 100) + '%';
-            if (statusText) statusText.textContent = `${Math.round(progress * 100)}% — keep spinning!`;
-            if (_chipRotation >= 360) {
-                _chipRotation = 0;
-                if (fill) fill.style.width = '0%';
-                const until = Date.now() + 10 * 60 * 1000;
-                updateState({ dataChipBuffUntil: until, dataChipLastClaim: today, notification: { title: 'Data Chip!', message: '1.5x click power active for 10 minutes!', type: 'success' } });
-                if (chip) chip.style.transform = `rotate(0deg) scale(1)`;
-                if (statusText) statusText.style.display = 'none';
-                if (fill) fill.style.display = 'none';
-                if (claimed) claimed.style.display = 'block';
-            }
-        }
-        function updateChipStatusUI() {
-            const today = new Date().toISOString().split('T')[0];
-            const claimed = document.getElementById('chip-claimed-text');
-            const statusText = document.getElementById('chip-status-text');
-            const fill = document.getElementById('chip-progress-fill');
-            if (!claimed || !statusText) return;
-            if (state.dataChipLastClaim === today) {
-                claimed.style.display = 'block';
-                statusText.style.display = 'none';
-                if (fill) fill.style.display = 'none';
-            } else {
-                claimed.style.display = 'none';
-                statusText.style.display = 'block';
-                if (fill) fill.style.display = 'block';
-            }
-        }
+        function openSocialModal()  { const m = document.getElementById('social-modal'); if (m) m.style.display = 'flex'; }
+        function closeSocialModal() { const m = document.getElementById('social-modal'); if (m) m.style.display = 'none'; }
 
         function getItemPrice(item) {
             const world = DESTINATIONS.find(d => d.id === state.theme);
@@ -851,7 +762,6 @@
                 'accio omnia': '/give all',
                 'accio gloria': '/give glory',
                 'accio tickets': '/give tickets',
-                'accio chip': '/chip reset',
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
@@ -932,16 +842,6 @@
                     }
                     }
                 }
-            } else if (command === '/chip') {
-                _chipRotation = 0;
-                changes.dataChipLastClaim = '';
-                changes.dataChipBuffUntil = 0;
-                const fill = document.getElementById('chip-progress-fill');
-                const chip = document.getElementById('data-chip');
-                if (fill) { fill.style.width = '0%'; fill.style.display = 'block'; }
-                if (chip) chip.style.transform = 'rotate(0deg) scale(1)';
-                updateChipStatusUI();
-                message = 'Accio Chip — data chip reset';
             } else if (command === '/quest') {
                 if (state.activeQuests.length > 0) {
                     changes.activeQuests = state.activeQuests.map(q => ({ ...q, completed: true, progress: q.target }));
@@ -1151,8 +1051,8 @@
             if (e.type === 'mousedown' && e.button !== 0) return;
 
             const currentPower = state.infinityRebirth
-                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult() * getDataChipMult()
-                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult() * getDataChipMult();
+                ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult()
+                : (state.prestigeLevel + 1) * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult();
 
             const gubbyEl = document.querySelector('.gubby-container');
             if (gubbyEl) { gubbyEl.classList.remove('animate-squish'); void gubbyEl.offsetWidth; gubbyEl.classList.add('animate-squish'); setTimeout(() => gubbyEl.classList.remove('animate-squish'), 400); }
@@ -1748,8 +1648,49 @@
             };
             SHOP_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
             const hasAny = Object.values(cats).some(c => c.items.length > 0);
-            if (!hasAny) return '<div class="text-center py-16"><p class="text-3xl font-black text-slate-400 uppercase mb-2">Storage Empty</p><p class="text-lg font-bold text-slate-400">Buy items from the Marketplace!</p></div>';
-            return '<div class="flex flex-col gap-6">' + Object.entries(cats).map(([catKey, catData]) => {
+
+            const activeStorageTab = state.storageTab || 'items';
+            const ticketCount = cats.ticket.items.length;
+            const tabBar = `<div class="flex gap-1.5 mb-5">
+                <button onclick="updateState({storageTab:'items'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='items' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Items</button>
+                <button onclick="updateState({storageTab:'tickets'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 flex items-center justify-center gap-2 ${activeStorageTab==='tickets' ? 'bg-amber-500 border-amber-600 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">
+                    <img src="https://i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
+                    Tickets${ticketCount > 0 ? ` (${ticketCount})` : ''}
+                </button>
+            </div>`;
+
+            if (!hasAny) return tabBar + '<div class="text-center py-16"><p class="text-3xl font-black text-slate-400 uppercase mb-2">Storage Empty</p><p class="text-lg font-bold text-slate-400">Buy items from the Marketplace!</p></div>';
+
+            if (activeStorageTab === 'tickets') {
+                if (cats.ticket.items.length === 0) return tabBar + '<div class="text-center py-16"><p class="text-2xl font-black text-slate-400 uppercase mb-2">No Tickets</p><p class="text-sm font-bold text-slate-400">Buy tickets from the shop!</p></div>';
+                const ticketCat = cats.ticket;
+                return tabBar + `<div class="flex flex-col gap-3">${ticketCat.items.map(item => {
+                    const isEquipped = (state.equippedGlory||[]).includes(item.id);
+                    const qty = state.inventory[item.id] || 0;
+                    if (item.isGlory) {
+                        return `<div class="flex items-center justify-between p-3 border-4 ${isEquipped ? 'border-amber-500 bg-amber-50' : 'border-slate-200 bg-white'}">
+                            <img src="${item.gloryImg}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
+                            <div class="flex-1">
+                                <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                                <p class="text-xs font-bold text-slate-500">${item.description}</p>
+                            </div>
+                            <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
+                        </div>`;
+                    }
+                    return `<div class="flex items-center justify-between p-3 border-4 border-slate-200 bg-white">
+                        <img src="${item.icon}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
+                        <div class="flex-1">
+                            <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
+                            <p class="text-xs font-bold text-slate-500">${item.description}</p>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">x${qty} owned</p>
+                        </div>
+                        <button onclick="useRouletteTicket()" ${qty <= 0 ? 'disabled' : ''} class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${qty > 0 ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">BET</button>
+                    </div>`;
+                }).join('')}</div>`;
+            }
+
+            const itemCats = Object.entries(cats).filter(([k]) => k !== 'ticket');
+            return tabBar + '<div class="flex flex-col gap-6">' + itemCats.map(([catKey, catData]) => {
                 if (catData.items.length === 0) return '';
                 if (catKey === 'skin') {
                     // Group owned skins by set
@@ -1791,6 +1732,7 @@
                     </div>`;
                 }
                 if (catKey === 'special') {
+                    if (catData.items.length === 0) return '';
                     return `<div class="border-4 ${catData.color} p-4 sm:p-6">
                         <h5 class="font-black text-base sm:text-lg uppercase mb-3 text-slate-900">Special Items</h5>
                         <div class="flex flex-col gap-3">
@@ -1803,43 +1745,12 @@
                                     <p class="text-xs font-bold text-slate-500">${item.description}</p>
                                     <p class="text-xs font-bold text-slate-400 mt-0.5">x${qty} owned</p>
                                 </div>
-                                <button onclick="useRouletteTicket()" ${qty <= 0 ? 'disabled' : ''} class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${qty > 0 ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">BET</button>
                             </div>`;
                         }).join('')}
                         </div>
                     </div>`;
                 }
-                if (catKey === 'ticket') {
-                    const ticketIds = ['ticket_bronze','ticket_silver','ticket_gold'];
-                    return `<div class="border-4 ${catData.color} p-4 sm:p-6">
-                        <h5 class="font-black text-base sm:text-lg uppercase mb-3 text-slate-900">Tickets</h5>
-                        <div class="flex flex-col gap-2">
-                        ${catData.items.map(item => {
-                            const isEquipped = (state.equippedGlory||[]).includes(item.id);
-                            const qty = state.inventory[item.id] || 0;
-                            if (item.isGlory) {
-                                return `<div class="flex items-center justify-between p-3 border-4 ${isEquipped ? 'border-amber-500 bg-amber-50' : 'border-slate-200 bg-white'}">
-                                    <img src="${item.gloryImg}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
-                                    <div class="flex-1">
-                                        <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
-                                        <p class="text-xs font-bold text-slate-500">${item.description}</p>
-                                    </div>
-                                    <button onclick="toggleEquip('${item.id}')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${isEquipped ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>
-                                </div>`;
-                            }
-                            return `<div class="flex items-center justify-between p-3 border-4 border-slate-200 bg-white">
-                                <img src="${item.icon}" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;margin-right:12px;" />
-                                <div class="flex-1">
-                                    <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
-                                    <p class="text-xs font-bold text-slate-500">${item.description}</p>
-                                    <p class="text-xs font-bold text-slate-400 mt-0.5">x${qty} owned</p>
-                                </div>
-                                <button onclick="useRouletteTicket()" ${qty <= 0 ? 'disabled' : ''} class="pixel-button px-4 py-2 font-black text-sm shrink-0 ${qty > 0 ? 'bg-indigo-600 border-indigo-800 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">BET</button>
-                            </div>`;
-                        }).join('')}
-                        </div>
-                    </div>`;
-                }
+                if (catKey === 'ticket') return '';
                 if (catKey === 'glory') {
                     const gloryIds = ['glory_ticket','glory_aura','glory_diary'];
                     const allGloryEq = gloryIds.every(id => (state.equippedGlory||[]).includes(id));
@@ -1862,6 +1773,7 @@
                         </div>
                     </div>`;
                 }
+                if (catData.items.length === 0) return '';
                 return `<div class="border-4 ${catData.color} p-4 sm:p-6"><h5 class="font-black text-base sm:text-lg uppercase mb-3 sm:mb-4 text-slate-900">${catData.name}</h5>
                     <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
                         ${catData.items.map(item => {
@@ -2209,13 +2121,12 @@
                         </button>
                     </div>
 
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;" >v0.53 — Latest</p>
-                    <a href="https://x.com/@gubbyclicker" target="_blank" rel="noopener" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;" onclick="event.stopPropagation()"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></a>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v0.91 Beta</p>
+                    <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
             `;
             lucide.createIcons();
-            updateChipStatusUI();
             if (prevActiveId === 'admin-input') {
                 const el = document.getElementById('admin-input');
                 if (el) { el.focus(); el.value = prevValue; el.setSelectionRange(prevValue.length, prevValue.length); }
@@ -2306,5 +2217,22 @@
         }
 
     </script>
+
+    <!-- Social Modal -->
+    <div id="social-modal" onclick="if(event.target===this)closeSocialModal()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+        <div style="background:#fff;border:4px solid #1e293b;padding:28px 24px;max-width:300px;width:90%;display:flex;flex-direction:column;gap:14px;position:relative;font-family:'Pixelify Sans',monospace;">
+            <button onclick="closeSocialModal()" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;font-weight:900;cursor:pointer;color:#64748b;line-height:1;">✕</button>
+            <p style="font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:2px;color:#1e293b;margin:0;">Find Us</p>
+            <a href="https://x.com/@gubbyclicker" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px;border:4px solid #1e293b;background:#000;color:#fff;text-decoration:none;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                X (Twitter)
+            </a>
+            <a href="https://discord.gg/Pxpp6v37Tz" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px;border:4px solid #5865F2;background:#5865F2;color:#fff;text-decoration:none;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                Discord
+            </a>
+        </div>
+    </div>
+
 </body>
 </html>
