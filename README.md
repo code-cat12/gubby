@@ -36,4 +36,4 @@ A free browser-based clicker game made by **Icy Games**. No download. No account
 
 ---
 
-*v0.91 Beta — Made by Icy Games*
+*v1.12 Full Release — Made by Icy Games*
