@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gubby Clicker</title>
-    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -187,11 +186,6 @@
         .action-button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
         .action-button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
         @media (max-width: 768px) {
-            /* Global mobile centering */
-            .min-h-screen { align-items: center !important; }
-            .pixel-card, .modal-content { text-align: center; }
-            .flex-col { align-items: center; }
-            header, header > * { text-align: center !important; justify-content: center !important; }
             /* Stats bar */
             .stat-display { padding: 6px 10px; }
             /* Action buttons — 2 columns on mobile */
@@ -258,14 +252,13 @@
     </style>
     <style>
         #loading-screen {
-            position: fixed; inset: 0; z-index: 99999; background: #0a0a0a;
+            position: fixed; inset: 0; z-index: 99998; background: #0a0a0a;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
         #loading-screen.fade-out { animation: loadingFadeOut 0.6s ease forwards; }
         @keyframes loadingFadeOut { to { opacity: 0; pointer-events: none; } }
         #loading-gubby-wrapper { position: relative; width: 280px; height: 280px; cursor: pointer; }
         #loading-gubby-spin { width: 280px; height: 280px; image-rendering: pixelated; display: block; filter: drop-shadow(0 0 20px rgba(255,255,255,0.15)); }
-        #loading-mini-toad { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 60px; height: 60px; image-rendering: pixelated; cursor: pointer; animation: toadSpin360 0.6s linear infinite; z-index: 10; }
         #loading-title { font-family: 'Pixelify Sans', monospace; font-size: 28px; font-weight: 900; color: #fff; letter-spacing: 4px; text-transform: uppercase; }
         #loading-sub { font-family: 'Pixelify Sans', monospace; font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 2px; text-transform: uppercase; }
         #loading-bar-wrap { width: 260px; height: 8px; background: #1e293b; border: 2px solid #334155; overflow: hidden; }
@@ -273,53 +266,6 @@
         #loading-click-hint { font-family: 'Pixelify Sans', monospace; font-size: 11px; color: #1e293b; letter-spacing: 1px; transition: color 0.3s; height: 16px; }
         #loading-click-hint.heating { color: #dc2626; animation: hintPulse 0.4s ease-in-out infinite alternate; }
         @keyframes hintPulse { from { opacity: 0.6; } to { opacity: 1; } }
-        @keyframes toadSpin360 { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
-        @keyframes fireFlicker { from { transform: scaleY(1) scaleX(1); opacity: 1; } to { transform: scaleY(0.8) scaleX(1.15); opacity: 0.85; } }
-        #toad-floater { position: fixed; z-index: 99998; pointer-events: all; display: none; flex-direction: column; align-items: center; gap: 0; }
-        #toad-floater-bubble {
-            position: relative;
-            background: #fff;
-            border: 4px solid #1e293b;
-            border-radius: 0;
-            padding: 8px 14px;
-            font-family: 'Pixelify Sans', monospace;
-            font-size: 13px;
-            font-weight: 900;
-            color: #1e293b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 4px 4px 0 #1e293b;
-            white-space: nowrap;
-            cursor: pointer;
-            margin-bottom: 0;
-            image-rendering: pixelated;
-        }
-        #toad-floater-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px; height: 12px;
-            background: #fff;
-            border-right: 4px solid #1e293b;
-            border-bottom: 4px solid #1e293b;
-            clip-path: polygon(0 0, 100% 100%, 100% 0);
-            z-index: 1;
-        }
-        #toad-floater-bubble::before {
-            content: '';
-            position: absolute;
-            bottom: -16px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 14px solid #1e293b;
-            z-index: 0;
-        }
-        #toad-floater img { width: 96px; height: 96px; image-rendering: pixelated; cursor: pointer; margin-top: 3px; }
 
         #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
         #crash-overlay.active { display:block; }
@@ -418,7 +364,7 @@
     <!-- BOSS OVERLAY -->
     <div id="boss-overlay">
         <div id="boss-title">GUBBY LORD</div>
-        <img id="boss-gubby" src="https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
+        <img id="boss-gubby" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
         <div id="boss-clicks">0 / 5000</div>
         <div id="boss-bar-wrap"><div id="boss-bar-fill" style="width:0%"></div></div>
         <div id="boss-timer">20:00 remaining</div>
@@ -441,7 +387,16 @@
         <button onclick="closeBossDefeated()" style="font-family:'Pixelify Sans',monospace;background:#fbbf24;border:4px solid #92400e;color:#1a0000;padding:12px 32px;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Claim Reward</button>
     </div>
 
-
+    <div id="loading-screen">
+        <div id="loading-title">Gubby Clicker</div>
+        <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
+            <img id="loading-gubby-spin" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" alt="Gubby" />
+        </div>
+        <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
+        <div id="loading-sub">Loading...</div>
+        <div id="loading-click-hint"></div>
+        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:700;color:#1e293b;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Made by Icy Games</div>
+    </div>
     <div id="demon-intro" style="display:none;">
         <div id="demon-intro-inner">
             <div id="demon-intro-title">Demon Mode</div>
@@ -449,36 +404,13 @@
             <button id="demon-intro-close" onclick="closeDemonIntro()">Enter ›</button>
         </div>
     </div>
-
-    <div id="loading-screen">
-        <div id="loading-title">Gubby Clicker</div>
-        <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
-            <img id="loading-gubby-spin" src="https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" alt="Gubby" />
-            <img id="loading-mini-toad" src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" alt="Toad" onclick="event.stopPropagation();loadingToadClick()" />
-        </div>
-        <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
-        <div id="loading-sub">Loading...</div>
-        <div id="loading-click-hint"></div>
-        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:700;color:#475569;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Made by Icy Games</div>
-    </div>
-
-    <!-- TOAD FLOATERS -->
-    <div id="toad-floater">
-        <div id="toad-floater-bubble" onclick="dismissToadFloater()"></div>
-        <img src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" />
-    </div>
-    <div id="toad-floater-2" style="position:fixed;z-index:99997;pointer-events:all;display:none;flex-direction:column;align-items:center;gap:0;">
-        <div id="toad-floater-bubble-2" onclick="dismissToadFloater()" style="position:relative;background:#fff;border:4px solid #1e293b;border-radius:0;padding:8px 14px;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#1e293b;text-transform:uppercase;letter-spacing:1px;box-shadow:4px 4px 0 #1e293b;white-space:nowrap;cursor:pointer;"></div>
-        <img src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" style="width:96px;height:96px;image-rendering:pixelated;cursor:pointer;margin-top:3px;" />
-    </div>
-
     <div id="page-wrapper" style="display:flex;min-height:100vh;align-items:stretch;">
         <div id="root" style="min-width:100vw;width:100vw;flex-shrink:0;"></div>
     </div>
 
 
     <script>
-        const GUBBY_DEFAULT_IMG = "https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
+        const GUBBY_DEFAULT_IMG = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
         function getGubbyImgUrl() {
             if (state.equippedSkin) {
                 const skin = SHOP_ITEMS.find(i => i.id === state.equippedSkin && i.isSkin);
@@ -511,34 +443,34 @@
         const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
-            { id: 'weak_i',      name: 'Weak Potion I',       category: 'small',  baseCost: 100,        power: 8,        duration: 20,  icon: 'https://wsrv.nl/?url=i.postimg.cc/Dzpccx68/potion-259.png'  },
-            { id: 'weak_ii',     name: 'Weak Potion II',      category: 'small',  baseCost: 450,        power: 19,       duration: 20,  icon: 'https://wsrv.nl/?url=i.postimg.cc/3wfZZt1W/potion-131.png'  },
-            { id: 'weak_iii',    name: 'Weak Potion III',     category: 'small',  baseCost: 1200,       power: 90,       duration: 18,  icon: 'https://wsrv.nl/?url=i.postimg.cc/vm2vv0hB/potion-067.png'  },
-            { id: 'ordinary_i',  name: 'Ordinary Potion I',   category: 'medium', baseCost: 12000,      power: 330,      duration: 18,  icon: 'https://wsrv.nl/?url=i.postimg.cc/N0CxxdD2/potion-263.png'  },
-            { id: 'ordinary_ii', name: 'Ordinary Potion II',  category: 'medium', baseCost: 60000,      power: 825,      duration: 16,  icon: 'https://wsrv.nl/?url=i.postimg.cc/g0tKKgsw/potion-135.png'  },
-            { id: 'ordinary_iii',name: 'Ordinary Potion III', category: 'medium', baseCost: 200000,     power: 4125,     duration: 16,  icon: 'https://wsrv.nl/?url=i.postimg.cc/pdcBBsCr/potion-071.png'  },
-            { id: 'strong_i',    name: 'Strong Potion I',     category: 'large',  baseCost: 800000,     power: 22500,    duration: 14,  icon: 'https://wsrv.nl/?url=i.postimg.cc/hGZ002sm/potion-279.png'  },
-            { id: 'strong_ii',   name: 'Strong Potion II',    category: 'large',  baseCost: 4000000,    power: 90000,    duration: 14,  icon: 'https://wsrv.nl/?url=i.postimg.cc/VNZFFKgb/potion-151.png'  },
-            { id: 'strong_iii',  name: 'Strong Potion III',   category: 'large',  baseCost: 12000000,   power: 450000,   duration: 12,  icon: 'https://wsrv.nl/?url=i.postimg.cc/GpgjjXK8/potion-087.png'  },
-            { id: 'powerful_i',  name: 'Powerful Potion I',   category: 'op',     baseCost: 80000000,   power: 4750000,  duration: 12,  icon: 'https://wsrv.nl/?url=i.postimg.cc/HJ55Y4fk/potion-295.png'  },
-            { id: 'powerful_ii', name: 'Powerful Potion II',  category: 'op',     baseCost: 400000000,  power: 47500000, duration: 10,  icon: 'https://wsrv.nl/?url=i.postimg.cc/t1PPqtLC/potion-167.png'  },
-            { id: 'powerful_iii',name: 'Powerful Potion III', category: 'op',     baseCost: 2000000000, power: 237500000,duration: 10,  icon: 'https://wsrv.nl/?url=i.postimg.cc/8FWWpBqp/potion-103.png'  },
-            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
-            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
-            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://wsrv.nl/?url=i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
-            { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
-            { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
-            { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://wsrv.nl/?url=dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
-            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
-            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
-            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
-            { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
-            { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
-            { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
-            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'ticket', baseCost: 500000, isSpecialItem: true, icon: 'https://wsrv.nl/?url=i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
-            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'ticket', baseCost: 250000,  permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
-            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'ticket', baseCost: 500000,  permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
-            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'ticket', baseCost: 1000000, permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15,  icon: 'https://i.postimg.cc/Dzpccx68/potion-259.png'  },
+            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 19,       duration: 12,  icon: 'https://i.postimg.cc/3wfZZt1W/potion-131.png'  },
+            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 90,       duration: 10,  icon: 'https://i.postimg.cc/vm2vv0hB/potion-067.png'  },
+            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 330,      duration: 20,  icon: 'https://i.postimg.cc/N0CxxdD2/potion-263.png'  },
+            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 825,      duration: 9,   icon: 'https://i.postimg.cc/g0tKKgsw/potion-135.png'  },
+            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 4125,     duration: 9,   icon: 'https://i.postimg.cc/pdcBBsCr/potion-071.png'  },
+            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 22500,    duration: 9,   icon: 'https://i.postimg.cc/hGZ002sm/potion-279.png'  },
+            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 90000,    duration: 8,   icon: 'https://i.postimg.cc/VNZFFKgb/potion-151.png'  },
+            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 450000,   duration: 7,   icon: 'https://i.postimg.cc/GpgjjXK8/potion-087.png'  },
+            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 4750000,  duration: 10,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
+            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 47500000, duration: 12,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
+            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 237500000,duration: 15,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
+            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
+            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
+            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
+            { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
+            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
+            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
+            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
+            { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
+            { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
+            { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
+            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'ticket', baseCost: 500000, isSpecialItem: true, icon: 'https://i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
+            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'ticket', baseCost: 250000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'ticket', baseCost: 500000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'ticket', baseCost: 1000000, permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'Equip for 2.5x click power + sell bonus.' },
         ];
 
         const WORLD_LORE = {
@@ -591,8 +523,7 @@
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
             storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
-            showSettings: false, showCredits: false, showHamburger: false, showStatsCard: false, showEventsModal: false,
-            toadStreak: 0, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
+            showSettings: false, showCredits: false, showHamburger: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             visitedWorlds: ['plains'],
             showFragmentsModal: false, showWorldLore: null,
@@ -662,7 +593,6 @@
                     bossClicks: state.bossClicks || 0,
                     // Glory
                     equippedGlory: state.equippedGlory || [],
-                    toadStreak: state.toadStreak || 0,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -723,7 +653,7 @@
         };
         window.addEventListener('DOMContentLoaded', () => {
             console.log('%c Gubby Clicker ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
-            console.log('%c v1.12 Full Release — Made by Icy Games ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
+            console.log('%c v0.91 Beta — Made by Icy Games ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
             startSpinLoop();
             startLoadingBar();
@@ -832,7 +762,6 @@
                 'accio omnia': '/give all',
                 'accio gloria': '/give glory',
                 'accio tickets': '/give tickets',
-                'accio drop': '/drop claim',
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
@@ -948,13 +877,6 @@
                     changes.gold = state.gold + glorySell;
                     changes.clicks = 0;
                     message = `Aurum Gloria — ${formatLargeNumber(glorySell, 2)} ${CURRENCIES[state.theme].name}s`;
-                }
-            } else if (command === '/drop') {
-                const sub = parts[1]?.toLowerCase();
-                if (sub === 'claim') {
-                    if (state.lastDropId) localStorage.removeItem('gubby_drop_' + state.lastDropId);
-                    fetchDrop(true);
-                    message = 'Accio Drop — resetting...';
                 }
             } else if (command === '/gloriamax') {
                 if (state.activeBuff) {
@@ -1127,26 +1049,6 @@
         function handleMainClick(e) {
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
-            // Rate limit check — Toad intervenes if clicking too fast (>4/s)
-            const now = Date.now();
-            if (now < _rateLimitUntil) return;
-            _recentClicks = _recentClicks.filter(t => now - t < 1000);
-            _recentClicks.push(now);
-            if (_recentClicks.length > 20) {
-                _rateLimitUntil = now + 5000;
-                _recentClicks = [];
-                const el = document.getElementById('toad-floater');
-                const bubble = document.getElementById('toad-floater-bubble');
-                if (el && bubble) {
-                    const x = window.innerWidth / 2 - 48; const y = window.innerHeight / 2 - 100;
-                    el.style.left = x + 'px'; el.style.top = y + 'px';
-                    el.style.transform = 'rotate(-8deg)';
-                    bubble.textContent = 'SIR PLEASE SLOW DOWN';
-                    el.style.display = 'flex';
-                    setTimeout(() => { el.style.display = 'none'; }, 5000);
-                }
-                return;
-            }
 
             const currentPower = state.infinityRebirth
                 ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult()
@@ -1186,10 +1088,10 @@
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
                 const imgIII = isDemon
-                    ? 'https://wsrv.nl/?url=dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
+                    ? 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
                     : isPancake
-                        ? 'https://wsrv.nl/?url=i.postimg.cc/QKSNz721/image.png'
-                        : 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png';
+                        ? 'https://i.postimg.cc/QKSNz721/image.png'
+                        : 'https://i.postimg.cc/nzCdK6z1/image.png';
                 const count = 3;
                 for (let i = 0; i < count; i++) {
                     const plush = document.createElement('img');
@@ -1271,10 +1173,6 @@
         }, true);
 
         function sellClicks() {
-            if (state.toadBlockSell) {
-                updateState({ notification: { title: 'TOAD SAYS NO', message: "Click Toad to get him off the Sell button.", type: 'error' } });
-                return;
-            }
             if (state.clicks > 0) {
                 const world = DESTINATIONS.find(d => d.id === state.theme);
                 const worldMult = world ? world.mult : 1;
@@ -1499,10 +1397,10 @@
             if (skinLevel < 2) return;
 
             const imgUrl = isDemon
-                ? 'https://wsrv.nl/?url=i.postimg.cc/t1tGR6Pk/image.png'
+                ? 'https://i.postimg.cc/t1tGR6Pk/image.png'
                 : isPancake
-                    ? 'https://wsrv.nl/?url=i.postimg.cc/G9f0hqbX/image.png'
-                    : 'https://wsrv.nl/?url=i.postimg.cc/wMh33rP2/image.png';
+                    ? 'https://i.postimg.cc/G9f0hqbX/image.png'
+                    : 'https://i.postimg.cc/wMh33rP2/image.png';
             const baseSize = isDemon ? 60 : isPancake ? 48 : 24;
             const sizeRange = isDemon ? 40 : isPancake ? 24 : 24;
             const baseDur = isDemon ? 17 : isPancake ? 12 : 11;
@@ -1619,7 +1517,7 @@
                         const skinSets = [
                             { key: 'star',    label: 'Star Gubby',    stateTab: 'skinShopTab',         bg: 'https://i.redd.it/8hr60jort3w91.gif',                                                               darkText: false },
                             { key: 'demon',   label: 'Demon Gubby',   stateTab: 'skinShopTabDemon',    bg: 'https://i.pinimg.com/originals/aa/04/0e/aa040ec6845c62139afbfa67c7988540.jpg',                      darkText: false },
-                            { key: 'pancake', label: 'Pancake Gubby', stateTab: 'skinShopTabPancake',  bg: 'https://wsrv.nl/?url=i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif',                                                   darkText: true  },
+                            { key: 'pancake', label: 'Pancake Gubby', stateTab: 'skinShopTabPancake',  bg: 'https://i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif',                                                   darkText: true  },
                         ];
                         return skinSets.map(set => {
                             const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin' && i.skinSet === set.key);
@@ -1756,7 +1654,7 @@
             const tabBar = `<div class="flex gap-1.5 mb-5">
                 <button onclick="updateState({storageTab:'items'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='items' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Items</button>
                 <button onclick="updateState({storageTab:'tickets'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 flex items-center justify-center gap-2 ${activeStorageTab==='tickets' ? 'bg-amber-500 border-amber-600 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">
-                    <img src="https://wsrv.nl/?url=i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
+                    <img src="https://i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
                     Tickets${ticketCount > 0 ? ` (${ticketCount})` : ''}
                 </button>
             </div>`;
@@ -1941,7 +1839,6 @@
                                     { spell: 'Chroma', cmd: '/gradient', desc: 'Toggle gradient tags' },
                                     { spell: 'Expelliarmus', cmd: '/disarm', desc: 'Lose all items' },
                                     { spell: 'Avada Kedavra', cmd: '/crash', desc: 'Secret boss encounter' },
-                                    { spell: 'Accio Drop', cmd: '/drop claim', desc: 'Reset and re-show the active drop' },
                                 ].map(s => `<div class="flex items-baseline gap-2">
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:14px;color:#c4b5fd;font-weight:900;" class="flex-shrink-0">${s.spell}</span>
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#7c3aed;font-weight:700;">— ${s.desc}</span>
@@ -2159,42 +2056,6 @@
                     ${state.showSettings ? renderSettings() : ''}
 
 
-                    ${state.showStatsCard ? `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showStatsCard:false})">
-                        <div class="bg-white pixel-card w-full modal-content overflow-hidden" style="max-width:420px;">
-                            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center">
-                                <div><p class="text-slate-400 text-xs font-black uppercase tracking-widest">Gubby Clicker</p><h3 class="text-white font-black text-2xl uppercase">My Stats</h3></div>
-                                <button onclick="updateState({showStatsCard:false})" class="text-white/60 hover:text-white text-2xl font-black leading-none">✕</button>
-                            </div>
-                            <div class="p-6 flex flex-col gap-4">
-                                <div class="border-4 border-slate-200 bg-slate-50 p-4 flex flex-col gap-3">
-                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
-                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">World</span>
-                                        <span class="font-black text-sm text-slate-900">${DESTINATIONS.find(d=>d.id===state.theme)?.name||'Peaceful Grasslands'}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
-                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Ascensions</span>
-                                        <span class="font-black text-sm text-slate-900">${state.prestigeLevel}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
-                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Click Power</span>
-                                        <span class="font-black text-sm text-indigo-600">${getCombinedSetMult()}x</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
-                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Sell Bonus</span>
-                                        <span class="font-black text-sm text-emerald-600">${getSellMult()}x</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Total Clicks</span>
-                                        <span class="font-black text-sm text-slate-900">${formatLargeNumber(state.clicks,0)}</span>
-                                    </div>
-                                </div>
-                                <button onclick="copyStats()" class="pixel-button w-full py-3 font-black uppercase text-sm bg-indigo-600 border-indigo-800 text-white">Copy &amp; Share</button>
-                                <p id="stats-copy-msg" class="text-center text-xs font-black text-emerald-600 hidden">Copied to clipboard!</p>
-                            </div>
-                        </div>
-                    </div>` : ''}
-
-
 
 
 
@@ -2225,17 +2086,6 @@
                             </div>
                         </div>
                     </header>
-
-                    <!-- DROP BANNER -->
-                    ${state.activeDrop ? `<div class="z-20 w-full max-w-md mx-auto px-4 mb-2">
-                        <div class="flex items-center justify-between gap-3 px-4 py-3 border-4 border-yellow-500 bg-yellow-50" style="box-shadow:4px 4px 0 rgba(0,0,0,0.15);">
-                            <div class="flex-1 min-w-0">
-                                <p class="font-black text-sm uppercase text-yellow-900 tracking-wide">Admin Drop Available!</p>
-                                <p class="text-xs font-bold text-yellow-700 truncate">${state.activeDrop.message || 'Free items from Icy Games'}</p>
-                            </div>
-                            <button onclick="claimDrop()" class="pixel-button shrink-0 bg-yellow-500 border-yellow-700 text-white px-4 py-2 font-black text-sm">CLAIM</button>
-                        </div>
-                    </div>` : ''}
 
                     <!-- GUBBY -->
                     <main class="z-10 relative flex flex-col items-center justify-center w-full mb-4">
@@ -2271,8 +2121,8 @@
                         </button>
                     </div>
 
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v1.12 Full Release</p>
-                    <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://wsrv.nl/?url=i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v0.91 Beta</p>
+                    <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
             `;
@@ -2286,92 +2136,8 @@
             }
         }
 
-        // ── TOAD FLOATER ────────────────────────────────────────
-        const TOAD_IMG = 'https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png';
-        const TOAD_MSGS = ['EXCUSE ME','ACTUALLY...','UM. HELLO?','SIR. SIR.','YOUR GOLD IS IN ANOTHER CASTLE','HAVE YOU TRIED CLICKING SOMEWHERE ELSE','I NEED TO SPEAK WITH YOU','NOT NOW IS NOT AN OPTION','THIS IS VERY IMPORTANT','WAIT WAIT WAIT','I HAVE CONCERNS','CAN I HELP YOU?','SCUSAMI!','ENTSCHULDIGUNG','すみません','PARDON MOI','DISCULPE','对不起','PERMISO','ENTSCHULDIGE MICH'];
-        let _toadFloaterTimeout = null, _toadFloaterInterval = null, _toadClickCount = 0, _toadCumulative = 0, _toadAutoDismissed = false, _toadAppearCount = 0;
-        // Rate limiting
-        let _recentClicks = [], _rateLimitUntil = 0;
-        function _placeToad(elId, bubbleId) {
-            const el = document.getElementById(elId);
-            const bubble = document.getElementById(bubbleId);
-            if (!el || !bubble) return;
-            const size = 72 + Math.floor(Math.random() * 56); // 72–128px
-            const margin = 110;
-            const x = margin + Math.random() * (window.innerWidth - margin * 2 - size);
-            const y = margin + Math.random() * (window.innerHeight - margin * 2 - size - 60);
-            const angle = (Math.random() - 0.5) * 30;
-            el.style.left = x + 'px'; el.style.top = y + 'px';
-            el.style.transform = `rotate(${angle}deg)`;
-            // Brag every 5th appearance
-            const msg = (_toadAppearCount > 0 && _toadAppearCount % 5 === 0)
-                ? `VISIT NUMBER ${_toadAppearCount} 🍄`
-                : TOAD_MSGS[Math.floor(Math.random() * TOAD_MSGS.length)];
-            bubble.textContent = msg;
-            el.querySelectorAll('img').forEach(img => { img.style.width = size + 'px'; img.style.height = size + 'px'; });
-            el.style.display = 'flex';
-        }
-        function showToadFloater() {
-            _toadAutoDismissed = false;
-            _toadAppearCount++;
-            // Temporarily change game title
-            const titleEl = document.querySelector('.gubby-title') || [...document.querySelectorAll('span')].find(el => el.textContent.trim() === 'Gubby Clicker');
-            if (titleEl) {
-                titleEl.textContent = 'Toad Clicker';
-                setTimeout(() => { if (titleEl) titleEl.textContent = 'Gubby Clicker'; }, 3500);
-            }
-            // 25% chance to block the sell button
-            const blockSell = Math.random() < 0.25;
-            if (blockSell) {
-                const sellBtn = document.querySelector('.sell-ascend-row button:last-child');
-                if (sellBtn) {
-                    const rect = sellBtn.getBoundingClientRect();
-                    const el = document.getElementById('toad-floater');
-                    const bubble = document.getElementById('toad-floater-bubble');
-                    if (el && bubble) {
-                        el.style.left = (rect.left + rect.width / 2 - 48) + 'px';
-                        el.style.top = (rect.top - 110) + 'px';
-                        el.style.transform = 'rotate(-6deg)';
-                        bubble.textContent = "DON'T EVEN THINK ABOUT IT";
-                        el.style.display = 'flex';
-                        state.toadBlockSell = true;
-                    }
-                }
-            } else {
-                _placeToad('toad-floater', 'toad-floater-bubble');
-            }
-            // 2nd toad after 25 cumulative clicks
-            if (_toadCumulative >= 25) _placeToad('toad-floater-2', 'toad-floater-bubble-2');
-            // Random screen flip (15% chance)
-            if (Math.random() < 0.15) {
-                const pw = document.getElementById('page-wrapper');
-                if (pw) { pw.style.transform = 'rotate(180deg)'; pw.style.transformOrigin = 'center center'; setTimeout(() => { pw.style.transform = ''; }, 3000); }
-            }
-            if (_toadFloaterTimeout) clearTimeout(_toadFloaterTimeout);
-            _toadFloaterTimeout = setTimeout(() => { _toadAutoDismissed = true; state.toadBlockSell = false; _hideToadFloaters(); resetToadStreak(); }, 3500);
-        }
-        function _hideToadFloaters() {
-            ['toad-floater','toad-floater-2'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-        }
-        function resetToadStreak() {
-            if (state.toadStreak > 0) updateState({ toadStreak: 0 }, true);
-        }
-        function dismissToadFloater() {
-            if (_toadFloaterTimeout) clearTimeout(_toadFloaterTimeout);
-            _hideToadFloaters();
-            state.toadBlockSell = false;
-            if (_toadAutoDismissed) return;
-            _toadClickCount++;
-            _toadCumulative++;
-        }
-        function startToadFloater() {
-            if (_toadFloaterInterval) return;
-            setTimeout(() => { showToadFloater(); _toadFloaterInterval = setInterval(showToadFloater, 8000); }, 5000);
-        }
-
         // ── LOADING SCREEN ───────────────────────────────────────
         let loadingClickCount = 0;
-        let loadingToadClickCount = 0;
         const DEMON_CLICKS_NEEDED = 5;
         let demonFlashInterval = null;
         let _spinDeg = 0, _spinSpeed = 1.5, _spinRaf = null;
@@ -2393,23 +2159,6 @@
                 bar.style.width = _loadProgress + '%';
                 if (_loadProgress >= 100) clearInterval(_loadBarInterval);
             }, 60);
-        }
-
-        function loadingToadClick() {
-            loadingToadClickCount++;
-            const toad = document.getElementById('loading-mini-toad');
-            if (toad) toad.style.filter = `brightness(${1 + loadingToadClickCount * 0.3}) drop-shadow(0 0 ${loadingToadClickCount * 6}px rgba(220,38,38,0.8))`;
-            if (loadingToadClickCount >= 5) {
-                if (toad) toad.style.animation = 'toadSpin360 0.1s linear infinite';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').classList.add('fade-out');
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = 'none';
-                        document.getElementById('demon-intro').style.display = 'flex';
-                        updateState({ demonMode: true, loadingDone: true });
-                    }, 600);
-                }, 400);
-            }
         }
 
         function loadingGubbyClick() {
@@ -2439,50 +2188,9 @@
             }
         }
 
-
-        function copyStats() {
-            const world = DESTINATIONS.find(d => d.id === state.theme)?.name || 'Peaceful Grasslands';
-            const text = `Gubby Clicker Stats\n——————————————\nWorld: ${world}\nAscensions: ${state.prestigeLevel}\nClick Power: ${getCombinedSetMult()}x\nSell Bonus: ${getSellMult()}x\nTotal Clicks: ${formatLargeNumber(state.clicks,0)}\n\nPlay free at x.com/@gubbyclicker`;
-            navigator.clipboard.writeText(text).then(() => {
-                const msg = document.getElementById('stats-copy-msg');
-                if (msg) { msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 2000); }
-            });
-        }
-
-        const GIST_DROP_URL = 'https://gist.githubusercontent.com/code-cat12/4f3951491077c3b4a37f09f54e210018/raw/drop.json';
-        function fetchDrop(forceShow) {
-            fetch(GIST_DROP_URL + '?t=' + Date.now())
-                .then(r => r.json())
-                .then(drop => {
-                    if (!drop || !drop.id) return;
-                    state.lastDropId = drop.id;
-                    const claimed = localStorage.getItem('gubby_drop_' + drop.id) === '1';
-                    if (!claimed || forceShow) updateState({ activeDrop: drop });
-                })
-                .catch(() => {});
-        }
-        function claimDrop() {
-            const drop = state.activeDrop;
-            if (!drop) return;
-            // Increment global counter
-            fetch(`https://api.counterapi.dev/v1/gubbyclicker/${drop.id}/up`).catch(() => {});
-            const newInv = { ...state.inventory };
-            const given = [];
-            (drop.items || []).forEach(id => {
-                const item = SHOP_ITEMS.find(i => i.id === id);
-                if (item) { newInv[id] = (newInv[id] || 0) + 1; given.push(item.name); }
-            });
-            const goldGain = drop.gold || 0;
-            localStorage.setItem('gubby_drop_' + drop.id, '1');
-            const msg = [given.length ? given.join(', ') : '', goldGain ? formatLargeNumber(goldGain, 0) + ' Gold' : ''].filter(Boolean).join(' + ');
-            updateState({ inventory: newInv, gold: state.gold + goldGain, activeDrop: null, notification: { title: 'Drop Claimed!', message: msg || 'Enjoy your reward!', type: 'success' } });
-        }
-
         function finishLoading() {
             if (state.loadingDone) return;
             loadGame();
-            fetchDrop();
-            startToadFloater();
             createFloatingStars();
             _loadProgress = 100; const bar = document.getElementById('loading-bar-fill'); if (bar) bar.style.width = '100%';
             clearInterval(_loadBarInterval);
@@ -2498,7 +2206,6 @@
             document.getElementById('demon-intro').style.display = 'none';
             startDemonFlash();
         }
-
         function startDemonFlash() {
             if (demonFlashInterval) return;
             document.querySelectorAll('.floating-star').forEach(s => s.remove());
