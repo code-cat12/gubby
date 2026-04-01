@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gubby Clicker</title>
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/8JFZMJKK/image.png">
+    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -418,7 +418,7 @@
     <!-- BOSS OVERLAY -->
     <div id="boss-overlay">
         <div id="boss-title">GUBBY LORD</div>
-        <img id="boss-gubby" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
+        <img id="boss-gubby" src="https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
         <div id="boss-clicks">0 / 5000</div>
         <div id="boss-bar-wrap"><div id="boss-bar-fill" style="width:0%"></div></div>
         <div id="boss-timer">20:00 remaining</div>
@@ -453,8 +453,8 @@
     <div id="loading-screen">
         <div id="loading-title">Gubby Clicker</div>
         <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
-            <img id="loading-gubby-spin" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" alt="Gubby" />
-            <img id="loading-mini-toad" src="https://i.postimg.cc/8JFZMJKK/image.png" alt="Toad" onclick="event.stopPropagation();loadingToadClick()" />
+            <img id="loading-gubby-spin" src="https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" alt="Gubby" />
+            <img id="loading-mini-toad" src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" alt="Toad" onclick="event.stopPropagation();loadingToadClick()" />
         </div>
         <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
         <div id="loading-sub">Loading...</div>
@@ -465,11 +465,11 @@
     <!-- TOAD FLOATERS -->
     <div id="toad-floater">
         <div id="toad-floater-bubble" onclick="dismissToadFloater()"></div>
-        <img src="https://i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" />
+        <img src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" />
     </div>
     <div id="toad-floater-2" style="position:fixed;z-index:99997;pointer-events:all;display:none;flex-direction:column;align-items:center;gap:0;">
         <div id="toad-floater-bubble-2" onclick="dismissToadFloater()" style="position:relative;background:#fff;border:4px solid #1e293b;border-radius:0;padding:8px 14px;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#1e293b;text-transform:uppercase;letter-spacing:1px;box-shadow:4px 4px 0 #1e293b;white-space:nowrap;cursor:pointer;"></div>
-        <img src="https://i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" style="width:96px;height:96px;image-rendering:pixelated;cursor:pointer;margin-top:3px;" />
+        <img src="https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" style="width:96px;height:96px;image-rendering:pixelated;cursor:pointer;margin-top:3px;" />
     </div>
 
     <div id="page-wrapper" style="display:flex;min-height:100vh;align-items:stretch;">
@@ -478,7 +478,7 @@
 
 
     <script>
-        const GUBBY_DEFAULT_IMG = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
+        const GUBBY_DEFAULT_IMG = "https://wsrv.nl/?url=static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
         function getGubbyImgUrl() {
             if (state.equippedSkin) {
                 const skin = SHOP_ITEMS.find(i => i.id === state.equippedSkin && i.isSkin);
@@ -511,34 +511,34 @@
         const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
 
         const SHOP_ITEMS = [
-            { id: 'weak_i',      name: 'Weak Potion I',       category: 'small',  baseCost: 100,        power: 8,        duration: 20,  icon: 'https://i.postimg.cc/Dzpccx68/potion-259.png'  },
-            { id: 'weak_ii',     name: 'Weak Potion II',      category: 'small',  baseCost: 450,        power: 19,       duration: 20,  icon: 'https://i.postimg.cc/3wfZZt1W/potion-131.png'  },
-            { id: 'weak_iii',    name: 'Weak Potion III',     category: 'small',  baseCost: 1200,       power: 90,       duration: 18,  icon: 'https://i.postimg.cc/vm2vv0hB/potion-067.png'  },
-            { id: 'ordinary_i',  name: 'Ordinary Potion I',   category: 'medium', baseCost: 12000,      power: 330,      duration: 18,  icon: 'https://i.postimg.cc/N0CxxdD2/potion-263.png'  },
-            { id: 'ordinary_ii', name: 'Ordinary Potion II',  category: 'medium', baseCost: 60000,      power: 825,      duration: 16,  icon: 'https://i.postimg.cc/g0tKKgsw/potion-135.png'  },
-            { id: 'ordinary_iii',name: 'Ordinary Potion III', category: 'medium', baseCost: 200000,     power: 4125,     duration: 16,  icon: 'https://i.postimg.cc/pdcBBsCr/potion-071.png'  },
-            { id: 'strong_i',    name: 'Strong Potion I',     category: 'large',  baseCost: 800000,     power: 22500,    duration: 14,  icon: 'https://i.postimg.cc/hGZ002sm/potion-279.png'  },
-            { id: 'strong_ii',   name: 'Strong Potion II',    category: 'large',  baseCost: 4000000,    power: 90000,    duration: 14,  icon: 'https://i.postimg.cc/VNZFFKgb/potion-151.png'  },
-            { id: 'strong_iii',  name: 'Strong Potion III',   category: 'large',  baseCost: 12000000,   power: 450000,   duration: 12,  icon: 'https://i.postimg.cc/GpgjjXK8/potion-087.png'  },
-            { id: 'powerful_i',  name: 'Powerful Potion I',   category: 'op',     baseCost: 80000000,   power: 4750000,  duration: 12,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
-            { id: 'powerful_ii', name: 'Powerful Potion II',  category: 'op',     baseCost: 400000000,  power: 47500000, duration: 10,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
-            { id: 'powerful_iii',name: 'Powerful Potion III', category: 'op',     baseCost: 2000000000, power: 237500000,duration: 10,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
-            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
-            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
-            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
-            { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
-            { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
-            { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
-            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
-            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
-            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
-            { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
-            { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
-            { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
-            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'ticket', baseCost: 500000, isSpecialItem: true, icon: 'https://i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
-            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'ticket', baseCost: 250000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
-            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'ticket', baseCost: 500000,  permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
-            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'ticket', baseCost: 1000000, permanent: true, isGlory: true, gloryImg: 'https://i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'weak_i',      name: 'Weak Potion I',       category: 'small',  baseCost: 100,        power: 8,        duration: 20,  icon: 'https://wsrv.nl/?url=i.postimg.cc/Dzpccx68/potion-259.png'  },
+            { id: 'weak_ii',     name: 'Weak Potion II',      category: 'small',  baseCost: 450,        power: 19,       duration: 20,  icon: 'https://wsrv.nl/?url=i.postimg.cc/3wfZZt1W/potion-131.png'  },
+            { id: 'weak_iii',    name: 'Weak Potion III',     category: 'small',  baseCost: 1200,       power: 90,       duration: 18,  icon: 'https://wsrv.nl/?url=i.postimg.cc/vm2vv0hB/potion-067.png'  },
+            { id: 'ordinary_i',  name: 'Ordinary Potion I',   category: 'medium', baseCost: 12000,      power: 330,      duration: 18,  icon: 'https://wsrv.nl/?url=i.postimg.cc/N0CxxdD2/potion-263.png'  },
+            { id: 'ordinary_ii', name: 'Ordinary Potion II',  category: 'medium', baseCost: 60000,      power: 825,      duration: 16,  icon: 'https://wsrv.nl/?url=i.postimg.cc/g0tKKgsw/potion-135.png'  },
+            { id: 'ordinary_iii',name: 'Ordinary Potion III', category: 'medium', baseCost: 200000,     power: 4125,     duration: 16,  icon: 'https://wsrv.nl/?url=i.postimg.cc/pdcBBsCr/potion-071.png'  },
+            { id: 'strong_i',    name: 'Strong Potion I',     category: 'large',  baseCost: 800000,     power: 22500,    duration: 14,  icon: 'https://wsrv.nl/?url=i.postimg.cc/hGZ002sm/potion-279.png'  },
+            { id: 'strong_ii',   name: 'Strong Potion II',    category: 'large',  baseCost: 4000000,    power: 90000,    duration: 14,  icon: 'https://wsrv.nl/?url=i.postimg.cc/VNZFFKgb/potion-151.png'  },
+            { id: 'strong_iii',  name: 'Strong Potion III',   category: 'large',  baseCost: 12000000,   power: 450000,   duration: 12,  icon: 'https://wsrv.nl/?url=i.postimg.cc/GpgjjXK8/potion-087.png'  },
+            { id: 'powerful_i',  name: 'Powerful Potion I',   category: 'op',     baseCost: 80000000,   power: 4750000,  duration: 12,  icon: 'https://wsrv.nl/?url=i.postimg.cc/HJ55Y4fk/potion-295.png'  },
+            { id: 'powerful_ii', name: 'Powerful Potion II',  category: 'op',     baseCost: 400000000,  power: 47500000, duration: 10,  icon: 'https://wsrv.nl/?url=i.postimg.cc/t1PPqtLC/potion-167.png'  },
+            { id: 'powerful_iii',name: 'Powerful Potion III', category: 'op',     baseCost: 2000000000, power: 237500000,duration: 10,  icon: 'https://wsrv.nl/?url=i.postimg.cc/8FWWpBqp/potion-103.png'  },
+            { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
+            { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
+            { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://wsrv.nl/?url=i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
+            { id: 'skin_demon_1',  name: 'Demon Gubby I',   category: 'skin', baseCost: 200000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/7L6gT0vY/no-Filter-1-removebg-preview.png', description: 'A dark corrupted form of Gubby.' },
+            { id: 'skin_demon_2',  name: 'Demon Gubby II',  category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/t1tGR6Pk/image.png', description: 'Demons fall out of the sky.', reqSkin: 'skin_demon_1' },
+            { id: 'skin_demon_3',  name: 'Demon Gubby III', category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'demon',   skinLevel: 3, skinImg: 'https://wsrv.nl/?url=dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png', description: 'Demons fly out on click.', reqSkin: 'skin_demon_2' },
+            { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
+            { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
+            { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://wsrv.nl/?url=i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
+            { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
+            { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
+            { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
+            { id: 'roulette_ticket', name: 'Roulette Ticket', category: 'ticket', baseCost: 500000, isSpecialItem: true, icon: 'https://wsrv.nl/?url=i.postimg.cc/ZBrRS5rC/Roulette-Ticket.webp', description: '50/50 bet — win 1,000,000 or lose nothing.' },
+            { id: 'ticket_bronze', name: 'Bronze VP Ticket', category: 'ticket', baseCost: 250000,  permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/XGwJbYw7/Bronze-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_silver', name: 'Silver VP Ticket', category: 'ticket', baseCost: 500000,  permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/phDTHLDm/Silver-VP-Ticket.webp',  description: 'Equip for 2.5x click power + sell bonus.' },
+            { id: 'ticket_gold',   name: 'Gold VP Ticket',   category: 'ticket', baseCost: 1000000, permanent: true, isGlory: true, gloryImg: 'https://wsrv.nl/?url=i.postimg.cc/wyhvpjhB/Gold-VP-Ticket.webp',    description: 'Equip for 2.5x click power + sell bonus.' },
         ];
 
         const WORLD_LORE = {
@@ -1186,10 +1186,10 @@
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
                 const imgIII = isDemon
-                    ? 'https://dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
+                    ? 'https://wsrv.nl/?url=dslv9ilpbe7p1.cloudfront.net/VA9VJ_ZZIJbcraaj1vn1nA_store_logo_image.png'
                     : isPancake
-                        ? 'https://i.postimg.cc/QKSNz721/image.png'
-                        : 'https://i.postimg.cc/nzCdK6z1/image.png';
+                        ? 'https://wsrv.nl/?url=i.postimg.cc/QKSNz721/image.png'
+                        : 'https://wsrv.nl/?url=i.postimg.cc/nzCdK6z1/image.png';
                 const count = 3;
                 for (let i = 0; i < count; i++) {
                     const plush = document.createElement('img');
@@ -1499,10 +1499,10 @@
             if (skinLevel < 2) return;
 
             const imgUrl = isDemon
-                ? 'https://i.postimg.cc/t1tGR6Pk/image.png'
+                ? 'https://wsrv.nl/?url=i.postimg.cc/t1tGR6Pk/image.png'
                 : isPancake
-                    ? 'https://i.postimg.cc/G9f0hqbX/image.png'
-                    : 'https://i.postimg.cc/wMh33rP2/image.png';
+                    ? 'https://wsrv.nl/?url=i.postimg.cc/G9f0hqbX/image.png'
+                    : 'https://wsrv.nl/?url=i.postimg.cc/wMh33rP2/image.png';
             const baseSize = isDemon ? 60 : isPancake ? 48 : 24;
             const sizeRange = isDemon ? 40 : isPancake ? 24 : 24;
             const baseDur = isDemon ? 17 : isPancake ? 12 : 11;
@@ -1619,7 +1619,7 @@
                         const skinSets = [
                             { key: 'star',    label: 'Star Gubby',    stateTab: 'skinShopTab',         bg: 'https://i.redd.it/8hr60jort3w91.gif',                                                               darkText: false },
                             { key: 'demon',   label: 'Demon Gubby',   stateTab: 'skinShopTabDemon',    bg: 'https://i.pinimg.com/originals/aa/04/0e/aa040ec6845c62139afbfa67c7988540.jpg',                      darkText: false },
-                            { key: 'pancake', label: 'Pancake Gubby', stateTab: 'skinShopTabPancake',  bg: 'https://i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif',                                                   darkText: true  },
+                            { key: 'pancake', label: 'Pancake Gubby', stateTab: 'skinShopTabPancake',  bg: 'https://wsrv.nl/?url=i.postimg.cc/3N7gH2S8/obvv1zx851t91.gif',                                                   darkText: true  },
                         ];
                         return skinSets.map(set => {
                             const skinItems = SHOP_ITEMS.filter(i => i.category === 'skin' && i.skinSet === set.key);
@@ -1756,7 +1756,7 @@
             const tabBar = `<div class="flex gap-1.5 mb-5">
                 <button onclick="updateState({storageTab:'items'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='items' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Items</button>
                 <button onclick="updateState({storageTab:'tickets'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 flex items-center justify-center gap-2 ${activeStorageTab==='tickets' ? 'bg-amber-500 border-amber-600 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">
-                    <img src="https://i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
+                    <img src="https://wsrv.nl/?url=i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
                     Tickets${ticketCount > 0 ? ` (${ticketCount})` : ''}
                 </button>
             </div>`;
@@ -2272,7 +2272,7 @@
                     </div>
 
                     <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v1.12 Full Release</p>
-                    <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
+                    <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://wsrv.nl/?url=i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
             `;
@@ -2287,7 +2287,7 @@
         }
 
         // ── TOAD FLOATER ────────────────────────────────────────
-        const TOAD_IMG = 'https://i.postimg.cc/8JFZMJKK/image.png';
+        const TOAD_IMG = 'https://wsrv.nl/?url=i.postimg.cc/8JFZMJKK/image.png';
         const TOAD_MSGS = ['EXCUSE ME','ACTUALLY...','UM. HELLO?','SIR. SIR.','YOUR GOLD IS IN ANOTHER CASTLE','HAVE YOU TRIED CLICKING SOMEWHERE ELSE','I NEED TO SPEAK WITH YOU','NOT NOW IS NOT AN OPTION','THIS IS VERY IMPORTANT','WAIT WAIT WAIT','I HAVE CONCERNS','CAN I HELP YOU?','SCUSAMI!','ENTSCHULDIGUNG','すみません','PARDON MOI','DISCULPE','对不起','PERMISO','ENTSCHULDIGE MICH'];
         let _toadFloaterTimeout = null, _toadFloaterInterval = null, _toadClickCount = 0, _toadCumulative = 0, _toadAutoDismissed = false, _toadAppearCount = 0;
         // Rate limiting
