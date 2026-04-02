@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gubby Clicker</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/8JFZMJKK/image.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,6 +55,18 @@
         }
         .gubby-float { animation: float 3s ease-in-out infinite; }
         .animate-squish { animation: squish-click 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important; }
+        @keyframes aprilPop {
+            0%   { transform: scale(0) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+        }
+        @keyframes arrowBounce {
+            from { transform: translateX(0px); }
+            to   { transform: translateX(6px); }
+        }
+        @keyframes confettiFall {
+            0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+        }
         @keyframes squish-click {
             0%   { transform: scale(1, 1); }
             25%  { transform: scale(1.05, 0.93); }
@@ -186,6 +199,22 @@
         .action-button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
         .action-button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
         @media (max-width: 768px) {
+            /* Global mobile alignment — left by default */
+            .min-h-screen { align-items: flex-start !important; }
+            .pixel-card { text-align: left; }
+            .modal-content { text-align: left; }
+            .flex-col { align-items: flex-start; }
+            header { text-align: left !important; }
+            /* Logo row centered */
+            header .flex.gap-6.items-center { justify-content: center !important; text-align: center !important; }
+            /* Modal headers always row with X on right */
+            .modal-content .flex.justify-between { flex-direction: row !important; align-items: center !important; width: 100% !important; }
+            /* Settings modal header */
+            .modal-content .bg-slate-800 .flex.justify-between { flex-direction: row !important; }
+            /* Marketplace popup buy button smaller */
+            .popup-buy-btn { padding-top: 10px !important; padding-bottom: 10px !important; font-size: 0.9rem !important; }
+            /* Marketplace item rows fill modal width */
+            .modal-content .flex.items-center.justify-between.p-4 { width: 100% !important; box-sizing: border-box !important; }
             /* Stats bar */
             .stat-display { padding: 6px 10px; }
             /* Action buttons — 2 columns on mobile */
@@ -203,6 +232,7 @@
             .stats-row { gap: 0 !important; width: 100% !important; justify-content: stretch !important; }
             .stats-row .stat-display { flex: 1 !important; border-right: 2px solid #e2e8f0; padding: 8px 6px; text-align: center; }
             .stats-row .stat-display:last-child { border-right: none; }
+            .stats-row .gold-stat { border-left: 4px solid #64748b !important; }
             /* Action grid — 2 col */
             .actions-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; flex-direction: unset !important; }
             /* Sell + Ascend row */
@@ -252,13 +282,14 @@
     </style>
     <style>
         #loading-screen {
-            position: fixed; inset: 0; z-index: 99998; background: #0a0a0a;
+            position: fixed; inset: 0; z-index: 99999; background: #0a0a0a;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
         #loading-screen.fade-out { animation: loadingFadeOut 0.6s ease forwards; }
         @keyframes loadingFadeOut { to { opacity: 0; pointer-events: none; } }
         #loading-gubby-wrapper { position: relative; width: 280px; height: 280px; cursor: pointer; }
         #loading-gubby-spin { width: 280px; height: 280px; image-rendering: pixelated; display: block; filter: drop-shadow(0 0 20px rgba(255,255,255,0.15)); }
+        #loading-mini-toad { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 60px; height: 60px; image-rendering: pixelated; cursor: pointer; animation: toadSpin360 0.6s linear infinite; z-index: 10; }
         #loading-title { font-family: 'Pixelify Sans', monospace; font-size: 28px; font-weight: 900; color: #fff; letter-spacing: 4px; text-transform: uppercase; }
         #loading-sub { font-family: 'Pixelify Sans', monospace; font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 2px; text-transform: uppercase; }
         #loading-bar-wrap { width: 260px; height: 8px; background: #1e293b; border: 2px solid #334155; overflow: hidden; }
@@ -266,6 +297,52 @@
         #loading-click-hint { font-family: 'Pixelify Sans', monospace; font-size: 11px; color: #1e293b; letter-spacing: 1px; transition: color 0.3s; height: 16px; }
         #loading-click-hint.heating { color: #dc2626; animation: hintPulse 0.4s ease-in-out infinite alternate; }
         @keyframes hintPulse { from { opacity: 0.6; } to { opacity: 1; } }
+        @keyframes toadSpin360 { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes fireFlicker { from { transform: scaleY(1) scaleX(1); opacity: 1; } to { transform: scaleY(0.8) scaleX(1.15); opacity: 0.85; } }
+        #toad-floater { position: fixed; z-index: 99998; pointer-events: all; display: none; flex-direction: column; align-items: center; gap: 0; }
+        #toad-floater-bubble {
+            position: relative;
+            background: #fff;
+            border: 4px solid #1e293b;
+            border-radius: 0;
+            padding: 8px 14px;
+            font-family: 'Pixelify Sans', monospace;
+            font-size: 13px;
+            font-weight: 900;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 4px 4px 0 #1e293b;
+            white-space: nowrap;
+            cursor: pointer;
+            margin-bottom: 0;
+                    }
+        #toad-floater-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px; height: 12px;
+            background: #fff;
+            border-right: 4px solid #1e293b;
+            border-bottom: 4px solid #1e293b;
+            clip-path: polygon(0 0, 100% 100%, 100% 0);
+            z-index: 1;
+        }
+        #toad-floater-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 14px solid #1e293b;
+            z-index: 0;
+        }
+        #toad-floater img { width: 96px; height: 96px; image-rendering: pixelated; cursor: pointer; margin-top: 3px; }
 
         #crash-overlay { display:none; position:fixed; inset:0; z-index:99998; pointer-events:none; }
         #crash-overlay.active { display:block; }
@@ -364,7 +441,7 @@
     <!-- BOSS OVERLAY -->
     <div id="boss-overlay">
         <div id="boss-title">GUBBY LORD</div>
-        <img id="boss-gubby" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" onclick="bossBattleClick()" />
+        <img id="boss-gubby" src="https://static.wikia.nocookie.net/robloxcities/images/1/1e/Gubby.webp/revision/latest?cb=20250511065644" onclick="bossBattleClick()" />
         <div id="boss-clicks">0 / 5000</div>
         <div id="boss-bar-wrap"><div id="boss-bar-fill" style="width:0%"></div></div>
         <div id="boss-timer">20:00 remaining</div>
@@ -387,16 +464,7 @@
         <button onclick="closeBossDefeated()" style="font-family:'Pixelify Sans',monospace;background:#fbbf24;border:4px solid #92400e;color:#1a0000;padding:12px 32px;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Claim Reward</button>
     </div>
 
-    <div id="loading-screen">
-        <div id="loading-title">Gubby Clicker</div>
-        <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
-            <img id="loading-gubby-spin" src="https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp" alt="Gubby" />
-        </div>
-        <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
-        <div id="loading-sub">Loading...</div>
-        <div id="loading-click-hint"></div>
-        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:700;color:#1e293b;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Made by Icy Games</div>
-    </div>
+
     <div id="demon-intro" style="display:none;">
         <div id="demon-intro-inner">
             <div id="demon-intro-title">Demon Mode</div>
@@ -404,13 +472,36 @@
             <button id="demon-intro-close" onclick="closeDemonIntro()">Enter ›</button>
         </div>
     </div>
+
+    <div id="loading-screen">
+        <div id="loading-title">Gubby Clicker</div>
+        <div id="loading-gubby-wrapper" onclick="loadingGubbyClick()">
+            <img id="loading-gubby-spin" src="https://static.wikia.nocookie.net/robloxcities/images/1/1e/Gubby.webp/revision/latest?cb=20250511065644" alt="Gubby" />
+            <img id="loading-mini-toad" src="https://i.postimg.cc/8JFZMJKK/image.png" alt="Toad" onclick="event.stopPropagation();loadingToadClick()" />
+        </div>
+        <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
+        <div id="loading-sub">Loading...</div>
+        <div id="loading-click-hint"></div>
+        <div style="font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:700;color:#475569;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">Made by Icy Games</div>
+    </div>
+
+    <!-- TOAD FLOATERS -->
+    <div id="toad-floater">
+        <div id="toad-floater-bubble" onclick="dismissToadFloater()"></div>
+        <img src="https://i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" />
+    </div>
+    <div id="toad-floater-2" style="position:fixed;z-index:99997;pointer-events:all;display:none;flex-direction:column;align-items:center;gap:0;">
+        <div id="toad-floater-bubble-2" onclick="dismissToadFloater()" style="position:relative;background:#fff;border:4px solid #1e293b;border-radius:0;padding:8px 14px;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#1e293b;text-transform:uppercase;letter-spacing:1px;box-shadow:4px 4px 0 #1e293b;white-space:nowrap;cursor:pointer;"></div>
+        <img src="https://i.postimg.cc/8JFZMJKK/image.png" onclick="dismissToadFloater()" style="width:96px;height:96px;image-rendering:pixelated;cursor:pointer;margin-top:3px;" />
+    </div>
+
     <div id="page-wrapper" style="display:flex;min-height:100vh;align-items:stretch;">
         <div id="root" style="min-width:100vw;width:100vw;flex-shrink:0;"></div>
     </div>
 
 
     <script>
-        const GUBBY_DEFAULT_IMG = "https://static.wikia.nocookie.net/parasprunki-fanon/images/1/1e/Gubby.webp";
+        const GUBBY_DEFAULT_IMG = "https://static.wikia.nocookie.net/robloxcities/images/1/1e/Gubby.webp/revision/latest?cb=20250511065644";
         function getGubbyImgUrl() {
             if (state.equippedSkin) {
                 const skin = SHOP_ITEMS.find(i => i.id === state.equippedSkin && i.isSkin);
@@ -430,6 +521,7 @@
             glacier:       { name: 'Crystal', icon: '' },
             medieval:      { name: 'Crown',   icon: '' },
             paradise:      { name: 'Pearl',   icon: '' },
+            marioland:     { name: 'Toad',    icon: '' },
         };
 
         const DESTINATIONS = [
@@ -438,23 +530,24 @@
             { id: 'forest',        name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 15,  priceMod: 0.75, priceRatio: 0.5,     color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
             { id: 'glacier',       name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 30,  priceMod: 0.5,  priceRatio: 0.25,    color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
             { id: 'medieval',      name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 50,  priceMod: 0.25, priceRatio: 0.125,   color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
+            { id: 'marioland',     name: 'Coin Kingdom',        chapter: 'VI',  req: 0,  mult: 250, priceMod: 1,    priceRatio: 1,       color: 'bg-red-50',     themeColor: '#fef2f2', bgImage: 'https://64.media.tumblr.com/f44f2482ffa09c1d812a2103a1a6f0d3/a5b3c7afe34c35bf-fb/s1280x1920/2dfc2c67d2bd1d34405802ab1e67b1bee99dec01.gif', isEventWorld: true, toadOnClick: true },
         ];
 
-        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50 };
+        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50, marioland: 250 };
 
         const SHOP_ITEMS = [
-            { id: 'rainbow',  name: 'Weak Potion I',      category: 'small',  baseCost: 100,        power: 8,        duration: 15,  icon: 'https://i.postimg.cc/Dzpccx68/potion-259.png'  },
-            { id: 'mega',     name: 'Weak Potion II',     category: 'small',  baseCost: 450,        power: 19,       duration: 12,  icon: 'https://i.postimg.cc/3wfZZt1W/potion-131.png'  },
-            { id: 'omega',    name: 'Weak Potion III',    category: 'small',  baseCost: 1200,       power: 90,       duration: 10,  icon: 'https://i.postimg.cc/vm2vv0hB/potion-067.png'  },
-            { id: 'godly',    name: 'Ordinary Potion I',  category: 'medium', baseCost: 15000,      power: 330,      duration: 20,  icon: 'https://i.postimg.cc/N0CxxdD2/potion-263.png'  },
-            { id: 'legendary',name: 'Ordinary Potion II', category: 'medium', baseCost: 75000,      power: 825,      duration: 9,   icon: 'https://i.postimg.cc/g0tKKgsw/potion-135.png'  },
-            { id: 'mythic',   name: 'Ordinary Potion III',category: 'medium', baseCost: 250000,     power: 4125,     duration: 9,   icon: 'https://i.postimg.cc/pdcBBsCr/potion-071.png'  },
-            { id: 'divine',   name: 'Strong Potion I',    category: 'large',  baseCost: 1000000,    power: 22500,    duration: 9,   icon: 'https://i.postimg.cc/hGZ002sm/potion-279.png'  },
-            { id: 'celestial',name: 'Strong Potion II',   category: 'large',  baseCost: 5000000,    power: 90000,    duration: 8,   icon: 'https://i.postimg.cc/VNZFFKgb/potion-151.png'  },
-            { id: 'void',     name: 'Strong Potion III',  category: 'large',  baseCost: 15000000,   power: 450000,   duration: 7,   icon: 'https://i.postimg.cc/GpgjjXK8/potion-087.png'  },
-            { id: 'titan',    name: 'Powerful Potion I',  category: 'op',     baseCost: 100000000,  power: 4750000,  duration: 10,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
-            { id: 'eternal',  name: 'Powerful Potion II', category: 'op',     baseCost: 500000000,  power: 47500000, duration: 12,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
-            { id: 'infinite', name: 'Powerful Potion III',category: 'op',     baseCost: 2500000000, power: 237500000,duration: 15,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
+            { id: 'weak_i',      name: 'Weak Potion I',       category: 'small',  baseCost: 100,        power: 8,        duration: 20,  icon: 'https://i.postimg.cc/R3ffSQjB/potion-259.png'  },
+            { id: 'weak_ii',     name: 'Weak Potion II',      category: 'small',  baseCost: 450,        power: 19,       duration: 20,  icon: 'https://i.postimg.cc/67RRWLDN/potion-131.png'  },
+            { id: 'weak_iii',    name: 'Weak Potion III',     category: 'small',  baseCost: 1200,       power: 90,       duration: 18,  icon: 'https://i.postimg.cc/t1PPqtLQ/potion-067.png'  },
+            { id: 'ordinary_i',  name: 'Ordinary Potion I',   category: 'medium', baseCost: 12000,      power: 330,      duration: 18,  icon: 'https://i.postimg.cc/yJ991Xw7/potion-263.png'  },
+            { id: 'ordinary_ii', name: 'Ordinary Potion II',  category: 'medium', baseCost: 60000,      power: 825,      duration: 16,  icon: 'https://i.postimg.cc/zLWWzS95/potion-135.png'  },
+            { id: 'ordinary_iii',name: 'Ordinary Potion III', category: 'medium', baseCost: 200000,     power: 4125,     duration: 16,  icon: 'https://i.postimg.cc/rdWWVCv2/potion-071.png'  },
+            { id: 'strong_i',    name: 'Strong Potion I',     category: 'large',  baseCost: 800000,     power: 22500,    duration: 14,  icon: 'https://i.postimg.cc/HJ55Y4fW/potion-279.png'  },
+            { id: 'strong_ii',   name: 'Strong Potion II',    category: 'large',  baseCost: 4000000,    power: 90000,    duration: 14,  icon: 'https://i.postimg.cc/GBYYLJZc/potion-151.png'  },
+            { id: 'strong_iii',  name: 'Strong Potion III',   category: 'large',  baseCost: 12000000,   power: 450000,   duration: 12,  icon: 'https://i.postimg.cc/mcMMLN0B/potion-087.png'  },
+            { id: 'powerful_i',  name: 'Powerful Potion I',   category: 'op',     baseCost: 80000000,   power: 4750000,  duration: 12,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
+            { id: 'powerful_ii', name: 'Powerful Potion II',  category: 'op',     baseCost: 400000000,  power: 47500000, duration: 10,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
+            { id: 'powerful_iii',name: 'Powerful Potion III', category: 'op',     baseCost: 2000000000, power: 237500000,duration: 10,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
             { id: 'skin_season_1', name: 'Star Gubby I',   category: 'skin', baseCost: 100000,  permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 1, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'A shining star form of Gubby.' },
             { id: 'skin_season_2', name: 'Star Gubby II',  category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 2, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', description: 'Stars fall from the sky as you play.', reqSkin: 'skin_season_1' },
             { id: 'skin_season_3', name: 'Star Gubby III', category: 'skin', baseCost: 50000,   permanent: true, isSkin: true, skinSet: 'star',  skinLevel: 3, skinImg: 'https://i.postimg.cc/nzCdK6z1/image.png', clickParticleImg: 'https://i.postimg.cc/tsQ0VhGW/download-%281%29.png', description: 'Mini Star Gubbies fly out on click.', reqSkin: 'skin_season_2' },
@@ -464,6 +557,8 @@
             { id: 'skin_pancake_1',name: 'Pancake Gubby I', category: 'skin', baseCost: 150000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 1, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'A fluffy pancake form of Gubby.' },
             { id: 'skin_pancake_2',name: 'Pancake Gubby II',category: 'skin', baseCost: 75000,   permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 2, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fall from the sky.', reqSkin: 'skin_pancake_1' },
             { id: 'skin_pancake_3',name: 'Pancake Gubby III',category: 'skin', baseCost: 75000,  permanent: true, isSkin: true, skinSet: 'pancake', skinLevel: 3, skinImg: 'https://i.postimg.cc/vDn5gLrJ/image.png', description: 'Pancakes fly out on click.', reqSkin: 'skin_pancake_2' },
+            { id: 'skin_bluetoad_1', name: 'Blue Toad Gubby', category: 'skin', baseCost: 999999999, permanent: true, isSkin: true, skinSet: 'bluetoad', skinLevel: 1, skinImg: 'https://i.postimg.cc/FHk0Xzrj/image.png', description: 'A cool blue toad form of Gubby.', eventOnly: true },
+            { id: 'skin_toad_1',     name: 'Toad Gubby',      category: 'skin', baseCost: 999999999, permanent: true, isSkin: true, skinSet: 'toad',     skinLevel: 1, skinImg: 'https://i.postimg.cc/8JFZMJKK/image.png',   description: 'The Toad himself.', eventOnly: true },
             { id: 'glory_ticket', name: 'Ticket of Glory',   category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/dk81YV8q/Greater-Chain-Ticket.webp',  description: 'A shimmering golden ticket. Equip for glory.' },
             { id: 'glory_aura',   name: 'Aura Jar of Glory', category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/JDbnLzbr/Deity-Aura-Jar.webp',        description: 'A jar brimming with golden aura. Equip for glory.' },
             { id: 'glory_diary',  name: 'Diary of Glory',    category: 'glory', baseCost: 1000000, permanent: true, isGlory: true, glorySet: 'glory', gloryImg: 'https://i.postimg.cc/qh8RTv8q/Glory-Tome.webp',             description: 'A golden diary of great deeds. Equip for glory.' },
@@ -511,7 +606,7 @@
         ];
 
         let state = {
-            clicks: 0, lifetimeClicks: 0, totalClicksSession: 0,
+            clicks: 0, lifetimeClicks: 0, totalClicksSession: 0, eventClicks: 0,
             gold: 0, activeBuff: null, theme: 'plains',
             showTravelModal: false, showMarketModal: false, showStorageModal: false, showQuestModal: false,
             inventory: SHOP_ITEMS.reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
@@ -521,9 +616,11 @@
             showAdmin: false, adminLog: [], discoEventTimer: 0, playerRole: null, gradientTags: false,
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [],
+            claimedEventRewards: [], showEventModal: false,
             equippedSkin: null, skinShopTab: 1, skinShopTabDemon: 1, skinShopTabPancake: 1,
             storageSkinTab_star: 1, storageSkinTab_demon: 1, storageSkinTab_pancake: 1,
-            showSettings: false, showCredits: false, showHamburger: false, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
+            showSettings: false, showCredits: false, showHamburger: false, showStatsCard: false, showEventsModal: false, showAprilModal: false,
+            toadStreak: 0, darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             demonMode: false, loadingDone: false, infinityRebirth: false,
             visitedWorlds: ['plains'],
             showFragmentsModal: false, showWorldLore: null,
@@ -549,6 +646,7 @@
                     // Core progress
                     clicks: state.clicks,
                     lifetimeClicks: state.lifetimeClicks,
+                    eventClicks: state.eventClicks || 0,
                     gold: state.gold,
                     theme: state.theme,
                     prestigeLevel: state.prestigeLevel,
@@ -593,6 +691,8 @@
                     bossClicks: state.bossClicks || 0,
                     // Glory
                     equippedGlory: state.equippedGlory || [],
+                    toadStreak: state.toadStreak || 0,
+                    claimedEventRewards: state.claimedEventRewards || [],
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(save));
             } catch(e) {}
@@ -653,7 +753,7 @@
         };
         window.addEventListener('DOMContentLoaded', () => {
             console.log('%c Gubby Clicker ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
-            console.log('%c v0.91 Beta — Made by Icy Games ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
+            console.log('%c v1.12 Full Release — Made by Icy Games ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
             startSpinLoop();
             startLoadingBar();
@@ -762,6 +862,7 @@
                 'accio omnia': '/give all',
                 'accio gloria': '/give glory',
                 'accio tickets': '/give tickets',
+                'accio drop': '/drop claim',
                 'accio': '/give',
                 'finite quaestum': '/quest',
                 'tenebris invoco': '/demon',
@@ -770,6 +871,8 @@
                 'rolum': '/role',
                 'expelliarmus': '/disarm',
                 'chroma': '/gradient',
+                'memoria oblivia': '/resetevent',
+                'rana advenio': '/toad',
             };
 
             let normalized = cmdText;
@@ -878,6 +981,13 @@
                     changes.clicks = 0;
                     message = `Aurum Gloria — ${formatLargeNumber(glorySell, 2)} ${CURRENCIES[state.theme].name}s`;
                 }
+            } else if (command === '/drop') {
+                const sub = parts[1]?.toLowerCase();
+                if (sub === 'claim') {
+                    if (state.lastDropId) localStorage.removeItem('gubby_drop_' + state.lastDropId);
+                    fetchDrop(true);
+                    message = 'Accio Drop — resetting...';
+                }
             } else if (command === '/gloriamax') {
                 if (state.activeBuff) {
                     message = 'Gloria Maxima — buff already active';
@@ -885,6 +995,17 @@
                     changes.activeBuff = { id: 'gloria_maxima', name: 'Gloria Maxima', power: 50, timeLeft: 30, duration: 30 };
                     message = 'Gloria Maxima — 50x for 30s';
                 }
+            } else if (command === '/toad') {
+                const n = parseInt(parts[1]) || 10;
+                _toadCumulative += n; _toadClickCount += n;
+                changes.eventClicks = (state.eventClicks || 0) + n;
+                message = 'Rana Advenio — ' + n + ' toad clicks granted';
+                const ecBtnEl = document.getElementById('event-btn-count');
+                if (ecBtnEl) ecBtnEl.textContent = Math.min(changes.eventClicks, 250) + '/250 Clicks';
+            } else if (command === '/resetevent') {
+                changes.eventClicks = 0;
+                changes.claimedEventRewards = [];
+                message = 'Memoria Oblivia — event progress reset';
             } else if (command === '/crash') {
                 message = 'Avada Kedavra';
                 updateState({ ...changes, adminLog: [message, ...state.adminLog].slice(0, 10) });
@@ -1049,6 +1170,26 @@
         function handleMainClick(e) {
             if (e.cancelable) e.preventDefault();
             if (e.type === 'mousedown' && e.button !== 0) return;
+            // Rate limit check — Toad intervenes if clicking too fast (>4/s)
+            const now = Date.now();
+            if (now < _rateLimitUntil) return;
+            _recentClicks = _recentClicks.filter(t => now - t < 1000);
+            _recentClicks.push(now);
+            if (_recentClicks.length > 20) {
+                _rateLimitUntil = now + 5000;
+                _recentClicks = [];
+                const el = document.getElementById('toad-floater');
+                const bubble = document.getElementById('toad-floater-bubble');
+                if (el && bubble) {
+                    const x = window.innerWidth / 2 - 48; const y = window.innerHeight / 2 - 100;
+                    el.style.left = x + 'px'; el.style.top = y + 'px';
+                    el.style.transform = 'rotate(-8deg)';
+                    bubble.textContent = 'SIR PLEASE SLOW DOWN';
+                    el.style.display = 'flex';
+                    setTimeout(() => { el.style.display = 'none'; }, 5000);
+                }
+                return;
+            }
 
             const currentPower = state.infinityRebirth
                 ? 1e100 * (state.activeBuff ? state.activeBuff.power : 1) * getCombinedSetMult() * getDemonMult()
@@ -1083,8 +1224,15 @@
             const isPancake = state.equippedSkin && state.equippedSkin.startsWith('skin_pancake_');
             const skinLevel = isStar || isDemon || isPancake ? parseInt(state.equippedSkin.slice(-1)) : 0;
 
-            // Level III only: level III image flies out on click
-            if (skinLevel >= 3) {
+            // Coin Kingdom: toad flies out on click (replaces skin particle if skin equipped)
+            if (state.theme === 'marioland') {
+                const cx = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const cy = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                spawnToadClickFlyout(cx, cy);
+            }
+
+            // Level III only: level III image flies out on click (not in Coin Kingdom)
+            if (skinLevel >= 3 && state.theme !== 'marioland') {
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
                 const imgIII = isDemon
@@ -1133,6 +1281,79 @@
             }
         }
 
+        function triggerAprilFools() {
+            updateState({ showAprilModal: false });
+
+            // Big April Fools angled modal
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);';
+            const box = document.createElement('div');
+            box.style.cssText = 'position:relative;background:#facc15;border:6px solid #1e293b;padding:40px 52px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:12px 12px 0 #1e293b;transform:rotate(-6deg);animation:aprilPop 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:90vw;';
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '✕';
+            closeBtn.style.cssText = 'position:absolute;top:10px;right:14px;font-size:1.4rem;font-weight:900;background:none;border:none;cursor:pointer;color:#1e293b;line-height:1;';
+            closeBtn.onclick = () => overlay.remove();
+            const face = document.createElement('div');
+            face.textContent = 'xD';
+            face.style.cssText = 'font-family:"Pixelify Sans",monospace;font-size:clamp(4rem,18vw,9rem);font-weight:900;color:#1e293b;line-height:1;letter-spacing:-4px;';
+            const txt = document.createElement('div');
+            txt.textContent = 'YOU GOT PRANKED!';
+            txt.style.cssText = 'font-family:"Pixelify Sans",monospace;font-size:clamp(1.2rem,5vw,2.5rem);font-weight:900;color:#1e293b;letter-spacing:4px;text-transform:uppercase;';
+            const sub = document.createElement('div');
+            sub.textContent = 'you got nothing lol';
+            sub.style.cssText = 'font-family:"Pixelify Sans",monospace;font-size:clamp(0.7rem,2.5vw,1rem);font-weight:700;color:#1e293b;opacity:0.6;letter-spacing:2px;text-transform:uppercase;';
+            box.appendChild(closeBtn);
+            box.appendChild(face);
+            box.appendChild(txt);
+            box.appendChild(sub);
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+            const t = setTimeout(() => overlay.remove(), 10000);
+            closeBtn.onclick = () => { clearTimeout(t); overlay.remove(); };
+
+            // Confetti
+            const colors = ['#facc15','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#ec4899','#06b6d4'];
+            for (let i = 0; i < 120; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    const size = 8 + Math.random() * 14;
+                    c.style.cssText = `position:fixed;top:-20px;left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};z-index:99998;pointer-events:none;border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${2+Math.random()*3}s linear forwards;`;
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 6000);
+                }, Math.random() * 2000);
+            }
+        }
+
+        function spawnToadClickFlyout(clientX, clientY) {
+            const toadImg = 'https://i.postimg.cc/8JFZMJKK/image.png';
+            const count = 3;
+            for (let i = 0; i < count; i++) {
+                const img = document.createElement('img');
+                img.src = toadImg;
+                const size = 48 + Math.random() * 20;
+                const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.8;
+                const dist = 70 + Math.random() * 70;
+                const tx = Math.cos(angle) * dist;
+                const ty = Math.sin(angle) * dist - 60;
+                img.style.cssText = `position:fixed;left:${clientX - size/2}px;top:${clientY - size/2}px;width:${size}px;height:${size}px;pointer-events:none;z-index:9999;image-rendering:pixelated;`;
+                document.body.appendChild(img);
+                const start = performance.now();
+                const dur = 650 + Math.random() * 300;
+                (function anim(el, tx, ty, dur, start) {
+                    const dir = Math.random() > 0.5 ? 1 : -1;
+                    function frame(now) {
+                        const t = Math.min(1, (now - start) / dur);
+                        const ease = 1 - Math.pow(1 - t, 3);
+                        el.style.transform = `translate(${tx * ease}px, ${ty * ease}px) rotate(${ease * 360 * dir}deg) scale(${1 - ease * 0.3})`;
+                        el.style.opacity = String(1 - ease * 0.8);
+                        if (t < 1) requestAnimationFrame(frame);
+                        else el.remove();
+                    }
+                    requestAnimationFrame(frame);
+                })(img, tx, ty, dur, start);
+            }
+        }
+
         function spawnGloryFlyout(clientX, clientY) {
             const equipped = state.equippedGlory || [];
             if (equipped.length === 0) return;
@@ -1173,6 +1394,10 @@
         }, true);
 
         function sellClicks() {
+            if (state.toadBlockSell) {
+                updateState({ notification: { title: 'TOAD SAYS NO', message: "Click Toad to get him off the Sell button.", type: 'error' } });
+                return;
+            }
             if (state.clicks > 0) {
                 const world = DESTINATIONS.find(d => d.id === state.theme);
                 const worldMult = world ? world.mult : 1;
@@ -1339,6 +1564,18 @@
 
             if (false) {
             }
+        }
+
+        function claimEventReward(rewardId) {
+            if ((state.claimedEventRewards||[]).includes(rewardId)) return;
+            const inv = { ...state.inventory };
+            let msg = '';
+            if (rewardId === 'event_50')  { inv['ordinary_ii'] = (inv['ordinary_ii']||0) + 1; msg = 'Ordinary Potion II added to storage!'; }
+            if (rewardId === 'event_75')  { inv['strong_i']    = (inv['strong_i']   ||0) + 1; msg = 'Strong Potion I added to storage!'; }
+            if (rewardId === 'event_100') { inv['skin_bluetoad_1'] = (inv['skin_bluetoad_1']||0) + 1; msg = 'Blue Toad Gubby skin unlocked'; }
+            if (rewardId === 'event_125') { inv['skin_toad_1']     = (inv['skin_toad_1']    ||0) + 1; msg = 'Toad Gubby skin unlocked'; }
+            if (!msg) return;
+            updateState({ inventory: inv, claimedEventRewards: [...(state.claimedEventRewards||[]), rewardId], notification: { title: 'Reward Claimed!', message: msg, type: 'success' } });
         }
 
         // Market ticker
@@ -1635,6 +1872,49 @@
                 }).join('') + '</div>';
         }
 
+        function renderEventModal() {
+            const milestones = [
+                { id:'event_50',  req:50,  label:'50 Clicks',  reward:'Ordinary Potion II',   img:SHOP_ITEMS.find(i=>i.id==='ordinary_ii')?.icon||'' },
+                { id:'event_75',  req:75,  label:'75 Clicks',  reward:'Strong Potion I',      img:SHOP_ITEMS.find(i=>i.id==='strong_i')?.icon||'' },
+                { id:'event_100', req:100, label:'100 Clicks', reward:'Blue Toad Gubby Skin', img:'https://i.postimg.cc/FHk0Xzrj/image.png' },
+                { id:'event_125', req:125, label:'125 Clicks', reward:'Toad Gubby Skin',      img:'https://i.postimg.cc/8JFZMJKK/image.png' },
+            ];
+            const claimed = state.claimedEventRewards || [];
+            const clicks = state.eventClicks || 0;
+            const rows = milestones.map(m => {
+                const isClaimed = claimed.includes(m.id);
+                const isUnlocked = clicks >= m.req;
+                const border = isClaimed ? 'border-emerald-400 bg-emerald-50' : isUnlocked ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white';
+                const action = isClaimed
+                    ? '<span class="font-black text-sm text-emerald-600 uppercase">Claimed</span>'
+                    : isUnlocked
+                        ? '<button onclick="claimEventReward(\'' + m.id + '\')" class="pixel-button bg-amber-500 border-amber-700 text-white px-5 py-2 font-black text-sm shrink-0">Claim</button>'
+                        : '<span class="font-black text-sm text-slate-400 uppercase">' + (m.req - clicks) + ' left</span>';
+                return '<div class="flex items-center gap-4 p-4 border-4 w-full ' + border + '">'
+                    + '<img src="' + m.img + '" style="width:48px;height:48px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />'
+                    + '<div class="flex-1 min-w-0"><p class="font-black text-sm uppercase text-slate-900">' + m.label + '</p><p class="text-xs font-bold text-slate-500 mt-0.5">' + m.reward + '</p></div>'
+                    + action
+                    + '</div>';
+            }).join('');
+            return '<div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showEventModal:false})">'
+                + '<div class="bg-white p-6 sm:p-10 pixel-card max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content">'
+                + '<div class="flex justify-between items-start mb-6">'
+                + '<div class="text-left"><h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Toad Event</h4><p class="text-xs font-bold text-slate-500 mt-1">Click Gubby to earn rewards</p></div>'
+                + '<button onclick="updateState({showEventModal:false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black leading-none">&#x2715;</button>'
+                + '</div>'
+                + '<div class="mb-4">'
+                + '<div class="flex justify-between items-center mb-1"><span class="text-xs font-black uppercase text-slate-500 tracking-widest">Total Clicks</span><span id="event-click-count" class="font-black text-sm text-slate-900">' + clicks + '/125</span></div>'
+                + '<div class="w-full h-4 bg-slate-200 border-2 border-slate-300 overflow-hidden"><div id="event-click-bar" class="h-full bg-green-500 transition-all" style="width:' + Math.min(clicks/125*100,100) + '%"></div></div>'
+                + '</div>'
+                + '<div class="flex flex-col gap-3 w-full">' + rows + '</div>'
+                + '<div class="mt-4 flex items-center gap-3 p-4 border-4 border-red-200 bg-red-50 w-full">'
+                + '<img src="https://i.postimg.cc/8JFZMJKK/image.png" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />'
+                + '<div class="flex-1 min-w-0"><p class="font-black text-sm uppercase text-slate-900">Coin Kingdom</p><p class="text-xs font-bold text-slate-500 mt-0.5">250 toad clicks unlocks Chapter VI</p></div>'
+                + '<span class="font-black text-sm ' + (clicks >= 250 ? 'text-emerald-600' : 'text-slate-400') + ' shrink-0">' + Math.min(clicks, 250) + '/250</span>'
+                + '</div>'
+                + '</div></div>';
+        }
+
         function renderStorageContent() {
             const cats = {
                 small:      { name: 'Weak Potions',     color: 'border-blue-500 bg-blue-50',     items: [] },
@@ -1651,8 +1931,10 @@
 
             const activeStorageTab = state.storageTab || 'items';
             const ticketCount = cats.ticket.items.length;
+            const skinCount = cats.skin.items.length;
             const tabBar = `<div class="flex gap-1.5 mb-5">
                 <button onclick="updateState({storageTab:'items'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='items' ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Items</button>
+                <button onclick="updateState({storageTab:'skins'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='skins' ? 'bg-purple-600 border-purple-800 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Skins${skinCount > 0 ? ` (${skinCount})` : ''}</button>
                 <button onclick="updateState({storageTab:'tickets'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 flex items-center justify-center gap-2 ${activeStorageTab==='tickets' ? 'bg-amber-500 border-amber-600 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">
                     <img src="https://i.postimg.cc/Ty4HjP3C/Ticket-Case.webp" style="width:20px;height:20px;object-fit:contain;image-rendering:pixelated;" />
                     Tickets${ticketCount > 0 ? ` (${ticketCount})` : ''}
@@ -1660,6 +1942,35 @@
             </div>`;
 
             if (!hasAny) return tabBar + '<div class="text-center py-16"><p class="text-3xl font-black text-slate-400 uppercase mb-2">Storage Empty</p><p class="text-lg font-bold text-slate-400">Buy items from the Marketplace!</p></div>';
+
+            if (activeStorageTab === 'skins') {
+                if (cats.skin.items.length === 0) return tabBar + '<div class="text-center py-16"><p class="text-2xl font-black text-slate-400 uppercase mb-2">No Skins</p><p class="text-sm font-bold text-slate-400">Earn skins from events or the shop!</p></div>';
+                const sets = {};
+                cats.skin.items.forEach(item => {
+                    if (!sets[item.skinSet]) sets[item.skinSet] = [];
+                    sets[item.skinSet].push(item);
+                });
+                const setNames = { star: 'Star Gubby', demon: 'Demon Gubby', pancake: 'Pancake Gubby', bluetoad: 'Blue Toad Gubby', toad: 'Toad Gubby' };
+                return tabBar + '<div class="flex flex-col gap-4">' + Object.entries(sets).map(([setKey, items]) => {
+                    items.sort((a,b) => a.skinLevel - b.skinLevel);
+                    const stateTabKey = setKey === 'star' ? 'storageSkinTab_star' : setKey === 'demon' ? 'storageSkinTab_demon' : setKey === 'pancake' ? 'storageSkinTab_pancake' : null;
+                    const activeLevel = stateTabKey ? (state[stateTabKey] || items[0].skinLevel) : items[0].skinLevel;
+                    const activeItem = (stateTabKey ? items.find(i => i.skinLevel === activeLevel) : null) || items[0];
+                    const isEquipped = state.equippedSkin === activeItem.id;
+                    return '<div class="border-4 ' + (isEquipped ? 'border-purple-500 bg-purple-50' : 'border-slate-200 bg-white') + '">'
+                        + '<div class="flex items-center gap-4 p-4">'
+                        + '<img src="' + activeItem.skinImg + '" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />'
+                        + '<div class="flex-1 min-w-0"><p class="font-black text-sm uppercase text-slate-900">' + (setNames[setKey] || setKey) + '</p><p class="text-xs font-bold text-slate-500 mt-0.5">' + activeItem.description + '</p></div>'
+                        + '<button onclick="toggleEquip(\'' + activeItem.id + '\')" class="pixel-button px-4 py-2 font-black text-sm shrink-0 ' + (isEquipped ? 'bg-purple-600 border-purple-800 text-white' : 'bg-slate-200 border-slate-400 text-slate-700') + '">' + (isEquipped ? 'UNEQUIP' : 'EQUIP') + '</button>'
+                        + '</div>'
+                        + (items.length > 1 && stateTabKey ? '<div class="flex border-t-4 border-slate-200">' + items.map(item => {
+                            const active = item.skinLevel === activeLevel;
+                            const roman = item.skinLevel === 1 ? 'I' : item.skinLevel === 2 ? 'II' : 'III';
+                            return '<button onclick="updateState({' + stateTabKey + ':' + item.skinLevel + '})" class="flex-1 py-2 font-black uppercase text-xs tracking-widest border-r-4 last:border-r-0 border-slate-200 ' + (active ? 'bg-purple-600 text-white' : 'bg-white text-slate-400 hover:text-slate-700') + '">Level ' + roman + '</button>';
+                        }).join('') + '</div>' : '')
+                        + '</div>';
+                }).join('') + '</div>';
+            }
 
             if (activeStorageTab === 'tickets') {
                 if (cats.ticket.items.length === 0) return tabBar + '<div class="text-center py-16"><p class="text-2xl font-black text-slate-400 uppercase mb-2">No Tickets</p><p class="text-sm font-bold text-slate-400">Buy tickets from the shop!</p></div>';
@@ -1689,7 +2000,7 @@
                 }).join('')}</div>`;
             }
 
-            const itemCats = Object.entries(cats).filter(([k]) => k !== 'ticket');
+            const itemCats = Object.entries(cats).filter(([k]) => k !== 'ticket' && k !== 'skin');
             return tabBar + '<div class="flex flex-col gap-6">' + itemCats.map(([catKey, catData]) => {
                 if (catData.items.length === 0) return '';
                 if (catKey === 'skin') {
@@ -1839,6 +2150,8 @@
                                     { spell: 'Chroma', cmd: '/gradient', desc: 'Toggle gradient tags' },
                                     { spell: 'Expelliarmus', cmd: '/disarm', desc: 'Lose all items' },
                                     { spell: 'Avada Kedavra', cmd: '/crash', desc: 'Secret boss encounter' },
+                                    { spell: 'Accio Drop', cmd: '/drop claim', desc: 'Reset and re-show the active drop' },
+                                    { spell: 'Rana Advenio [n]', cmd: '/toad', desc: 'Grant toad clicks' },
                                 ].map(s => `<div class="flex items-baseline gap-2">
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:14px;color:#c4b5fd;font-weight:900;" class="flex-shrink-0">${s.spell}</span>
                                     <span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#7c3aed;font-weight:700;">— ${s.desc}</span>
@@ -1859,6 +2172,31 @@
                     <button onclick="updateState({showHamburger:!state.showHamburger})" class="fixed top-20 right-4 sm:top-24 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-white pixel-button flex items-center justify-center group">
                         <i data-lucide="menu" class="text-slate-600 w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
+                    <button onclick="updateState({showAprilModal:true})" class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] w-12 h-12 sm:w-14 sm:h-14 bg-yellow-300 pixel-button flex items-center justify-center font-black text-slate-900 text-sm leading-none" style="border-color:#ca8a04;">xD</button>
+                    ${state.showAprilModal ? `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showAprilModal:false})">
+                        <div class="bg-white pixel-card w-full modal-content overflow-hidden" style="max-width:480px;">
+                            <div class="px-6 py-4 flex justify-between items-center" style="background:#facc15;border-bottom:4px solid #1e293b;">
+                                <div><p class="text-slate-800 text-xs font-black uppercase tracking-widest">Limited Program</p><h3 class="text-slate-900 font-black text-2xl uppercase">Gubby Clicker xD</h3></div>
+                                <button onclick="updateState({showAprilModal:false})" class="text-slate-800 hover:text-slate-900 text-2xl font-black leading-none">✕</button>
+                            </div>
+                            <div class="p-6 flex flex-col gap-5">
+                                <p class="text-sm font-bold text-slate-600 leading-relaxed">Welcome to the <span class="font-black text-slate-900">Gubby Clicker xD Program</span> — an exclusive membership for the most dedicated Gubby fans. Members get instant access to a massive starter pack, completely free.</p>
+                                <div class="border-4 border-yellow-400 bg-yellow-50 p-4">
+                                    <p class="text-xs font-black uppercase text-yellow-700 tracking-widest mb-3">What you get on join</p>
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 border-2 border-yellow-600 flex-shrink-0"></span><p class="text-sm font-black text-slate-800">Every potion (x3 each) — instantly usable</p></div>
+                                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 border-2 border-yellow-600 flex-shrink-0"></span><p class="text-sm font-black text-slate-800">All skins unlocked — equip immediately</p></div>
+                                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 border-2 border-yellow-600 flex-shrink-0"></span><p class="text-sm font-black text-slate-800">All glory &amp; ticket items added to storage</p></div>
+                                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 border-2 border-yellow-600 flex-shrink-0"></span><p class="text-sm font-black text-slate-800">100% free, no strings attached</p></div>
+                                    </div>
+                                </div>
+                                <button onclick="triggerAprilFools()" class="w-full py-4 font-black uppercase text-base tracking-widest pixel-button bg-yellow-400 border-yellow-600 text-slate-900 hover:bg-yellow-300">Join &amp; Claim</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+                    <div style="position:fixed;top:9rem;right:7.5rem;z-index:58;transform:rotate(25deg);animation:arrowBounce 0.55s ease-in-out infinite alternate;">
+                        <img src="https://static.thenounproject.com/png/2405560-200.png" style="width:120px;height:120px;opacity:0.9;">
+                    </div>
                     ${state.showHamburger ? `<div class="fixed top-36 right-4 sm:top-44 sm:right-6 z-[60] flex flex-col gap-2">
                         <button onclick="updateState({showSettings:true,showHamburger:false})" class="bg-white pixel-button flex items-center gap-2 px-4 py-2 font-black text-sm uppercase text-slate-700 hover:bg-slate-50 whitespace-nowrap">
                             <i data-lucide="settings" class="text-slate-500 w-4 h-4"></i> Settings
@@ -1895,6 +2233,10 @@
                                     <div class="flex items-center gap-3 p-3 border-4 border-pink-200 bg-pink-50">
                                         <div class="w-2 h-2 bg-pink-400 flex-shrink-0 border-2 border-pink-600"></div>
                                         <div><p class="font-black text-sm text-slate-800">@Alvin</p><p class="text-xs text-slate-500">Special contributor &amp; supporter</p></div>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-3 border-4 border-orange-200 bg-orange-50">
+                                        <div class="w-2 h-2 bg-orange-400 flex-shrink-0 border-2 border-orange-600"></div>
+                                        <div><p class="font-black text-sm text-slate-800">Claude (Anthropic)</p><p class="text-xs text-slate-500">AI assistant — features, fixes &amp; event system</p></div>
                                     </div>
                                 </div>
                                 <button onclick="updateState({showCredits:false})" class="w-full text-slate-400 font-black uppercase text-xs hover:text-slate-600 pt-2">Close</button>
@@ -1957,7 +2299,7 @@
                             <div class="flex items-center justify-center gap-3 mb-2"><i data-lucide="book-open" class="w-7 h-7 text-indigo-500"></i><h4 class="font-black text-2xl sm:text-3xl text-center uppercase text-slate-900">Chapters</h4></div>
                             <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Select a chapter to travel to</p>
                             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5">
-                                ${DESTINATIONS.map(dest => {
+                                ${DESTINATIONS.filter(d => !d.isEventWorld).map(dest => {
                                     const isLocked = state.prestigeLevel < dest.req;
                                     const isCurrent = state.theme === dest.id;
                                     return `<button ${isLocked?'disabled':''} onclick="travelTo('${dest.id}')" style="box-shadow:${isLocked?'0 0 0':'4px 4px 0 rgba(0,0,0,0.2)'};min-height:110px;" class="p-4 flex flex-col items-center justify-center gap-1.5 transition-all border-4 ${isLocked?'opacity-40 grayscale bg-slate-100 border-slate-400':`${isCurrent?'border-indigo-500 bg-indigo-50':'border-slate-600'} hover:border-slate-900`} ${!isLocked&&!isCurrent?'hover:-translate-y-1':''}">
@@ -1969,6 +2311,28 @@
                                     </button>`;
                                 }).join('')}
                             </div>
+                            <div class="flex items-center gap-3 mt-8 mb-4">
+                                <div class="flex-1 h-0.5 bg-slate-300"></div>
+                                <span class="font-black text-xs uppercase tracking-widest text-slate-500">Event Chapters</span>
+                                <div class="flex-1 h-0.5 bg-slate-300"></div>
+                            </div>
+                            ${(() => {
+                                const mario = DESTINATIONS.find(d => d.id === 'marioland');
+                                const isUnlocked = (state.eventClicks || 0) >= 250;
+                                const isCurrent = state.theme === 'marioland';
+                                return `<button ${!isUnlocked ? 'disabled' : ''} onclick="travelTo('marioland')" class="w-full border-4 ${isCurrent ? 'border-indigo-500 bg-indigo-50' : isUnlocked ? 'border-slate-600 bg-white hover:border-slate-900' : 'border-slate-400 bg-slate-100 opacity-50'} transition-all" style="min-height:80px;box-shadow:${isUnlocked&&!isCurrent?'4px 4px 0 rgba(0,0,0,0.2)':'none'};">
+                                    <div class="flex items-center justify-between px-6 py-4">
+                                        <div class="text-left">
+                                            <p class="text-xs font-black text-indigo-400 uppercase tracking-widest">Chapter VI</p>
+                                            <p class="font-black text-base uppercase text-slate-900 leading-tight">Coin Kingdom</p>
+                                            <p class="text-xs font-bold text-slate-500 mt-0.5">250x Profit · Toad flies on click</p>
+                                        </div>
+                                        <div class="text-right shrink-0 ml-4">
+                                            ${isCurrent ? '<span class="text-xs font-black text-emerald-600 uppercase">Current</span>' : isUnlocked ? '<span class="text-xs font-black text-slate-700 uppercase">Travel →</span>' : `<span class="text-xs font-black text-red-500 uppercase">${state.eventClicks||0}/250 Toad Clicks</span>`}
+                                        </div>
+                                    </div>
+                                </button>`;
+                            })()}
                             <button onclick="updateState({showTravelModal:false})" class="w-full mt-6 sm:mt-10 text-slate-500 font-black uppercase text-xs sm:text-sm hover:text-slate-700">Close</button>
                         </div>
                     </div>` : ''}
@@ -2053,7 +2417,45 @@
                         </div>
                     </div>` : ''}
 
+                    ${state.showEventModal ? renderEventModal() : ''}
+
                     ${state.showSettings ? renderSettings() : ''}
+
+
+                    ${state.showStatsCard ? `<div class="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showStatsCard:false})">
+                        <div class="bg-white pixel-card w-full modal-content overflow-hidden" style="max-width:420px;">
+                            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center">
+                                <div><p class="text-slate-400 text-xs font-black uppercase tracking-widest">Gubby Clicker</p><h3 class="text-white font-black text-2xl uppercase">My Stats</h3></div>
+                                <button onclick="updateState({showStatsCard:false})" class="text-white/60 hover:text-white text-2xl font-black leading-none">✕</button>
+                            </div>
+                            <div class="p-6 flex flex-col gap-4">
+                                <div class="border-4 border-slate-200 bg-slate-50 p-4 flex flex-col gap-3">
+                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
+                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">World</span>
+                                        <span class="font-black text-sm text-slate-900">${DESTINATIONS.find(d=>d.id===state.theme)?.name||'Peaceful Grasslands'}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
+                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Ascensions</span>
+                                        <span class="font-black text-sm text-slate-900">${state.prestigeLevel}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
+                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Click Power</span>
+                                        <span class="font-black text-sm text-indigo-600">${getCombinedSetMult()}x</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b-2 border-slate-200 pb-2">
+                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Sell Bonus</span>
+                                        <span class="font-black text-sm text-emerald-600">${getSellMult()}x</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs font-black uppercase text-slate-500 tracking-widest">Total Clicks</span>
+                                        <span class="font-black text-sm text-slate-900">${formatLargeNumber(state.clicks,0)}</span>
+                                    </div>
+                                </div>
+                                <button onclick="copyStats()" class="pixel-button w-full py-3 font-black uppercase text-sm bg-indigo-600 border-indigo-800 text-white">Copy &amp; Share</button>
+                                <p id="stats-copy-msg" class="text-center text-xs font-black text-emerald-600 hidden">Copied to clipboard!</p>
+                            </div>
+                        </div>
+                    </div>` : ''}
 
 
 
@@ -2063,7 +2465,7 @@
                     <header class="z-10 w-full max-w-6xl mb-4">
                         <div class="flex gap-6 items-center justify-center mb-4">
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;transform:scaleX(-1);" />
-                            <span onclick="triggerTitleClick()" class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl" style="color:${currentWorld?.id==='medieval'||currentWorld?.id==='forest'?'#fff':'#000'};text-shadow:3px 3px 0 rgba(0,0,0,0.1);">Gubby Clicker</span>
+                            <span onclick="triggerTitleClick()" class="cursor-help active:scale-95 transition-transform select-none font-black uppercase tracking-wide text-4xl sm:text-6xl" style="color:${currentWorld?.id==='medieval'||currentWorld?.id==='forest'||currentWorld?.id==='marioland'?'#fff':'#000'};text-shadow:3px 3px 0 rgba(0,0,0,0.1);">Gubby Clicker</span>
                             <img src="https://images.vexels.com/media/users/3/234958/isolated/lists/9c8eb5a83491aac23768e982ddb86705-stars-decoration-doodle.png" alt="" class="h-16 sm:h-20" style="image-rendering:pixelated;" />
                         </div>
                         <div class="w-full max-w-6xl flex gap-3 mb-2 flex-wrap">
@@ -2078,7 +2480,7 @@
                             <div class="flex items-center gap-3 sm:gap-6 flex-1 flex-wrap justify-center w-full sm:w-auto sm:justify-start stats-row">
                                 <div class="stat-display"><p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Clicks</p><span class="clicks-live text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.clicks, 0)}</span></div>
                                 <div class="stat-display"><p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Market</p><span class="market-rate-live text-lg sm:text-2xl font-black"><span class="${state.marketMultiplier >= 1.2 ? 'text-emerald-600' : 'text-slate-900'}">${state.marketMultiplier.toFixed(2)}x</span></span></div>
-                                <div class="stat-display"><p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">${currentCurrency.name}s</p><span class="text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.gold, 2)}</span></div>
+                                <div class="stat-display gold-stat"><p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">${currentCurrency.name}s</p><span class="text-lg sm:text-2xl font-black text-slate-900">${formatLargeNumber(state.gold, 2)}</span></div>
                             </div>
                             <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center w-full sm:w-auto sell-ascend-row">
                                 <button onclick="ascend()" ${state.gold < currentPrestigeCost?'disabled':''} class="px-4 sm:px-6 py-2 sm:py-3 font-black uppercase text-xs sm:text-sm tracking-widest pixel-button ${state.gold >= currentPrestigeCost?'bg-indigo-600 border-indigo-800 text-white':'bg-slate-200 border-slate-400 text-slate-400'}">Ascend<br/><span class="text-xs">(${formatCost(currentPrestigeCost)})</span></button>
@@ -2086,6 +2488,17 @@
                             </div>
                         </div>
                     </header>
+
+                    <!-- DROP BANNER -->
+                    ${state.activeDrop ? `<div class="z-20 w-full max-w-md mx-auto px-4 mb-2">
+                        <div class="flex items-center justify-between gap-3 px-4 py-3 border-4 border-yellow-500 bg-yellow-50" style="box-shadow:4px 4px 0 rgba(0,0,0,0.15);">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-black text-sm uppercase text-yellow-900 tracking-wide">Admin Drop Available!</p>
+                                <p class="text-xs font-bold text-yellow-700 truncate">${state.activeDrop.message || 'Free items from Icy Games'}</p>
+                            </div>
+                            <button onclick="claimDrop()" class="pixel-button shrink-0 bg-yellow-500 border-yellow-700 text-white px-4 py-2 font-black text-sm">CLAIM</button>
+                        </div>
+                    </div>` : ''}
 
                     <!-- GUBBY -->
                     <main class="z-10 relative flex flex-col items-center justify-center w-full mb-4">
@@ -2119,9 +2532,15 @@
                             <span class="text-xs font-bold text-slate-500">${state.completedQuests} Completed</span>
                             ${state.activeQuests.some(q=>q.completed) ? `<span class="absolute -top-2 -right-2 bg-emerald-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow:3px 3px 0 rgba(0,0,0,0.3);"><i data-lucide="check" class="w-6 h-6"></i></span>` : state.activeQuests.length > 0 ? `<span class="absolute -top-2 -right-2 bg-amber-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow:3px 3px 0 rgba(0,0,0,0.3);">${state.activeQuests.length}</span>` : ''}
                         </button>
+                        <button onclick="updateState({showEventModal:true})" class="action-button px-10 py-6 flex flex-col items-center gap-2 flex-1 relative">
+                            <i data-lucide="star" class="w-12 h-12 text-yellow-400"></i>
+                            <span class="font-black text-lg uppercase text-slate-900">Event</span>
+                            <span id="event-btn-count" class="text-xs font-bold text-slate-500">${Math.min(state.eventClicks||0, 125)}/125 Clicks</span>
+                            ${[{id:'event_50',req:50},{id:'event_75',req:75},{id:'event_100',req:100},{id:'event_125',req:125}].some(m => (state.eventClicks||0) >= m.req && !(state.claimedEventRewards||[]).includes(m.id)) ? `<span class="absolute -top-2 -right-2 bg-emerald-500 border-3 border-white text-white text-sm font-black w-10 h-10 flex items-center justify-center" style="box-shadow:3px 3px 0 rgba(0,0,0,0.3);"><i data-lucide="check" class="w-6 h-6"></i></span>` : ''}
+                        </button>
                     </div>
 
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v0.91 Beta</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">v1.12 Full Release</p>
                     <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
@@ -2136,8 +2555,126 @@
             }
         }
 
+        // ── TOAD FLOATER ────────────────────────────────────────
+        const TOAD_IMG = 'https://i.postimg.cc/8JFZMJKK/image.png';
+        const TOAD_MSGS = ['EXCUSE ME','ACTUALLY...','UM. HELLO?','SIR. SIR.','YOUR GOLD IS IN ANOTHER CASTLE','HAVE YOU TRIED CLICKING SOMEWHERE ELSE','I NEED TO SPEAK WITH YOU','NOT NOW IS NOT AN OPTION','THIS IS VERY IMPORTANT','WAIT WAIT WAIT','I HAVE CONCERNS','CAN I HELP YOU?','STOP WHAT YOU ARE DOING','ARE YOU EVEN LISTENING','I SAID EXCUSE ME','HELLO??? HELLO???','EYES UP HERE','THAT\'S A LOT OF CLICKING','HAVE YOU CONSIDERED TOUCHING GRASS','YOU\'VE BEEN HERE TOO LONG','I COUNTED YOUR CLICKS. CONCERNING.','THE SELL BUTTON IS MINE NOW','I LIVE HERE NOW','JUST VISITING','DO NOT MIND ME','KNOCK KNOCK','I BRING NEWS','TOAD REPORTING FOR DUTY','THIS IS MY SPOT','MOVE OVER'];
+        const TOAD_PAIRS = [
+            ['EXCUSE ME',                          'HE SAID EXCUSE ME'],
+            ['SIR. SIR.',                          'SIR!!!!'],
+            ['YOUR GOLD IS IN ANOTHER CASTLE',     'I HELPED WRITE THAT'],
+            ['I NEED TO SPEAK WITH YOU',           'BOTH OF US. RIGHT NOW.'],
+            ['THIS IS VERY IMPORTANT',             'SO IMPORTANT WE CAME TOGETHER'],
+            ['WAIT WAIT WAIT',                     'WAIT FOR BOTH OF US'],
+            ['I HAVE CONCERNS',                    'I ALSO HAVE CONCERNS'],
+            ['HELLO??? HELLO???',                  'THEY CANNOT HEAR YOU'],
+            ['EYES UP HERE',                       'UP HERE TOO'],
+            ["THAT'S A LOT OF CLICKING",           'I COUNTED. IT IS TOO MANY.'],
+            ['I LIVE HERE NOW',                    'WE BOTH DO'],
+            ['KNOCK KNOCK',                        "WHO'S THERE"],
+            ['TOAD REPORTING FOR DUTY',            'TOAD TWO ALSO REPORTING'],
+            ['STOP WHAT YOU ARE DOING',            'RIGHT NOW PLEASE'],
+            ['THE SELL BUTTON IS MINE NOW',        'WE ARE SHARING IT'],
+            ['DO NOT MIND ME',                     'OR ME'],
+            ['ARE YOU EVEN LISTENING',             'THEY ARE NOT LISTENING'],
+            ['NOT NOW IS NOT AN OPTION',           'CORRECT. NOW IS THE TIME.'],
+            ['CAN I HELP YOU?',                    'OR ME? I CAN HELP TOO'],
+            ['HAVE YOU CONSIDERED TOUCHING GRASS', 'GRASS EXISTS. WE CHECKED.'],
+            ["YOU'VE BEEN HERE TOO LONG",          'WE HAVE ALSO BEEN HERE TOO LONG'],
+            ['I COUNTED YOUR CLICKS. CONCERNING.', 'I DOUBLE CHECKED. STILL CONCERNING.'],
+            ['I BRING NEWS',                       'I BRING MORE NEWS'],
+            ['MOVE OVER',                          'NO YOU MOVE OVER'],
+            ['ACTUALLY...',                        'GO ON. SAY IT.'],
+            ['UM. HELLO?',                         'UM. HELLO ALSO?'],
+            ['THIS IS MY SPOT',                    'IT IS OUR SPOT NOW'],
+            ['JUST VISITING',                      'SAME HONESTLY'],
+        ];
+        let _toadFloaterTimeout = null, _toadFloaterInterval = null, _toadClickCount = 0, _toadCumulative = 0, _toadAutoDismissed = false, _toadAppearCount = 0;
+        // Rate limiting
+        let _recentClicks = [], _rateLimitUntil = 0;
+        function _placeToad(elId, bubbleId, msg) {
+            const el = document.getElementById(elId);
+            const bubble = document.getElementById(bubbleId);
+            if (!el || !bubble) return;
+            const size = 72 + Math.floor(Math.random() * 56); // 72–128px
+            const margin = 110;
+            const x = margin + Math.random() * (window.innerWidth - margin * 2 - size);
+            const y = margin + Math.random() * (window.innerHeight - margin * 2 - size - 60);
+            const angle = (Math.random() - 0.5) * 30;
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            el.style.transform = `rotate(${angle}deg)`;
+            bubble.textContent = msg || TOAD_MSGS[Math.floor(Math.random() * TOAD_MSGS.length)];
+            el.querySelectorAll('img').forEach(img => { img.style.width = size + 'px'; img.style.height = size + 'px'; });
+            el.style.display = 'flex';
+        }
+        function showToadFloater() {
+            _toadAutoDismissed = false;
+            _toadAppearCount++;
+            // Temporarily change game title
+            const titleEl = document.querySelector('.gubby-title') || [...document.querySelectorAll('span')].find(el => el.textContent.trim() === 'Gubby Clicker');
+            if (titleEl) {
+                titleEl.textContent = 'Toad Clicker';
+                setTimeout(() => { if (titleEl) titleEl.textContent = 'Gubby Clicker'; }, 3500);
+            }
+            const isDual = _toadCumulative >= 25;
+            const pair = isDual ? TOAD_PAIRS[Math.floor(Math.random() * TOAD_PAIRS.length)] : null;
+            // 25% chance to block the sell button
+            const blockSell = Math.random() < 0.25;
+            if (blockSell) {
+                const sellBtn = document.querySelector('.sell-ascend-row button:last-child');
+                if (sellBtn) {
+                    const rect = sellBtn.getBoundingClientRect();
+                    const el = document.getElementById('toad-floater');
+                    const bubble = document.getElementById('toad-floater-bubble');
+                    if (el && bubble) {
+                        el.style.left = (rect.left + rect.width / 2 - 48) + 'px';
+                        el.style.top = (rect.top - 110) + 'px';
+                        el.style.transform = 'rotate(-6deg)';
+                        bubble.textContent = "DON'T EVEN THINK ABOUT IT";
+                        el.style.display = 'flex';
+                        state.toadBlockSell = true;
+                    }
+                }
+                if (isDual) {
+                    _placeToad('toad-floater-2', 'toad-floater-bubble-2', 'HE MEANS IT');
+                }
+            } else {
+                _placeToad('toad-floater', 'toad-floater-bubble', pair ? pair[0] : undefined);
+                if (isDual) {
+                    _placeToad('toad-floater-2', 'toad-floater-bubble-2', pair[1]);
+                }
+            }
+            if (_toadFloaterTimeout) clearTimeout(_toadFloaterTimeout);
+            _toadFloaterTimeout = setTimeout(() => { _toadAutoDismissed = true; state.toadBlockSell = false; _hideToadFloaters(); resetToadStreak(); }, 3500);
+        }
+        function _hideToadFloaters() {
+            ['toad-floater','toad-floater-2'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+        }
+        function resetToadStreak() {
+            if (state.toadStreak > 0) updateState({ toadStreak: 0 }, true);
+        }
+        function dismissToadFloater() {
+            if (_toadFloaterTimeout) clearTimeout(_toadFloaterTimeout);
+            _hideToadFloaters();
+            state.toadBlockSell = false;
+            if (_toadAutoDismissed) return;
+            _toadClickCount++;
+            _toadCumulative++;
+            state.eventClicks = (state.eventClicks || 0) + 1;
+            const ecBtnEl = document.getElementById('event-btn-count');
+            if (ecBtnEl) ecBtnEl.textContent = Math.min(state.eventClicks, 125) + '/125 Clicks';
+            const ecCountEl = document.getElementById('event-click-count');
+            if (ecCountEl) ecCountEl.textContent = state.eventClicks + '/125';
+            const ecBarEl = document.getElementById('event-click-bar');
+            if (ecBarEl) ecBarEl.style.width = Math.min(state.eventClicks / 125 * 100, 100) + '%';
+        }
+        function startToadFloater() {
+            if (_toadFloaterInterval) return;
+            setTimeout(() => { showToadFloater(); _toadFloaterInterval = setInterval(showToadFloater, 8000); }, 5000);
+        }
+
         // ── LOADING SCREEN ───────────────────────────────────────
         let loadingClickCount = 0;
+        let loadingToadClickCount = 0;
         const DEMON_CLICKS_NEEDED = 5;
         let demonFlashInterval = null;
         let _spinDeg = 0, _spinSpeed = 1.5, _spinRaf = null;
@@ -2159,6 +2696,23 @@
                 bar.style.width = _loadProgress + '%';
                 if (_loadProgress >= 100) clearInterval(_loadBarInterval);
             }, 60);
+        }
+
+        function loadingToadClick() {
+            loadingToadClickCount++;
+            const toad = document.getElementById('loading-mini-toad');
+            if (toad) toad.style.filter = `brightness(${1 + loadingToadClickCount * 0.3}) drop-shadow(0 0 ${loadingToadClickCount * 6}px rgba(220,38,38,0.8))`;
+            if (loadingToadClickCount >= 5) {
+                if (toad) toad.style.animation = 'toadSpin360 0.1s linear infinite';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('fade-out');
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('demon-intro').style.display = 'flex';
+                        updateState({ demonMode: true, loadingDone: true });
+                    }, 600);
+                }, 400);
+            }
         }
 
         function loadingGubbyClick() {
@@ -2188,9 +2742,51 @@
             }
         }
 
+
+        function copyStats() {
+            const world = DESTINATIONS.find(d => d.id === state.theme)?.name || 'Peaceful Grasslands';
+            const text = `Gubby Clicker Stats\n——————————————\nWorld: ${world}\nAscensions: ${state.prestigeLevel}\nClick Power: ${getCombinedSetMult()}x\nSell Bonus: ${getSellMult()}x\nTotal Clicks: ${formatLargeNumber(state.clicks,0)}\n\nPlay free at x.com/@gubbyclicker`;
+            navigator.clipboard.writeText(text).then(() => {
+                const msg = document.getElementById('stats-copy-msg');
+                if (msg) { msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 2000); }
+            });
+        }
+
+        const GIST_DROP_URL = 'https://gist.githubusercontent.com/code-cat12/4f3951491077c3b4a37f09f54e210018/raw/drop.json';
+        function fetchDrop(forceShow) {
+            fetch(GIST_DROP_URL + '?t=' + Date.now())
+                .then(r => r.json())
+                .then(drop => {
+                    if (!drop || !drop.id) return;
+                    state.lastDropId = drop.id;
+                    const claimed = localStorage.getItem('gubby_drop_' + drop.id) === '1';
+                    if (!claimed || forceShow) updateState({ activeDrop: drop });
+                })
+                .catch(() => {});
+        }
+        function claimDrop() {
+            const drop = state.activeDrop;
+            if (!drop) return;
+            // Increment global counter
+            fetch(`https://api.counterapi.dev/v1/gubbyclicker/${drop.id}/up`).catch(() => {});
+            const newInv = { ...state.inventory };
+            const given = [];
+            (drop.items || []).forEach(id => {
+                const item = SHOP_ITEMS.find(i => i.id === id);
+                if (item) { newInv[id] = (newInv[id] || 0) + 1; given.push(item.name); }
+            });
+            const goldGain = drop.gold || 0;
+            localStorage.setItem('gubby_drop_' + drop.id, '1');
+            const msg = [given.length ? given.join(', ') : '', goldGain ? formatLargeNumber(goldGain, 0) + ' Gold' : ''].filter(Boolean).join(' + ');
+            updateState({ inventory: newInv, gold: state.gold + goldGain, activeDrop: null, notification: { title: 'Drop Claimed!', message: msg || 'Enjoy your reward!', type: 'success' } });
+        }
+
         function finishLoading() {
             if (state.loadingDone) return;
             loadGame();
+            _toadCumulative = state.eventClicks || 0;
+            fetchDrop();
+            startToadFloater();
             createFloatingStars();
             _loadProgress = 100; const bar = document.getElementById('loading-bar-fill'); if (bar) bar.style.width = '100%';
             clearInterval(_loadBarInterval);
@@ -2206,6 +2802,7 @@
             document.getElementById('demon-intro').style.display = 'none';
             startDemonFlash();
         }
+
         function startDemonFlash() {
             if (demonFlashInterval) return;
             document.querySelectorAll('.floating-star').forEach(s => s.remove());
