@@ -1502,7 +1502,7 @@
                 document.querySelectorAll('.floating-star').forEach(s => s.remove());
                 createFloatingStars();
                 render();
-            } else if (item.category === 'glory') {
+            } else if (item.category === 'glory' || item.category === 'ticket') {
                 const equipped = state.equippedGlory || [];
                 const newEquipped = equipped.includes(itemId)
                     ? equipped.filter(id => id !== itemId)
