@@ -1734,14 +1734,19 @@
                     const isPerm = item.permanent;
                     const isOwned = isPerm && owned > 0;
                     const img = item.gloryImg || item.icon;
-                    return `<div class="flex items-center gap-3 p-3 border-4 bg-white ${canAfford && !isOwned ? 'border-slate-300' : 'border-slate-200'}">
+                    const isEquipped = isPerm && (state.equippedGlory || []).includes(item.id);
+                    const borderColor = isEquipped ? 'border-amber-400' : (canAfford && !isOwned ? 'border-slate-300' : 'border-slate-200');
+                    return `<div class="flex items-center gap-3 p-3 border-4 bg-white ${borderColor}">
                         <img src="${img}" style="width:48px;height:48px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />
                         <div class="flex-1 min-w-0">
                             <p class="font-black text-sm uppercase text-slate-900">${item.name}</p>
                             <p class="text-xs font-bold text-slate-400 mt-0.5">${item.description}</p>
-                            <p class="text-xs font-bold ${isOwned ? 'text-emerald-600' : 'text-indigo-600'} mt-0.5">${isOwned ? 'Owned' : formatLargeNumber(price, 0) + ' ' + CURRENCIES[state.theme].name + (isPerm ? '' : ' · Owned: ' + owned)}</p>
+                            <p class="text-xs font-bold ${isEquipped ? 'text-amber-600' : isOwned ? 'text-emerald-600' : 'text-indigo-600'} mt-0.5">${isEquipped ? 'Equipped' : isOwned ? 'Owned' : formatLargeNumber(price, 0) + ' ' + CURRENCIES[state.theme].name + (isPerm ? '' : ' · Owned: ' + owned)}</p>
                         </div>
-                        <button onclick="${isOwned ? '' : isPerm ? 'buySpecialItem(\''+item.id+'\')' : 'event.stopPropagation();openItemPopup(\''+item.id+'\')'}" class="pixel-button shrink-0 px-4 py-2 font-black text-sm ${isOwned ? 'bg-emerald-500 border-emerald-700 text-white cursor-default' : canAfford ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">${isOwned ? 'OWNED' : 'BUY'}</button>
+                        ${isOwned && isPerm
+                            ? `<button onclick="toggleEquip('${item.id}')" class="pixel-button shrink-0 px-4 py-2 font-black text-sm ${isEquipped ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-400 text-slate-700'}">${isEquipped ? 'UNEQUIP' : 'EQUIP'}</button>`
+                            : `<button onclick="${isPerm ? 'buySpecialItem(\''+item.id+'\')' : 'event.stopPropagation();openItemPopup(\''+item.id+'\')'}" class="pixel-button shrink-0 px-4 py-2 font-black text-sm ${canAfford ? 'bg-amber-500 border-amber-700 text-white' : 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'}">BUY</button>`
+                        }
                     </div>`;
                 }).join('') + '</div>';
             }
