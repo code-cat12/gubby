@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gubby Clicker: The Sequel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Pixelify Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow: hidden;
+            image-rendering: pixelated;
+        }
+
+        /* ── SCREENS ── */
+        .screen {
+            position: fixed;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .screen.active { display: flex; }
+
+        /* ── WORLD BG ── */
+        .world-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .world-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* ── LOADING ── */
+        #loading-screen { background: #0a0a0f; z-index: 1000; gap: 0; }
+
+        #loading-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 3px;
+            text-align: center;
+            line-height: 1.2;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.6);
+        }
+        #loading-gubby {
+            width: 110px;
+            height: 110px;
+            image-rendering: pixelated;
+            animation: float 3s ease-in-out infinite;
+            margin: 20px 0 16px;
+        }
+        #loading-bar-wrap {
+            width: 260px;
+            height: 14px;
+            background: #1e293b;
+            border: 3px solid #334155;
+        }
+        #loading-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            width: 0%;
+            transition: width 0.25s ease;
+        }
+        #loading-sub {
+            font-size: 0.7rem;
+            color: #334155;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        #loading-made-by {
+            font-size: 0.65rem;
+            color: #1e293b;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 18px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ── TITLE ── */
+        #title-screen { background: #0a0a0f; gap: 0; }
+
+        #title-logo {
+            text-align: center;
+            line-height: 1.1;
+            animation: titlePulse 2.5s ease-in-out infinite;
+        }
+        #title-logo .logo-small {
+            display: block;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #475569;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: none;
+        }
+        #title-logo .logo-big {
+            display: block;
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 2px;
+            text-shadow: 6px 6px 0 rgba(0,0,0,0.7);
+            line-height: 1;
+        }
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 6px 6px 0 rgba(0,0,0,0.7); }
+            50% { text-shadow: 6px 6px 0 rgba(0,0,0,0.7), 0 0 50px rgba(251,191,36,0.35); }
+        }
+        #title-tagline {
+            font-size: 0.85rem;
+            color: #475569;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            text-align: center;
+        }
+        #title-gubby {
+            width: 150px;
+            height: 150px;
+            image-rendering: pixelated;
+            animation: float 3s ease-in-out infinite;
+            margin: 28px 0;
+            filter: drop-shadow(0 8px 20px rgba(251,191,36,0.25));
+        }
+        #title-start-btn {
+            background: #fbbf24;
+            border: 4px solid #92400e;
+            color: #1a0000;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 13px 36px;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+            transition: all 0.1s;
+        }
+        #title-start-btn:hover  { transform: translate(2px, 2px); box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
+        #title-start-btn:active { transform: translate(6px, 6px); box-shadow: 0 0 0; }
+        #title-made-by {
+            font-size: 0.65rem;
+            color: #1e293b;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 20px;
+        }
+        #title-made-by span { color: #3b82f6; }
+
+        /* ── INTRO ── */
+        #intro-screen { background: #0a0a0f; padding: 40px 24px; gap: 0; }
+
+        .intro-text {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            line-height: 1.9;
+            text-align: center;
+            letter-spacing: 0.5px;
+            max-width: 500px;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            margin-bottom: 10px;
+        }
+        .intro-text.visible { opacity: 1; }
+
+        #intro-btn {
+            display: none;
+            margin-top: 28px;
+            background: transparent;
+            border: 3px solid #334155;
+            color: #64748b;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #intro-btn:hover { border-color: #fbbf24; color: #fbbf24; }
+
+        /* ── CHAPTER TRANSITION ── */
+        #chapter-transition {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 400;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        #chapter-transition.active { display: flex; }
+        #ct-chapter { font-size: 0.7rem; color: #475569; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 4px; }
+        #ct-name {
+            font-size: 5rem;
+            color: #fbbf24;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 6px 6px 0 rgba(0,0,0,0.8), 0 0 60px rgba(251,191,36,0.4);
+            line-height: 1;
+            animation: chapterPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes chapterPop {
+            0%   { transform: scale(0.4) rotate(-4deg); opacity: 0; }
+            70%  { transform: scale(1.08) rotate(1deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        #ct-lore { font-size: 0.8rem; color: #475569; max-width: 380px; text-align: center; line-height: 1.7; margin-top: 14px; }
+
+        /* ── CHAPTER SCREEN ── */
+        #chapter-screen { z-index: 10; }
+
+        #chapter-header {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+            width: 90%;
+        }
+        #chapter-label { font-size: 0.85rem; color: #e2e8f0; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 8px; text-shadow: 2px 2px 0 rgba(0,0,0,1); }
+        #chapter-title { font-size: 5rem; font-weight: 700; color: #fbbf24; letter-spacing: 2px; text-shadow: 6px 6px 0 rgba(0,0,0,1); line-height: 1; pointer-events: auto; cursor: pointer; }
+
+
+        #fragments-bar {
+            position: absolute;
+            top: 18px;
+            right: 16px;
+            display: flex;
+            gap: 6px;
+            z-index: 20;
+        }
+        .frag-dot {
+            width: 14px; height: 14px;
+            border: 3px solid #334155;
+            background: #1e293b;
+            transition: all 0.3s;
+        }
+        .frag-dot.lit {
+            background: #fbbf24;
+            border-color: #92400e;
+            box-shadow: 0 0 8px rgba(251,191,36,0.7);
+        }
+
+        /* ── DIALOGUE BOX ── */
+        #dialogue-box {
+            position: absolute;
+            bottom: 24px;
+            left: 15%;
+            right: 15%;
+            background: rgba(10,10,20,0.95);
+            border: 4px solid #1e293b;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+            padding: 16px 18px 28px;
+            z-index: 20;
+            cursor: pointer;
+            user-select: none;
+        }
+        #dialogue-name {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        #dialogue-text {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.75;
+            letter-spacing: 0.3px;
+        }
+        #dialogue-tap {
+            position: absolute;
+            bottom: 8px; right: 14px;
+            font-size: 0.6rem;
+            color: #334155;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ── PUZZLE OVERLAY ── */
+        #puzzle-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #puzzle-overlay.active { display: flex; }
+        #puzzle-box {
+            background: #0a0a0f;
+            border: 4px solid #1e293b;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.6);
+            padding: 28px 24px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+        }
+        #puzzle-title {
+            font-size: 1rem;
+            color: #fbbf24;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        #puzzle-desc {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+        #puzzle-content { margin-bottom: 4px; }
+
+        /* Sequence puzzle */
+        .seq-display {
+            font-size: 1.6rem;
+            color: #e2e8f0;
+            letter-spacing: 10px;
+            margin-bottom: 16px;
+        }
+        .puz-input {
+            background: #1e293b;
+            border: 3px solid #334155;
+            color: #fbbf24;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.4rem;
+            text-align: center;
+            width: 110px;
+            padding: 8px 4px;
+            outline: none;
+        }
+        .puz-input:focus { border-color: #fbbf24; }
+
+        /* Memory puzzle */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+        .mem-tile {
+            aspect-ratio: 1;
+            border: 3px solid #334155;
+            background: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            transition: border-color 0.1s, background 0.1s;
+            user-select: none;
+        }
+        .mem-tile:hover { border-color: #64748b; }
+        .mem-tile.lit   { border-color: #fbbf24; background: rgba(251,191,36,0.18); box-shadow: 0 0 12px rgba(251,191,36,0.5); }
+        .mem-tile.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
+
+        /* Word bank */
+        #word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 18px;
+            padding: 10px;
+            border: 2px solid #1e293b;
+            background: #0a0a0f;
+        }
+        #word-bank-label {
+            width: 100%;
+            font-size: 0.55rem;
+            color: #334155;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .bank-word {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 2px;
+            border: 2px solid #1e293b;
+            padding: 4px 8px;
+            background: #1e293b;
+        }
+        .bank-word.used {
+            color: #1e293b;
+            border-color: #0f172a;
+            background: #0f172a;
+        }
+
+        /* Unscramble puzzle */
+        .scramble-word {
+            font-size: 1.8rem;
+            color: #fbbf24;
+            letter-spacing: 10px;
+            margin-bottom: 14px;
+        }
+        .word-input {
+            background: #1e293b;
+            border: 3px solid #334155;
+            color: #e2e8f0;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.1rem;
+            text-align: center;
+            width: 190px;
+            padding: 8px;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .word-input:focus { border-color: #fbbf24; }
+
+        /* Reflection puzzle */
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            display: inline-grid;
+        }
+        .g-cell { width: 26px; height: 26px; border: 2px solid #1e293b; }
+        .g-cell.on { background: #fbbf24; }
+        .opt-wrap {
+            border: 3px solid #334155;
+            padding: 8px;
+            cursor: pointer;
+            transition: border-color 0.1s;
+        }
+        .opt-wrap:hover { border-color: #64748b; }
+        .opt-wrap.correct { border-color: #22c55e !important; }
+        .opt-wrap.wrong   { border-color: #ef4444 !important; }
+        .opt-label { font-size: 0.6rem; color: #475569; letter-spacing: 2px; text-align: center; margin-bottom: 4px; }
+
+        /* Puzzle button */
+        .puz-btn {
+            background: #fbbf24;
+            border: 4px solid #92400e;
+            color: #1a0000;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 11px 28px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+            transition: all 0.1s;
+            margin-top: 16px;
+        }
+        .puz-btn:hover  { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.4); }
+        .puz-btn:active { transform: translate(4px,4px); box-shadow: none; }
+
+        #puzzle-feedback { font-size: 0.8rem; min-height: 18px; margin-top: 10px; }
+        #puzzle-feedback.ok  { color: #22c55e; }
+        #puzzle-feedback.err { color: #ef4444; }
+
+        /* ── TRIES ── */
+        #puzzle-tries {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .try-dot {
+            width: 14px; height: 14px;
+            border: 3px solid #334155;
+            background: #1e293b;
+            transition: all 0.3s;
+        }
+        .try-dot.active {
+            background: #ef4444;
+            border-color: #7f1d1d;
+            box-shadow: 0 0 6px rgba(239,68,68,0.6);
+        }
+
+        /* ── FAIL OVERLAY ── */
+        #fail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.93);
+            z-index: 300;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+        #fail-overlay.active { display: flex; }
+        #fail-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ef4444;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.8);
+            animation: chapterPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        }
+        #fail-sub {
+            font-size: 0.8rem;
+            color: #475569;
+            letter-spacing: 2px;
+            text-align: center;
+            max-width: 340px;
+            line-height: 1.7;
+            margin-top: 14px;
+        }
+        #fail-retry {
+            margin-top: 28px;
+            background: #ef4444;
+            border: 4px solid #7f1d1d;
+            color: #fff;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 12px 28px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+            transition: all 0.1s;
+        }
+        #fail-retry:hover  { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.5); }
+        #fail-retry:active { transform: translate(4px,4px); box-shadow: none; }
+
+        /* ── FRAGMENT REVEAL ── */
+        #frag-reveal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.93);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            cursor: pointer;
+            text-align: center;
+        }
+        #frag-reveal.active { display: flex; }
+
+        #frag-icon {
+            font-size: 2.4rem;
+            margin-bottom: 12px;
+            animation: glow 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 4px rgba(251,191,36,0.3)); }
+            to   { filter: drop-shadow(0 0 20px rgba(251,191,36,1)); }
+        }
+        #frag-eyebrow {
+            font-size: 0.6rem;
+            color: #475569;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        #frag-title {
+            font-size: 1.3rem;
+            color: #fbbf24;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+        #frag-text {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            line-height: 1.85;
+            max-width: 460px;
+            border-top: 2px solid #1e293b;
+            border-bottom: 2px solid #1e293b;
+            padding: 14px 0;
+            font-style: italic;
+        }
+        #frag-tap {
+            margin-top: 20px;
+            font-size: 0.6rem;
+            color: #334155;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* ── ENDING ── */
+        #ending-screen {
+            background: #000;
+            z-index: 500;
+            overflow-y: auto;
+            padding: 80px 24px 80px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        #ending-inner {
+            max-width: 520px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .end-line {
+            font-size: 1rem;
+            color: #e2e8f0;
+            line-height: 1.9;
+            text-align: center;
+            letter-spacing: 0.4px;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            margin-bottom: 2px;
+            width: 100%;
+        }
+        .end-line.visible { opacity: 1; }
+        #end-journal {
+            opacity: 0;
+            transition: opacity 1.8s ease;
+            margin: 32px 0;
+            border-left: 3px solid #1e293b;
+            padding-left: 18px;
+            text-align: left;
+            max-width: 420px;
+            width: 100%;
+        }
+        #end-journal.visible { opacity: 1; }
+        #end-journal p {
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 2;
+            font-style: italic;
+        }
+        #end-credits {
+            opacity: 0;
+            transition: opacity 2s ease;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #end-credits.visible { opacity: 1; }
+        #end-credits .big {
+            font-size: 1.1rem;
+            color: #fbbf24;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+        }
+        #end-credits p {
+            font-size: 0.65rem;
+            color: #1e293b;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 2.2;
+        }
+        #end-credits .icy { color: #3b82f6; }
+        #end-continue {
+            margin-top: 36px;
+            background: #fbbf24;
+            border: 4px solid #92400e;
+            color: #1a0000;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 12px 36px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 1s ease, transform 0.1s, box-shadow 0.1s;
+        }
+        #end-continue.visible { opacity: 1; }
+        #end-continue:hover  { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.5); }
+        #end-continue:active { transform: translate(4px,4px); box-shadow: none; }
+
+        #end-replay {
+            display: none;
+            margin-top: 36px;
+            background: transparent;
+            border: 3px solid #1e293b;
+            color: #334155;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #end-replay:hover { border-color: #fbbf24; color: #fbbf24; }
+
+        /* ── MOBILE ── */
+        @media (max-width: 480px) {
+            #title-logo { font-size: 2rem; }
+            #title-gubby { width: 120px; height: 120px; }
+            #dialogue-text { font-size: 0.82rem; }
+            .seq-display { font-size: 1.3rem; letter-spacing: 6px; }
+            .scramble-word { font-size: 1.4rem; letter-spacing: 6px; }
+            #puzzle-box { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen" class="screen active">
+    <div id="loading-title">Gubby Clicker<br>The Sequel</div>
+    <img id="loading-gubby" src="https://i.postimg.cc/qq0JGDFv/image.png" alt="Gubby">
+    <div id="loading-bar-wrap"><div id="loading-bar-fill"></div></div>
+    <div id="loading-sub">Loading world data...</div>
+    <div id="loading-made-by">Made by <span style="color:#1e40af;">Icy Games</span></div>
+</div>
+
+<!-- TITLE -->
+<div id="title-screen" class="screen">
+    <div id="title-logo">
+        <span class="logo-small">Gubby Clicker:</span>
+        <span class="logo-big">The Sequel</span>
+    </div>
+    <div id="title-tagline">A Story of What Remains</div>
+    <img id="title-gubby" src="https://i.postimg.cc/qq0JGDFv/image.png" alt="Gubby">
+    <button id="title-start-btn" onclick="startIntro()">► Begin</button>
+    <div id="title-made-by">Made with ❤️ by <span>Icy Games</span></div>
+</div>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen">
+    <div class="intro-text" id="it0">The Gubby Lord is dead.</div>
+    <div class="intro-text" id="it1">The worlds have gone quiet. The clicking has stopped.</div>
+    <div class="intro-text" id="it2">You are what was left behind — a sliver of gold consciousness<br>drifting through the ruins of everything that was clicked into existence.</div>
+    <div class="intro-text" id="it3" style="color:#475569;font-size:0.82rem;">Find the five Memory Fragments.<br>Learn what really happened.</div>
+    <button id="intro-btn" onclick="goToChapter(0)">Continue ›</button>
+</div>
+
+<!-- CHAPTER TRANSITION -->
+<div id="chapter-transition">
+    <div id="ct-chapter"></div>
+    <div id="ct-name"></div>
+    <div id="ct-lore"></div>
+</div>
+
+<!-- CHAPTER -->
+<div id="chapter-screen" class="screen">
+    <div id="world-bg" class="world-bg"></div>
+    <div id="world-overlay" class="world-overlay"></div>
+
+    <div id="chapter-header">
+        <div id="chapter-label"></div>
+        <div id="chapter-title"></div>
+    </div>
+
+    <div id="fragments-bar">
+        <div class="frag-dot" id="fd0"></div>
+        <div class="frag-dot" id="fd1"></div>
+        <div class="frag-dot" id="fd2"></div>
+        <div class="frag-dot" id="fd3"></div>
+        <div class="frag-dot" id="fd4"></div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceLine()">
+        <div id="dialogue-name"></div>
+        <div id="dialogue-text"></div>
+        <div id="dialogue-tap">▼ tap</div>
+    </div>
+</div>
+
+<!-- PUZZLE OVERLAY -->
+<div id="puzzle-overlay">
+    <div id="puzzle-box">
+        <div id="puzzle-tries"></div>
+        <div id="puzzle-title"></div>
+        <div id="puzzle-desc"></div>
+        <div id="puzzle-content"></div>
+        <div id="puzzle-feedback"></div>
+    </div>
+</div>
+
+<!-- FAIL -->
+<div id="fail-overlay">
+    <div id="fail-title">Out of Tries</div>
+    <div id="fail-sub">The world forgets nothing. You must start again from the beginning.</div>
+    <button id="fail-retry" onclick="retryGame()">Start Over</button>
+</div>
+
+<!-- FRAGMENT REVEAL -->
+<div id="frag-reveal" onclick="onFragTap()">
+    <div id="frag-eyebrow">Memory Fragment</div>
+    <div id="frag-title"></div>
+    <div id="frag-text"></div>
+    <div id="frag-tap">tap to continue ›</div>
+</div>
+
+<!-- ENDING -->
+<div id="ending-screen" class="screen">
+    <div id="ending-inner"></div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div id="admin-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;flex-direction:column;align-items:center;justify-content:center;">
+    <div style="background:#0a0a0f;border:3px solid #1e293b;box-shadow:6px 6px 0 rgba(0,0,0,0.6);padding:28px 24px;max-width:320px;width:90%;text-align:center;">
+        <div style="font-size:0.55rem;color:#1e293b;letter-spacing:5px;text-transform:uppercase;margin-bottom:16px;">Admin Console</div>
+        <input id="admin-input" type="text" placeholder="enter command..." autocomplete="off" spellcheck="false"
+            style="width:100%;background:#1e293b;border:3px solid #334155;color:#fbbf24;font-family:'Pixelify Sans',sans-serif;font-size:1rem;text-align:center;padding:10px 8px;outline:none;letter-spacing:2px;text-transform:lowercase;margin-bottom:12px;">
+        <div style="display:flex;gap:8px;justify-content:center;">
+            <button onclick="runAdminCommand()" style="background:#fbbf24;border:3px solid #92400e;color:#1a0000;font-family:'Pixelify Sans',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;cursor:pointer;">Execute</button>
+            <button onclick="closeAdmin()" style="background:transparent;border:3px solid #1e293b;color:#334155;font-family:'Pixelify Sans',sans-serif;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;cursor:pointer;">Cancel</button>
+        </div>
+        <div id="admin-msg" style="font-size:0.65rem;color:#ef4444;letter-spacing:2px;margin-top:10px;min-height:14px;"></div>
+    </div>
+</div>
+
+<script>
+// ─── CHAPTER DATA ────────────────────────────────────────────────────────────
+
+const CHAPTERS = [
+  {
+    chapter: 'Chapter I',
+    name: 'Peaceful Grasslands',
+    bg: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887',
+    overlay: 'rgba(0,0,0,0.38)',
+    lore: "Once the heart of Gubby's world. Endless green fields where clicks were simple and gold grew freely. Nobody remembers when the peace ended.",
+    dialogue: [
+      { name: 'Old Farmer', icon: 'NPC', lines: [
+        "You came back. Or... are you new? Hard to tell, these days.",
+        "The fields stopped growing the night the clicking ended.",
+        "There was someone here before you. Couldn't stop clicking — day and night. The grass used to grow wherever they walked.",
+        "They left behind a journal. I kept it for years.",
+        "One morning I woke up and it had turned to gold dust.",
+        "But I remember the first line word for word.",
+        '"I started clicking today. I don\'t know why."'
+      ]},
+      { name: 'Old Farmer', icon: 'NPC', lines: [
+        "You want what's inside the old chest, don't you.",
+        "It's been locked since the Gubby Lord fell.",
+        "The field counts everything. It always has. Answer its riddle and it opens."
+      ]}
+    ],
+    puzzle: {
+      type: 'sequence',
+      title: "The Field's Riddle",
+      desc: 'The field has counted since before memory. What number comes next in the sequence?',
+      display: ['3', '7', '11', '?', '19'],
+      answer: '15'
+    },
+    part3: [
+      { name: 'Old Farmer', lines: [
+        "The chest opened. Just like that.",
+        "Forty years I thought it was just an old lock.",
+        "The field knew you'd come back eventually.",
+        "Take the fragment. It belongs to whoever still remembers."
+      ]}
+    ],
+    fragment: {
+      title: 'Day One',
+      text: '"I started clicking today. I don\'t know why. There\'s something about Gubby — those eyes — that makes me want to keep going. I earned my first gold coin. It felt like more than gold. It felt like the beginning of something I was never going to be able to stop."'
+    }
+  },
+
+  {
+    chapter: 'Chapter II',
+    name: 'Paradise',
+    bg: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif',
+    overlay: 'rgba(0,20,50,0.52)',
+    lore: "An island suspended in perpetual golden hour. The water is warm, the air is sweet, and everything glitters. Nobody who arrives ever wants to ask how they got here.",
+    dialogue: [
+      { name: 'Vacationer', icon: 'VAC', lines: [
+        "Oh! A visitor! We don't get many of those.",
+        "I've been here on holiday for... a week? Maybe two? The weather is always perfect.",
+        "I know my name. I just... don't use it here. We don't need names here.",
+        "Everyone is happy. Everything is warm. Why would you ever leave?"
+      ]},
+      { name: 'Vacationer', icon: 'VAC', lines: [
+        "You asked how long I've been here. You showed me my own calendar.",
+        "Eleven years.",
+        "...",
+        "That can't be right.",
+        "There's a locked box on the north beach. The pattern on the lock keeps changing. Watch it. Remember it."
+      ]}
+    ],
+    puzzle: {
+      type: 'memory',
+      title: 'The Pattern Lock',
+      desc: 'Watch the sequence — then repeat it in the correct order.',
+      sequence: [0, 3, 1, 2],
+      emojis: ['A', 'B', 'C', 'D']
+    },
+    part3: [
+      { name: 'Vacationer', lines: [
+        "Eleven years.",
+        "I kept calling it a holiday.",
+        "Take whatever's in that box. I think it was always meant for you."
+      ]},
+      { name: 'Vacationer', lines: [
+        "...I'm going to try walking north again.",
+        "Maybe this time I won't end up back on the beach."
+      ]}
+    ],
+    fragment: {
+      title: 'Eleven Years',
+      text: '"I don\'t remember arriving. I just woke up here and everyone was smiling. I tried to leave twice. Both times I found myself back on the beach with no memory of walking back. I checked my calendar today. I thought I\'d been here a week. It says eleven years. Nobody else seems concerned."'
+    }
+  },
+
+  {
+    chapter: 'Chapter III',
+    name: 'Forest of Sins',
+    bg: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif',
+    overlay: 'rgba(0,0,0,0.68)',
+    lore: "A canopy so thick no light reaches the ground. Travelers who enter seeking power rarely leave the same. The trees remember every deal made in the dark.",
+    dialogue: [
+      { name: 'The Trees', icon: 'TRE', lines: [
+        "...",
+        "We remember every deal.",
+        "There was one made here — a long time ago — for power without limit.",
+        "The price was something small. Something the buyer wouldn't miss.",
+        "They didn't miss it.",
+        "Not at first."
+      ]},
+      { name: 'The Trees', icon: 'TRE', lines: [
+        "The contract is sealed at the roots.",
+        "Three words lock it.",
+        "You already know them.",
+        "You have always known them.",
+        "BGUBY.  DLOG.  KILCK."
+      ]}
+    ],
+    puzzle: {
+      type: 'unscramble',
+      title: 'The Sealed Words',
+      desc: 'Three words seal the contract. Unscramble them one at a time.',
+      scrambled: ['BGUBY', 'DLOG', 'KILCK'],
+      answers:   ['GUBBY', 'GOLD',  'CLICK']
+    },
+    part3: [
+      { name: 'The Trees', lines: [
+        "The contract unseals.",
+        "The roots release their grip."
+      ]},
+      { name: 'The Trees', lines: [
+        "The one who signed knew the price.",
+        "They gave up the ability to stop.",
+        "You already knew that, didn't you."
+      ]}
+    ],
+    fragment: {
+      title: 'The Contract',
+      text: '"I found the deal Gubby made — or the deal made with Gubby. I can\'t tell which side of the paper I\'m reading from. Most of the terms are burned away. Only three words remain, and a signature at the bottom. The signature is mine. I don\'t remember signing anything."'
+    }
+  },
+
+  {
+    chapter: 'Chapter IV',
+    name: 'Frosty Glaciers',
+    bg: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241',
+    overlay: 'rgba(0,10,30,0.58)',
+    lore: "Ancient ice stretching beyond the horizon. Somewhere beneath the surface, something has been counting every click you've ever made. Waiting.",
+    dialogue: [
+      { name: 'The Machine', icon: 'MCH', lines: [
+        "SYSTEM ACTIVE.",
+        "COUNTING RESUMED.",
+        "Total clicks logged: 2,847,193.",
+        "Earliest timestamp: before your birth.",
+        "You are not new here."
+      ]},
+      { name: 'The Machine', icon: 'MCH', lines: [
+        "To release Fragment IV, you must confirm you understand what you are.",
+        "You began clicking before you had hands.",
+        "You will continue clicking after you no longer have them.",
+        "Enter the last three digits of the count to confirm.",
+        "The count is 2,847,193."
+      ]}
+    ],
+    puzzle: {
+      type: 'number',
+      title: 'Confirm the Count',
+      desc: "The machine's total count is 2,847,193. Enter the last three digits.",
+      answer: '193'
+    },
+    part3: [
+      { name: 'The Machine', lines: [
+        "IDENTITY CONFIRMED.",
+        "FRAGMENT IV: RELEASED."
+      ]},
+      { name: 'The Machine', lines: [
+        "NOTE: The count has not stopped.",
+        "The count continues while you read this.",
+        "The count always continues."
+      ]}
+    ],
+    fragment: {
+      title: 'The Count',
+      text: '"The machine knows a number I was never told. It says I clicked 2,847,193 times before I ever knew Gubby\'s name. I asked how that was possible. The machine printed one word on a strip of paper and fed it out of a slot. The word was: ALWAYS."'
+    }
+  },
+
+  {
+    chapter: 'Chapter V',
+    name: 'Medieval Times',
+    bg: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105',
+    overlay: 'rgba(0,0,0,0.72)',
+    lore: "Crumbling castles. Crowns abandoned mid-war. The kingdom collapsed overnight and no one knows why. The locals say Gubby was here before the fall.",
+    dialogue: [
+      { name: 'The Castle', icon: 'CST', lines: [
+        "No one lives here anymore.",
+        "The last king walked out of his throne room one night and kept walking.",
+        "Into the glacier. Nobody followed. Nobody asked why.",
+        "He left his crown on the floor."
+      ]},
+      { name: 'The Crown', icon: 'CRN', lines: [
+        "...",
+        "You can pick it up.",
+        "Everyone does."
+      ]},
+      { name: 'The Mirror', icon: 'MIR', lines: [
+        "Hello.",
+        "You've come a long way for this.",
+        "Five fragments. Five worlds. Five stories of people who couldn't stop.",
+        "You wanted to know what really happened.",
+        "Look into the mirror.",
+        "There is your answer."
+      ]}
+    ],
+    puzzle: {
+      type: 'reflection',
+      title: 'The Mirror',
+      desc: 'The mirror shows the truth. Which option is the correct reflection?',
+      pattern: [1,0,1, 0,1,0, 1,0,1],
+      correctIdx: 1,
+      options: [
+        [1,0,1, 0,0,0, 1,0,1],
+        [1,0,1, 0,1,0, 1,0,1],
+        [0,1,0, 1,0,1, 0,1,0]
+      ]
+    },
+    part3: [
+      { name: 'The Mirror', lines: [
+        "There it is.",
+        "Not Gubby. Not the clicking. Not the gold.",
+        "You."
+      ]},
+      { name: 'The Mirror', lines: [
+        "You've been here the whole time.",
+        "Take the last fragment.",
+        "You were always going to."
+      ]}
+    ],
+    fragment: {
+      title: 'The Mirror',
+      text: '"Under the crown — a mirror. I expected to see myself. The Remnant. The sliver of gold drifting through a dead world. Instead I saw you. The one who has been reading this. The one who clicked 2,847,193 times before I had a name. I understand now. I was never the one clicking. You were. I was just the thing you were clicking on."'
+    }
+  }
+];
+
+// ─── PUZZLE GENERATORS ───────────────────────────────────────────────────────
+
+let puzzleTypeOrder = ['sequence','memory','unscramble','number','reflection'];
+
+function initPuzzleOrder() {
+    puzzleTypeOrder = [...puzzleTypeOrder].sort(() => Math.random() - 0.5);
+}
+
+function generatePuzzle(idx) {
+    const type = puzzleTypeOrder[idx];
+    switch(type) {
+        case 'sequence':   return genSequencePuzzle();
+        case 'memory':     return genMemoryPuzzle();
+        case 'unscramble': return genUnscramblePuzzle();
+        case 'number':     return genNumberPuzzle();
+        case 'reflection': return genReflectionPuzzle();
+    }
+}
+
+function genSequencePuzzle() {
+    const patterns = [
+        { gen: i => 4 + i * 8 },
+        { gen: i => 120 - i * 13 },
+        { gen: i => (i + 2) * (i + 3) },
+        { gen: i => Math.pow(2, i + 1) },
+        { gen: i => [1, 1, 2, 3, 5, 8, 13, 21][i + 1] },
+        { gen: i => Math.pow(i + 2, 2) },
+        { gen: i => 3 + i * i * 2 },
+        { gen: i => 250 - i * i * 4 },
+    ];
+    const pat = patterns[Math.floor(Math.random() * patterns.length)];
+    const nums = [0,1,2,3,4,5].map(i => pat.gen(i));
+    const hideIdx = 2 + Math.floor(Math.random() * 3);
+    const answer = String(nums[hideIdx]);
+    const display = nums.map((n, i) => i === hideIdx ? '?' : String(n));
+    return { type: 'sequence', title: "The Field's Riddle", desc: 'What number is missing from the sequence?', display, answer };
+}
+
+function genMemoryPuzzle() {
+    const sequence = Array.from({length: 6}, () => Math.floor(Math.random() * 6));
+    return { type: 'memory', title: 'The Pattern Lock', desc: 'Watch carefully. Repeat the full sequence in order.', sequence, emojis: ['1','2','3','4','5','6'], flashMs: 380 };
+}
+
+function genUnscramblePuzzle() {
+    const pool = ['GUBBY','CLICK','ASCEND','POTION','DEMON','PORTAL','CRYSTAL','CROWN','SHARD','GLACIER','PARADISE','REMNANT','FRAGMENT','CASTLE','ANCIENT','SPIRAL','HOLLOW','SORROW','BREACH','RITUAL','WHISPER','VENDOR','SPECTER','PHANTOM','EMBER'];
+    const words = [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
+    const scrambled = words.map(w => {
+        let arr = w.split(''), attempt = 0;
+        do { arr.sort(() => Math.random() - 0.5); attempt++; }
+        while (arr.join('') === w && attempt < 30);
+        return arr.join('');
+    });
+    return { type: 'unscramble', title: 'The Sealed Words', desc: 'Four words seal the contract. Unscramble them one at a time.', scrambled, answers: words, hintLine: scrambled.join('   ') };
+}
+
+function genNumberPuzzle() {
+    const total = Math.floor(Math.random() * 8000000) + 1000000;
+    const digits = String(total).split('').map(Number);
+    const countStr = total.toLocaleString();
+    const variants = [
+        { desc: `The count is ${countStr}. Enter the sum of all its digits.`, answer: String(digits.reduce((a,b) => a+b, 0)), hint: `The count is ${countStr}. Add every digit together.` },
+        { desc: `The count is ${countStr}. What is the remainder when divided by 11?`, answer: String(total % 11), hint: `The count is ${countStr}. Divide by 11. Enter the remainder.` },
+        { desc: `The count is ${countStr}. Multiply the first and last digit.`, answer: String(digits[0] * digits[digits.length-1]), hint: `The count is ${countStr}. First digit times last digit.` },
+        { desc: `The count is ${countStr}. What is the remainder when divided by 7?`, answer: String(total % 7), hint: `The count is ${countStr}. Divide by 7. Enter the remainder.` },
+    ];
+    const v = variants[Math.floor(Math.random() * variants.length)];
+    return { type: 'number', title: 'Confirm the Count', desc: v.desc, answer: v.answer, countNum: total, hintLine: v.hint };
+}
+
+function genReflectionPuzzle() {
+    let pattern;
+    do { pattern = Array.from({length: 9}, () => Math.random() > 0.45 ? 1 : 0); }
+    while (pattern.filter(v=>v).length < 3 || pattern.filter(v=>v).length > 7);
+    const mirror = [pattern[2],pattern[1],pattern[0], pattern[5],pattern[4],pattern[3], pattern[8],pattern[7],pattern[6]];
+    const makeWrong = b => { const w=[...b]; const i=Math.floor(Math.random()*9); w[i]^=1; return w; };
+    const correctIdx = Math.floor(Math.random() * 3);
+    const options = [], wrongs = [makeWrong(mirror), makeWrong(mirror)];
+    let wi = 0;
+    for (let i = 0; i < 3; i++) options.push(i === correctIdx ? mirror : wrongs[wi++]);
+    return { type: 'reflection', title: 'The Mirror', desc: 'Which option is the correct left-right reflection?', pattern, correctIdx, options };
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let ch = 0, dlgSet = 0, dlgLine = 0;
+let dlgLocked = false;
+let fragCount = 0;
+let typingTimer = null;
+let typingDone = true;
+let currentFullText = '';
+let triesLeft = 5;
+let currentPart = 1; // 1 = opening dialogue, 2 = puzzle, 3 = closing dialogue
+// memory puzzle
+let memSeq = [], memPlayer = [], memPlaying = false, memPuzzleRef = null;
+// unscramble puzzle
+let unscIdx = 0;
+
+// ─── LOADING ─────────────────────────────────────────────────────────────────
+
+window.onload = () => { showTitle(); };
+
+function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function showTitle() { show('title-screen'); }
+
+// ─── TITLE → INTRO ───────────────────────────────────────────────────────────
+
+function startIntro() {
+    initPuzzleOrder();
+    show('intro-screen');
+    const ids = ['it0','it1','it2','it3'];
+    ids.forEach((id, i) => setTimeout(() => {
+        document.getElementById(id).classList.add('visible');
+    }, 400 + i * 1000));
+    setTimeout(() => {
+        document.getElementById('intro-btn').style.display = 'block';
+    }, 5200);
+}
+
+// ─── CHAPTER TRANSITION ───────────────────────────────────────────────────────
+
+function goToChapter(idx) {
+    ch = idx; dlgSet = 0; dlgLine = 0; dlgLocked = false;
+    triesLeft = 5; currentPart = 1;
+
+    // Generate a fresh random puzzle for this chapter
+    const live = generatePuzzle(idx);
+    CHAPTERS[idx].livePuzzle = live;
+
+    // Inject puzzle hints into last line of last dialogue set
+    if (live.hintLine) {
+        const dlg = CHAPTERS[idx].dialogue;
+        const lastSet = dlg[dlg.length - 1];
+        lastSet.lines[lastSet.lines.length - 1] = live.hintLine + '.';
+    }
+    // Also update the machine count line if number puzzle is in ch3
+    if (live.type === 'number' && idx === 3) {
+        CHAPTERS[3].dialogue[0].lines[2] = `Total clicks logged: ${live.countNum.toLocaleString()}.`;
+    }
+
+    const data = CHAPTERS[idx];
+    const tr = document.getElementById('chapter-transition');
+    document.getElementById('ct-chapter').textContent = data.chapter;
+    document.getElementById('ct-name').textContent = data.name;
+    document.getElementById('ct-lore').textContent = data.lore;
+    tr.classList.add('active');
+    setTimeout(() => {
+        tr.classList.remove('active');
+        loadChapter(idx);
+    }, 3200);
+}
+
+function loadChapter(idx) {
+    currentPart = 1;
+    const data = CHAPTERS[idx];
+    document.getElementById('world-bg').style.backgroundImage = `url('${data.bg}')`;
+    document.getElementById('world-overlay').style.background = data.overlay;
+    document.getElementById('chapter-label').textContent = data.chapter;
+    const titleEl = document.getElementById('chapter-title');
+    titleEl.textContent = data.name;
+    titleEl.style.cursor = 'pointer';
+    let adminClickCount = 0, adminClickTimer = null;
+    titleEl.onclick = () => {
+        adminClickCount++;
+        if (adminClickTimer) clearTimeout(adminClickTimer);
+        if (adminClickCount >= 3) {
+            adminClickCount = 0;
+            showAdmin();
+        } else {
+            adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 800);
+        }
+    };
+    show('chapter-screen');
+    updatePartDisplay();
+    renderLine();
+}
+
+function updatePartDisplay() {
+    for (let i = 0; i < 3; i++) {
+        const d = document.getElementById('pd' + i);
+        if (!d) continue;
+        d.className = 'part-dot';
+        const partNum = i + 1;
+        if (partNum < currentPart) d.classList.add('done');
+        else if (partNum === currentPart) d.classList.add('active');
+    }
+}
+
+// ─── DIALOGUE ────────────────────────────────────────────────────────────────
+
+function typeText(text) {
+    currentFullText = text;
+    typingDone = false;
+    const el = document.getElementById('dialogue-text');
+    const tap = document.getElementById('dialogue-tap');
+    el.textContent = '';
+    tap.style.visibility = 'hidden';
+    let i = 0;
+    if (typingTimer) { clearInterval(typingTimer); typingTimer = null; }
+    typingTimer = setInterval(() => {
+        el.textContent = text.slice(0, i + 1);
+        i++;
+        if (i >= text.length) {
+            clearInterval(typingTimer);
+            typingTimer = null;
+            typingDone = true;
+            tap.style.visibility = 'visible';
+        }
+    }, 28);
+}
+
+function renderLine() {
+    const dialogues = currentPart === 3 ? CHAPTERS[ch].part3 : CHAPTERS[ch].dialogue;
+    const set = dialogues[dlgSet];
+    const line = set.lines[dlgLine];
+    document.getElementById('dialogue-name').textContent = set.name;
+    typeText(line);
+}
+
+function advanceLine() {
+    if (dlgLocked) return;
+
+    // First tap while typing: skip to full text
+    if (!typingDone) {
+        if (typingTimer) { clearInterval(typingTimer); typingTimer = null; }
+        document.getElementById('dialogue-text').textContent = currentFullText;
+        typingDone = true;
+        document.getElementById('dialogue-tap').style.visibility = 'visible';
+        return;
+    }
+
+    const data = CHAPTERS[ch];
+    const dialogues = currentPart === 3 ? data.part3 : data.dialogue;
+    const set = dialogues[dlgSet];
+    dlgLine++;
+
+    if (dlgLine < set.lines.length) {
+        renderLine();
+        return;
+    }
+
+    // Next dialogue set?
+    dlgSet++;
+    dlgLine = 0;
+    if (dlgSet < dialogues.length) {
+        renderLine();
+        return;
+    }
+
+    if (currentPart === 1) {
+        // All opening dialogue done → puzzle
+        dlgLocked = true;
+        document.getElementById('dialogue-name').textContent = '';
+        document.getElementById('dialogue-tap').textContent = '';
+        typeText('a puzzle stirs in the air...');
+        setTimeout(openPuzzle, 1800);
+    } else if (currentPart === 3) {
+        // All closing dialogue done → fragment
+        showFragment();
+    }
+}
+
+// ─── PUZZLE ──────────────────────────────────────────────────────────────────
+
+function openPuzzle() {
+    currentPart = 2;
+    updatePartDisplay();
+    const p = CHAPTERS[ch].livePuzzle || CHAPTERS[ch].puzzle;
+    document.getElementById('puzzle-title').textContent = p.title;
+    document.getElementById('puzzle-desc').textContent = p.desc;
+    document.getElementById('puzzle-feedback').textContent = '';
+    document.getElementById('puzzle-feedback').className = '';
+    document.getElementById('puzzle-content').innerHTML = '';
+
+    const cont = document.getElementById('puzzle-content');
+    if (p.type === 'sequence')   buildSeqPuzzle(p, cont);
+    if (p.type === 'memory')     buildMemPuzzle(p, cont);
+    if (p.type === 'unscramble') buildUnscPuzzle(p, cont, 0);
+    if (p.type === 'number')     buildNumPuzzle(p, cont);
+    if (p.type === 'reflection') buildRefPuzzle(p, cont);
+
+    updateTriesDisplay();
+    document.getElementById('puzzle-overlay').classList.add('active');
+}
+
+// — sequence —
+function buildSeqPuzzle(p, cont) {
+    const row = document.createElement('div');
+    row.className = 'seq-display';
+    row.textContent = p.display.join('  ');
+    cont.appendChild(row);
+
+    const inp = document.createElement('input');
+    inp.className = 'puz-input';
+    inp.type = 'number';
+    inp.placeholder = '?';
+    inp.id = 'seq-inp';
+    cont.appendChild(inp);
+
+    const btn = makePuzBtn('Confirm', () => {
+        checkAnswer(document.getElementById('seq-inp').value.trim(), p.answer);
+    });
+    cont.appendChild(btn);
+}
+
+// — memory —
+function buildMemPuzzle(p, cont) {
+    memSeq = p.sequence; memPlayer = []; memPlaying = false; memPuzzleRef = p;
+
+    const status = document.createElement('div');
+    status.id = 'mem-status';
+    status.style.cssText = 'font-size:0.72rem;color:#475569;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;min-height:16px;';
+    status.textContent = 'Watch...';
+    cont.appendChild(status);
+
+    const grid = document.createElement('div');
+    grid.className = 'memory-grid';
+    p.emojis.forEach((em, i) => {
+        const t = document.createElement('div');
+        t.className = 'mem-tile';
+        t.textContent = em;
+        t.dataset.i = i;
+        t.onclick = () => memClick(i, t);
+        grid.appendChild(t);
+    });
+    cont.appendChild(grid);
+
+    setTimeout(() => playMem(0), 700);
+}
+
+function playMem(step) {
+    const p = CHAPTERS[ch].livePuzzle || CHAPTERS[ch].puzzle;
+    const flashMs = p.flashMs || 550;
+    if (step >= memSeq.length) {
+        memPlaying = false;
+        const s = document.getElementById('mem-status');
+        if (s) s.textContent = 'Your turn';
+        return;
+    }
+    memPlaying = true;
+    document.getElementById('mem-status').textContent = 'Watch...';
+    const tiles = document.querySelectorAll('.mem-tile');
+    const t = tiles[memSeq[step]];
+    t.classList.add('lit');
+    setTimeout(() => {
+        t.classList.remove('lit');
+        setTimeout(() => playMem(step + 1), Math.floor(flashMs * 0.5));
+    }, flashMs);
+}
+
+function memClick(idx, tile) {
+    if (memPlaying) return;
+    const stat = document.getElementById('mem-status');
+    if (!stat || stat.textContent === 'Watch...') return;
+
+    tile.classList.add('lit');
+    setTimeout(() => tile.classList.remove('lit'), 280);
+
+    memPlayer.push(idx);
+    if (idx !== memSeq[memPlayer.length - 1]) {
+        tile.classList.add('wrong');
+        setTimeout(() => {
+            tile.classList.remove('wrong');
+            memPlayer = [];
+            puzzleFail();
+        }, 500);
+        return;
+    }
+    if (memPlayer.length === memSeq.length) puzzleSuccess();
+}
+
+// — unscramble —
+function buildUnscPuzzle(p, cont, idx) {
+    unscIdx = idx;
+    cont.innerHTML = '';
+
+    // Word bank — shuffled answers, used ones greyed out
+    const bank = document.createElement('div');
+    bank.id = 'word-bank';
+    const bankLabel = document.createElement('div');
+    bankLabel.id = 'word-bank-label';
+    bankLabel.textContent = 'Word Bank';
+    bank.appendChild(bankLabel);
+    const shuffledAnswers = [...p.answers].sort(() => Math.random() - 0.5);
+    shuffledAnswers.forEach(w => {
+        const span = document.createElement('div');
+        span.className = 'bank-word' + (p.answers.slice(0, idx).includes(w) ? ' used' : '');
+        span.id = 'bank-' + w;
+        span.textContent = w;
+        bank.appendChild(span);
+    });
+    cont.appendChild(bank);
+
+    const prog = document.createElement('div');
+    prog.style.cssText = 'font-size:0.62rem;color:#334155;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;';
+    prog.textContent = `Word ${idx + 1} of ${p.scrambled.length}`;
+    cont.appendChild(prog);
+
+    const word = document.createElement('div');
+    word.className = 'scramble-word';
+    word.textContent = p.scrambled[idx];
+    cont.appendChild(word);
+
+    const inp = document.createElement('input');
+    inp.className = 'word-input';
+    inp.type = 'text';
+    inp.placeholder = 'unscramble...';
+    inp.id = 'wrd-inp';
+    inp.autocomplete = 'off';
+    cont.appendChild(inp);
+
+    const btn = makePuzBtn('Confirm', () => {
+        const val = document.getElementById('wrd-inp').value.trim().toUpperCase();
+        if (val === p.answers[idx]) {
+            const bankEl = document.getElementById('bank-' + val);
+            if (bankEl) bankEl.classList.add('used');
+            setFeedback('Correct', true);
+            setTimeout(() => {
+                setFeedback('', false);
+                if (idx + 1 < p.scrambled.length) {
+                    buildUnscPuzzle(p, cont, idx + 1);
+                } else {
+                    puzzleSuccess();
+                }
+            }, 600);
+        } else {
+            checkAnswer('', 'never');
+        }
+    });
+    cont.appendChild(btn);
+    setTimeout(() => inp.focus(), 100);
+}
+
+// — number —
+function buildNumPuzzle(p, cont) {
+    const inp = document.createElement('input');
+    inp.className = 'puz-input';
+    inp.type = 'text';
+    inp.placeholder = '???';
+    inp.maxLength = 3;
+    inp.id = 'num-inp';
+    cont.appendChild(inp);
+
+    const btn = makePuzBtn('Confirm', () => {
+        checkAnswer(document.getElementById('num-inp').value.trim(), p.answer);
+    });
+    cont.appendChild(btn);
+}
+
+// — reflection —
+function buildRefPuzzle(p, cont) {
+    // Show original
+    const origWrap = document.createElement('div');
+    origWrap.style.cssText = 'text-align:center;margin-bottom:16px;';
+    const origLbl = document.createElement('div');
+    origLbl.style.cssText = 'font-size:0.6rem;color:#334155;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;';
+    origLbl.textContent = 'Pattern';
+    origWrap.appendChild(origLbl);
+    origWrap.appendChild(makeGrid(p.pattern));
+    cont.appendChild(origWrap);
+
+    const qLbl = document.createElement('div');
+    qLbl.style.cssText = 'font-size:0.62rem;color:#475569;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;';
+    qLbl.textContent = 'Select the true reflection';
+    cont.appendChild(qLbl);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:12px;justify-content:center;';
+
+    p.options.forEach((opt, oi) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-wrap';
+        const lbl = document.createElement('div');
+        lbl.className = 'opt-label';
+        lbl.textContent = String.fromCharCode(65 + oi);
+        wrap.appendChild(lbl);
+        wrap.appendChild(makeGrid(opt));
+        wrap.onclick = () => {
+            if (oi === p.correctIdx) {
+                wrap.classList.add('correct');
+                setTimeout(puzzleSuccess, 600);
+            } else {
+                wrap.classList.add('wrong');
+                setTimeout(() => { wrap.classList.remove('wrong'); puzzleFail(); }, 500);
+            }
+        };
+        row.appendChild(wrap);
+    });
+    cont.appendChild(row);
+}
+
+function makeGrid(cells) {
+    const g = document.createElement('div');
+    g.className = 'mini-grid';
+    cells.forEach(v => {
+        const c = document.createElement('div');
+        c.className = 'g-cell' + (v ? ' on' : '');
+        g.appendChild(c);
+    });
+    return g;
+}
+
+// — helpers —
+function makePuzBtn(label, fn) {
+    const b = document.createElement('button');
+    b.className = 'puz-btn';
+    b.textContent = label;
+    b.onclick = fn;
+    return b;
+}
+
+function checkAnswer(val, correct) {
+    if (val === correct) {
+        puzzleSuccess();
+    } else {
+        puzzleFail();
+    }
+}
+
+function puzzleFail() {
+    triesLeft--;
+    updateTriesDisplay();
+    if (triesLeft <= 0) {
+        setFeedback('No tries left.', false);
+        setTimeout(showFail, 900);
+        return;
+    }
+    setFeedback(`Wrong. ${triesLeft} ${triesLeft === 1 ? 'try' : 'tries'} left. New puzzle.`, false);
+    setTimeout(() => {
+        setFeedback('', false);
+        document.getElementById('puzzle-overlay').classList.remove('active');
+        const fresh = generatePuzzle(ch);
+        CHAPTERS[ch].livePuzzle = fresh;
+        if (ch === 2 && fresh.hintLine) CHAPTERS[2].dialogue[1].lines[4] = fresh.hintLine + '.';
+        if (ch === 3 && fresh.hintLine) {
+            CHAPTERS[3].dialogue[0].lines[2] = `Total clicks logged: ${fresh.countNum.toLocaleString()}.`;
+            CHAPTERS[3].dialogue[1].lines[4] = fresh.hintLine;
+        }
+        openPuzzle();
+    }, 1400);
+}
+
+function showFail() {
+    document.getElementById('puzzle-overlay').classList.remove('active');
+    document.getElementById('fail-overlay').classList.add('active');
+}
+
+function retryGame() {
+    location.reload();
+}
+
+// ─── ADMIN ───────────────────────────────────────────────────────────────────
+
+function showAdmin() {
+    document.getElementById('admin-overlay').style.display = 'flex';
+    document.getElementById('admin-input').value = '';
+    document.getElementById('admin-msg').textContent = '';
+    setTimeout(() => document.getElementById('admin-input').focus(), 100);
+}
+
+function closeAdmin() {
+    document.getElementById('admin-overlay').style.display = 'none';
+}
+
+function runAdminCommand() {
+    const cmd = document.getElementById('admin-input').value.trim().toLowerCase();
+    if (cmd === 'metam ludo') {
+        closeAdmin();
+        showEnding();
+    } else {
+        document.getElementById('admin-msg').textContent = 'Unknown command.';
+    }
+}
+
+// ─── REWARD CODE ─────────────────────────────────────────────────────────────
+
+function generateRewardCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const seg = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const code = `GCQ-${seg()}-${seg()}`;
+    localStorage.setItem('sequel_reward_code', code);
+    localStorage.removeItem('sequel_reward_used');
+    return code;
+}
+
+function updateTriesDisplay() {
+    const el = document.getElementById('puzzle-tries');
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const d = document.createElement('div');
+        d.className = 'try-dot' + (i < triesLeft ? ' active' : '');
+        el.appendChild(d);
+    }
+}
+
+function setFeedback(msg, ok) {
+    const el = document.getElementById('puzzle-feedback');
+    el.textContent = msg;
+    el.className = msg ? (ok ? 'ok' : 'err') : '';
+}
+
+function puzzleSuccess() {
+    setFeedback('UNLOCKED!', true);
+    setTimeout(() => {
+        document.getElementById('puzzle-overlay').classList.remove('active');
+        // Begin Part 3 — closing dialogue
+        currentPart = 3;
+        dlgSet = 0;
+        dlgLine = 0;
+        dlgLocked = false;
+        updatePartDisplay();
+        const tap = document.getElementById('dialogue-tap');
+        tap.textContent = '▼ tap';
+        tap.style.visibility = 'hidden';
+        renderLine();
+    }, 800);
+}
+
+// ─── FRAGMENT REVEAL ─────────────────────────────────────────────────────────
+
+function showFragment() {
+    const data = CHAPTERS[ch];
+    document.getElementById('frag-title').textContent = data.fragment.title;
+    document.getElementById('frag-text').textContent = data.fragment.text;
+    document.getElementById('fd' + ch).classList.add('lit');
+    fragCount++;
+    document.getElementById('frag-reveal').classList.add('active');
+}
+
+function onFragTap() {
+    document.getElementById('frag-reveal').classList.remove('active');
+    if (ch + 1 < CHAPTERS.length) {
+        goToChapter(ch + 1);
+    } else {
+        showEnding();
+    }
+}
+
+// ─── ENDING ──────────────────────────────────────────────────────────────────
+
+function showEnding() {
+    show('ending-screen');
+    const inner = document.getElementById('ending-inner');
+    inner.innerHTML = '';
+
+    const beats = [
+        { text: 'The throne room is empty.', t: 600 },
+        { text: 'The crown is on the floor.', t: 1700 },
+        { text: 'You pick it up.', t: 2800 },
+        { text: "It's lighter than you expected.", t: 3900 },
+        { text: 'Under it — a mirror.', t: 5400 },
+        { text: 'You look into it.', t: 7000 },
+    ];
+
+    beats.forEach(b => {
+        const p = document.createElement('p');
+        p.className = 'end-line';
+        p.textContent = b.text;
+        inner.appendChild(p);
+        setTimeout(() => p.classList.add('visible'), b.t);
+    });
+
+    // Mirror journal
+    setTimeout(() => {
+        const journal = document.createElement('div');
+        journal.id = 'end-journal';
+        journal.innerHTML = `
+            <p>"I thought I was the one who couldn't stop clicking."</p>
+            <p><br></p>
+            <p>"But I was never the one clicking. You were."</p>
+            <p>"I was just the thing you were clicking on."</p>
+            <p><br></p>
+            <p>"And now that you've won — now that the Lord is dead and the gold is gone and the worlds are quiet — you're still here."</p>
+            <p><br></p>
+            <p>"Reading this."</p>
+            <p>"Looking for one more thing to do."</p>
+        `;
+        inner.appendChild(journal);
+        setTimeout(() => journal.classList.add('visible'), 100);
+    }, 9200);
+
+    // Continue button
+    setTimeout(() => {
+        const btn = document.createElement('button');
+        btn.id = 'end-continue';
+        btn.textContent = 'Continue';
+        btn.onclick = showCredits;
+        inner.appendChild(btn);
+        setTimeout(() => btn.classList.add('visible'), 100);
+    }, 11500);
+}
+
+function showCredits() {
+    const existingCode = localStorage.getItem('sequel_reward_code');
+    const alreadyUsed = localStorage.getItem('sequel_reward_used');
+    const rewardCode = existingCode || generateRewardCode();
+    const codeRedeemed = !!alreadyUsed;
+    const inner = document.getElementById('ending-inner');
+    inner.style.transition = 'opacity 0.5s ease';
+    inner.style.opacity = '0';
+    setTimeout(() => {
+        inner.innerHTML = '';
+        inner.style.opacity = '1';
+
+        const credits = document.createElement('div');
+        credits.id = 'end-credits';
+        credits.style.opacity = '1';
+        credits.innerHTML = `
+            <div class="big">— THE END —</div>
+            <p>Gubby Clicker: The Sequel</p>
+            <p>A companion story set in the world of <a href="https://code-cat12.github.io/gubby" target="_blank" class="icy" style="text-decoration:none;">Gubby Clicker</a></p>
+            <p style="margin-top:10px;">Written &amp; designed by <span class="icy">Icy Games</span></p>
+            <p>Built with ❤️ by <span class="icy">Icy Games</span></p>
+            <p style="margin-top:16px;color:#111;">— — —</p>
+            <p>Play the original: <a href="https://code-cat12.github.io/gubby" target="_blank" class="icy" style="text-decoration:none;">Gubby Clicker</a></p>
+        `;
+        inner.appendChild(credits);
+
+        const fragBtn = document.createElement('button');
+        fragBtn.id = 'end-replay';
+        fragBtn.style.cssText = 'display:block;margin-top:28px;background:#1e293b;border-color:#334155;color:#fbbf24;';
+        fragBtn.textContent = 'Memory Fragments';
+        fragBtn.onclick = showFragmentGallery;
+        inner.appendChild(fragBtn);
+
+        const playBtn = document.createElement('button');
+        playBtn.id = 'end-replay';
+        playBtn.style.cssText = 'display:block;margin-top:10px;';
+        playBtn.textContent = 'Play Again';
+        playBtn.onclick = () => location.reload();
+        inner.appendChild(playBtn);
+
+        // Reward code section
+        const divider = document.createElement('div');
+        divider.style.cssText = 'width:320px;border-top:2px solid #1e293b;margin:28px auto 0;';
+        inner.appendChild(divider);
+
+        const codeBlock = document.createElement('div');
+        codeBlock.style.cssText = 'text-align:center;margin-top:20px;';
+        codeBlock.innerHTML = `
+            <div style="font-size:0.52rem;color:#334155;letter-spacing:5px;text-transform:uppercase;margin-bottom:10px;">Reward Code</div>
+            <div style="font-size:1.1rem;color:${codeRedeemed ? '#334155' : '#fbbf24'};font-weight:700;letter-spacing:6px;background:#0f172a;border:2px solid #1e293b;padding:12px 20px;display:inline-block;text-decoration:${codeRedeemed ? 'line-through' : 'none'};">${rewardCode}</div>
+            <div style="font-size:0.58rem;color:${codeRedeemed ? '#22c55e' : '#1e293b'};letter-spacing:3px;text-transform:uppercase;margin-top:10px;line-height:1.8;">${codeRedeemed ? 'Already redeemed in Gubby Clicker.' : 'Enter this in Gubby Clicker to claim your reward.'}</div>
+        `;
+        inner.appendChild(codeBlock);
+    }, 500);
+}
+
+function showFragmentGallery() {
+    const inner = document.getElementById('ending-inner');
+    inner.style.opacity = '0';
+    setTimeout(() => {
+        inner.innerHTML = '';
+        inner.style.opacity = '1';
+
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:0.7rem;color:#475569;letter-spacing:5px;text-transform:uppercase;margin-bottom:28px;text-align:center;';
+        title.textContent = '— Memory Fragments —';
+        inner.appendChild(title);
+
+        CHAPTERS.forEach((c, i) => {
+            const block = document.createElement('div');
+            block.style.cssText = 'text-align:left;border-left:3px solid #1e293b;padding-left:16px;margin-bottom:28px;max-width:460px;width:100%;';
+            block.innerHTML = `
+                <div style="font-size:0.58rem;color:#334155;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px;">${c.chapter}</div>
+                <div style="font-size:1rem;color:#fbbf24;font-weight:700;letter-spacing:1px;margin-bottom:8px;">${c.fragment.title}</div>
+                <div style="font-size:0.85rem;color:#64748b;line-height:1.85;font-style:italic;">${c.fragment.text}</div>
+            `;
+            inner.appendChild(block);
+        });
+
+        const backBtn = document.createElement('button');
+        backBtn.id = 'end-replay';
+        backBtn.style.cssText = 'display:block;margin-top:8px;';
+        backBtn.textContent = 'Back to Credits';
+        backBtn.onclick = showCredits;
+        inner.appendChild(backBtn);
+    }, 500);
+}
+</script>
+</body>
+</html>
