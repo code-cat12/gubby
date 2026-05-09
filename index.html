@@ -3151,17 +3151,27 @@
             if (!drop) return;
             // Increment global counter
             fetch(`https://api.counterapi.dev/v1/gubbyclicker/${drop.id}/up`).catch(() => {});
+            // Flexible item lookup: match by exact id OR by name (case-insensitive, underscores = spaces)
+            function findItem(raw) {
+                const key = String(raw).toLowerCase().replace(/_/g, ' ');
+                return SHOP_ITEMS.find(i => i.id === raw || i.name.toLowerCase() === key)
+                    || FRUIT_ITEMS.find(i => i.id === raw || i.name.toLowerCase() === key);
+            }
+            function findSword(raw) {
+                const key = String(raw).toLowerCase().replace(/_/g, ' ');
+                return SWORD_ITEMS.find(s => s.id === raw || s.name.toLowerCase() === key);
+            }
             const newInv = { ...state.inventory };
             const given = [];
-            (drop.items || []).forEach(id => {
-                const item = SHOP_ITEMS.find(i => i.id === id) || FRUIT_ITEMS.find(i => i.id === id);
-                if (item) { newInv[id] = (newInv[id] || 0) + 1; given.push(item.name); }
+            (drop.items || []).forEach(raw => {
+                const item = findItem(raw);
+                if (item) { newInv[item.id] = (newInv[item.id] || 0) + 1; given.push(item.name); }
             });
             const newSwords = [...(state.purchasedSwords || [])];
             const givenSwords = [];
-            (drop.swords || []).forEach(id => {
-                const sword = SWORD_ITEMS.find(s => s.id === id);
-                if (sword && !newSwords.includes(id)) { newSwords.push(id); givenSwords.push(sword.name); }
+            (drop.swords || []).forEach(raw => {
+                const sword = findSword(raw);
+                if (sword && !newSwords.includes(sword.id)) { newSwords.push(sword.id); givenSwords.push(sword.name); }
             });
             const goldGain = drop.gold || 0;
             localStorage.setItem('gubby_drop_' + drop.id, '1');
