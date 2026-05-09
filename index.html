@@ -716,7 +716,7 @@
 
             const spellMap = {
                 'aurum revelio':      '/money',
-                'accio drop':         '/drop',
+                // 'accio drop':         '/drop',   // DROP SYSTEM DISABLED
                 'accio omnia':        '/give all',
                 'accio fruit':        '/fruit',
                 'accio potion':       '/potion',
@@ -813,10 +813,10 @@
                     message = `Accio Sword — unknown sword "${rawName || '?'}"`;
                 }
 
-            // /drop — refresh active drop
-            } else if (command === '/drop') {
-                fetchDrop(true);
-                message = 'Accio Drop — drop refreshed';
+            // DROP SYSTEM DISABLED
+            // } else if (command === '/drop') {
+            //     fetchDrop(true);
+            //     message = 'Accio Drop — drop refreshed';
 
             // /disarm — clear all inventory and swords
             } else if (command === '/disarm') {
@@ -2967,7 +2967,7 @@
                         </div>
                     </header>
 
-                    <!-- DROP BANNER -->
+                    <!-- DROP BANNER — DISABLED
                     ${state.activeDrop ? `<div class="z-20 w-full max-w-md mx-auto px-4 mb-2">
                         <div class="flex items-center justify-between gap-3 px-4 py-3 border-4 border-yellow-500 bg-yellow-50" style="box-shadow:4px 4px 0 rgba(0,0,0,0.15);">
                             <div class="flex-1 min-w-0">
@@ -2977,6 +2977,7 @@
                             <button onclick="claimDrop()" class="pixel-button shrink-0 bg-yellow-500 border-yellow-700 text-white px-4 py-2 font-black text-sm">CLAIM</button>
                         </div>
                     </div>` : ''}
+                    END DROP BANNER -->
 
                     <!-- GUBBY / BOSS ISLAND -->
                     <main class="z-10 relative flex flex-col items-center justify-center w-full mb-4">
@@ -3134,6 +3135,7 @@
             });
         }
 
+        /* ── DROP SYSTEM DISABLED ── restore by uncommenting everything below ──
         const GIST_DROP_URL = 'https://gist.githubusercontent.com/code-cat12/4f3951491077c3b4a37f09f54e210018/raw/drop.json';
         function fetchDrop(forceShow) {
             fetch(GIST_DROP_URL + '?t=' + Date.now())
@@ -3149,9 +3151,7 @@
         function claimDrop() {
             const drop = state.activeDrop;
             if (!drop) return;
-            // Increment global counter
             fetch(`https://api.counterapi.dev/v1/gubbyclicker/${drop.id}/up`).catch(() => {});
-            // Flexible item lookup: match by exact id OR by name (case-insensitive, underscores = spaces)
             function findItem(raw) {
                 const key = String(raw).toLowerCase().replace(/_/g, ' ');
                 return SHOP_ITEMS.find(i => i.id === raw || i.name.toLowerCase() === key)
@@ -3179,11 +3179,12 @@
             const msg = [allGiven.length ? allGiven.join(', ') : '', goldGain ? formatLargeNumber(goldGain, 0) + ' Gold' : ''].filter(Boolean).join(' + ');
             updateState({ inventory: newInv, purchasedSwords: newSwords, gold: state.gold + goldGain, activeDrop: null, notification: { title: 'Drop Claimed!', message: msg || 'Enjoy your reward!', type: 'success' } });
         }
+        ── END DROP SYSTEM ── */
 
         function finishLoading() {
             if (state.loadingDone) return;
             loadGame();
-            fetchDrop();
+            // fetchDrop();   // DROP SYSTEM DISABLED
             createFloatingStars();
             _loadProgress = 100; const bar = document.getElementById('loading-bar-fill'); if (bar) bar.style.width = '100%';
             clearInterval(_loadBarInterval);
