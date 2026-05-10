@@ -1587,8 +1587,8 @@
         function sellClicks() {
             if (state.clicks > 0) {
                 const world = DESTINATIONS.find(d => d.id === state.theme);
-                const worldMult = world ? world.mult : 1;
-                const earned = (state.clicks * worldMult * getSellMult() * getFruitMult()) / CONVERSION_RATES[state.theme];
+                const priceRatio = world ? (world.priceRatio ?? 1) : 1;
+                const earned = state.clicks * priceRatio * getSellMult() * getFruitMult();
                 state.totalSells = (state.totalSells || 0) + 1;
                 const _sm = getSellMult(); const multMsg = _sm > 1 ? ` (${_sm}x set bonus)` : '';
                 updateState({ gold: state.gold + earned, clicks: 0, notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(earned, 2)} ${CURRENCIES[state.theme].name}s!${multMsg}`, type: "success" } });
@@ -1598,8 +1598,10 @@
 
         function travelTo(destId) {
             const dest = DESTINATIONS.find(d => d.id === destId);
-            const oldRate = CONVERSION_RATES[state.theme], newRate = CONVERSION_RATES[destId];
-            const newGold = state.gold * (oldRate / newRate);
+            const oldWorld = DESTINATIONS.find(d => d.id === state.theme);
+            const oldRatio = oldWorld ? (oldWorld.priceRatio ?? 1) : 1;
+            const newRatio = dest ? (dest.priceRatio ?? 1) : 1;
+            const newGold = state.gold * (newRatio / oldRatio);
             const isFirst = !state.visitedWorlds.includes(destId);
             updateState({
                 theme: destId, gold: newGold, showTravelModal: false,
