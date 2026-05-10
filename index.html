@@ -509,15 +509,15 @@
 
         const DESTINATIONS = [
             { id: 'plains',        name: 'Peaceful Grasslands', chapter: 'I',   req: 0,  mult: 1,   priceMod: 1,    priceRatio: 1,       color: 'bg-emerald-50', themeColor: '#f0fdf4', bgImage: 'https://cdnb.artstation.com/p/assets/images/images/053/135/427/original/pixel-jess-field-animation-final.gif?1661495887' },
-            { id: 'paradise',      name: 'Paradise',            chapter: 'II',  req: 5,  mult: 1,   priceMod: 0.75, priceRatio: 0.75,    color: 'bg-cyan-50',    themeColor: '#ecfeff', bgImage: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif' },
-            { id: 'forest',        name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 1,   priceMod: 0.75, priceRatio: 0.5,     color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
-            { id: 'glacier',       name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 1,   priceMod: 0.5,  priceRatio: 0.25,    color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
-            { id: 'medieval',      name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 1,   priceMod: 0.25, priceRatio: 0.125,   color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
+            { id: 'paradise',      name: 'Paradise',            chapter: 'II',  req: 5,  mult: 1,   priceMod: 0.5,    priceRatio: 0.5,      color: 'bg-cyan-50',    themeColor: '#ecfeff', bgImage: 'https://cutekawaiiresources.wordpress.com/wp-content/uploads/2013/04/z.gif' },
+            { id: 'forest',        name: 'Forest of Sins',      chapter: 'III', req: 12, mult: 1,   priceMod: 0.25,   priceRatio: 0.25,     color: 'bg-green-900',  themeColor: '#14190f', bgImage: 'https://i.pinimg.com/originals/93/9e/92/939e9273e3d6ef4f281cda31e9e62488.gif' },
+            { id: 'glacier',       name: 'Frosty Glaciers',     chapter: 'IV',  req: 20, mult: 1,   priceMod: 0.125,  priceRatio: 0.125,    color: 'bg-sky-100',    themeColor: '#e0f2fe', bgImage: 'https://cdna.artstation.com/p/assets/images/images/044/829/822/original/alex-bartlett-northernlights-anims.gif?1641268241' },
+            { id: 'medieval',      name: 'Medieval Times',      chapter: 'V',   req: 35, mult: 1,   priceMod: 0.0625, priceRatio: 0.0625,   color: 'bg-slate-900',  themeColor: '#1e1b2e', bgImage: 'https://cdna.artstation.com/p/assets/images/images/083/367/432/original/kobe-ouano-vampire-castle-watermarked.gif?1735733105' },
             { id: 'boss_island',   name: 'Boss Island',         flavor: 'Only the strongest survive here.',         chapter: 'VI',  req: 50, mult: 1,   priceMod: 1,    priceRatio: 1,       color: 'bg-red-950',    themeColor: '#1a0505', bgImage: 'https://i.pinimg.com/originals/43/d4/d7/43d4d7e5ba1cfa7959a1fab8d64f22ea.gif', isEventWorld: true },
             { id: 'finale',        name: 'The Finale',          flavor: 'This is where it all ends.',               chapter: 'VII', req: 65, mult: 1,   priceMod: 1,    priceRatio: 1,       color: 'bg-red-950',    themeColor: '#000000', bgImage: 'https://cdna.artstation.com/p/assets/images/images/020/895/676/original/simon-coroller-nd6rgow.gif', isEventWorld: true },
         ];
 
-        const CONVERSION_RATES = { plains: 1, forest: 25, glacier: 75, medieval: 150, paradise: 50, boss_island: 1, finale: 1 };
+        const CONVERSION_RATES = { plains: 1, paradise: 2, forest: 4, glacier: 8, medieval: 16, boss_island: 1, finale: 1 };
 
         const SHOP_ITEMS = [
             { id: 'weak_i',      name: 'Weak Potion I',       category: 'small',  baseCost: 100,        power: 8,        duration: 20,  icon: 'https://i.postimg.cc/R3ffSQjB/potion-259.png'  },
