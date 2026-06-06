@@ -433,51 +433,26 @@
     </div>
 
     <!-- WHAT'S NEW -->
-    <div id="whats-new" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px;">
-        <div style="background:#fff;border:4px solid #6366f1;max-width:520px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(99,102,241,0.4);">
-            <div style="background:#4f46e5;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-                <div>
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#a5b4fc;font-weight:700;letter-spacing:3px;text-transform:uppercase;">Gubby Clicker 2</p>
-                    <h2 style="font-family:'Pixelify Sans',monospace;font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0;">What's New in v2.13</h2>
-                </div>
-                <button onclick="closeWhatsNew()" style="font-family:'Pixelify Sans',monospace;background:transparent;border:none;color:rgba(255,255,255,0.6);font-size:24px;font-weight:900;cursor:pointer;line-height:1;">✕</button>
+    <div id="whats-new" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
+        <div style="background:#fff;border:4px solid #6366f1;max-width:560px;width:100%;display:flex;flex-direction:column;">
+            <!-- Logo -->
+            <div style="padding:32px 24px 22px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                <img src="https://i.postimg.cc/B6Y6MPBM/Copy-of-G-(1).png" alt="Gubby Clicker 2" style="height:110px;image-rendering:pixelated;margin-bottom:10px;" />
+                <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#6b7280;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin:0;">Gubby Clicker 2 · v2.14</p>
             </div>
-            <div style="overflow-y:auto;padding:20px 24px;flex:1;display:flex;flex-direction:column;gap:12px;">
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #f59e0b44;background:#fef3c722;">
-                    <i data-lucide="coins" style="width:22px;height:22px;color:#f59e0b;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Token System</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Quests now reward Tokens instead of gold. Tokens shown in the stat bar.</p></div>
+            <!-- Message -->
+            <div style="padding:0 28px 10px;display:flex;flex-direction:column;gap:14px;text-align:center;">
+                <div style="background:#fef9c3;border:3px solid #fbbf24;padding:16px 18px;">
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;letter-spacing:0.5px;">🏖️ Hey there, Gubby fan!</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#92400e;margin:0;line-height:1.9;">Development on Gubby Clicker 2 is taking a short break. Icy is heading off on a well-deserved vacation from <strong style="color:#b45309;">July 4th all the way to August 7th</strong>. No new updates will be dropping during that time, but don't worry — everything picks right back up once the vacation wraps up!</p>
                 </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #6366f144;background:#eef2ff22;">
-                    <i data-lucide="sword" style="width:22px;height:22px;color:#6366f1;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Swords</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Equippable swords that boost boss damage. Use Accio Sword in the Spellbook.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #ec489944;background:#fdf2f822;">
-                    <i data-lucide="gift" style="width:22px;height:22px;color:#ec4899;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Gifting</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Send items to friends using gift codes. Pick what you want to share, generate a code, and have them redeem it in the Gift menu.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #8b5cf644;background:#f5f3ff22;">
-                    <i data-lucide="user" style="width:22px;height:22px;color:#8b5cf6;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Skins → Characters</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Skins have been renamed to Characters. They now cost 5 Tokens to unlock and can be equipped from the Characters menu.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #dc262644;background:#fef2f222;">
-                    <i data-lucide="moon" style="width:22px;height:22px;color:#dc2626;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Gubby Lord Jr. Tale</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">A cinematic story plays after your first boss defeat. Cast Narra Boss to replay.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #f9731644;background:#fff7ed22;">
-                    <i data-lucide="apple" style="width:22px;height:22px;color:#f97316;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Fruits</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">A new category of consumables in the shop. Fruits give powerful temporary multipliers and come in three tiers — Basic, Tropical, and Exotic.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #10b98144;background:#f0fdf422;">
-                    <i data-lucide="flask-conical" style="width:22px;height:22px;color:#10b981;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Quest Renames</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Power Boost → Potion Boost &nbsp;·&nbsp; Boost Master → Potion Master.</p></div>
-                </div>
-                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px;border:3px solid #64748b44;background:#f8fafc22;">
-                    <i data-lucide="palette" style="width:22px;height:22px;color:#64748b;flex-shrink:0;margin-top:2px;"></i>
-                    <div><p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin:0 0 3px;">Settings Polish</p><p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;font-weight:700;margin:0;line-height:1.5;">Setting cards are always colored regardless of toggle state.</p></div>
+                <div style="background:#fef9c3;border:3px solid #fbbf24;padding:16px 18px;">
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;">🌴 What's in this version?</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#92400e;margin:0;line-height:1.9;">This tropical update brings <strong style="color:#0891b2;">4 brand new tropical fruits</strong> to the marketplace, plus a brand new sword category — <strong style="color:#d97706;">Tropical Swords</strong> — featuring the mighty <strong style="color:#b45309;">Blade of Paradise</strong> at 52.5 dmg. Stock up, suit up, and enjoy the extra boosts while Icy is away!</p>
                 </div>
             </div>
-            <div style="padding:16px 24px;flex-shrink:0;border-top:3px solid #e2e8f0;">
-                <button onclick="closeWhatsNew()" style="width:100%;font-family:'Pixelify Sans',monospace;background:#4f46e5;border:4px solid #3730a3;color:#fff;padding:14px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">LET'S GO!</button>
+            <div style="padding:24px 28px 28px;flex-shrink:0;">
+                <button onclick="closeWhatsNew()" style="width:100%;font-family:'Pixelify Sans',monospace;background:#4f46e5;border:4px solid #3730a3;color:#fff;padding:16px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">UNDERSTOOD, LET'S PLAY!</button>
             </div>
         </div>
     </div>
@@ -543,6 +518,10 @@
             { id: 'fruit_pear',        name: 'Pear',        category: 'fruit_ii',       baseCost: 750000,      profitMult: 12, duration: 15, icon: 'https://i.postimg.cc/F7X8GwVZ/green-pear.png' },
             { id: 'fruit_cherry',      name: 'Cherry',      category: 'fruit_ii',       baseCost: 3000000,     profitMult: 14, duration: 15, icon: 'https://i.postimg.cc/NKBhGZyf/red-cherry.png' },
             { id: 'fruit_grape',       name: 'Grape',       category: 'fruit_ii',       baseCost: 11250000,    profitMult: 16, duration: 15, icon: 'https://i.postimg.cc/PC4gCKZY/blackberry.png' },
+            { id: 'fruit_lime',        name: 'Lime',        category: 'fruit_tropical', baseCost: 45000000,    profitMult: 18, duration: 15, icon: 'https://i.postimg.cc/7Gfr875f/green-lime-2.png' },
+            { id: 'fruit_pineapple',   name: 'Pineapple',   category: 'fruit_tropical', baseCost: 187500000,   profitMult: 20, duration: 15, icon: 'https://i.postimg.cc/8sfgZRQs/yellow-pineapple.png' },
+            { id: 'fruit_coconut',     name: 'Coconut',     category: 'fruit_tropical', baseCost: 750000000,   profitMult: 22, duration: 15, icon: 'https://i.postimg.cc/MnmSyzkn/brown-coconut-2.png' },
+            { id: 'fruit_dragonfruit', name: 'Dragonfruit', category: 'fruit_tropical', baseCost: 3750000000,  profitMult: 24, duration: 15, icon: 'https://i.postimg.cc/nsVt2Npp/pink-dragonfruit.png' },
         ];
 
         const SWORD_ITEMS = [
@@ -558,6 +537,7 @@
             { id: 'sword_samurai',   name: 'Samurai Sword',         category: 'prismatic', dmg: 37.5, baseCost: 10000000000, icon: 'https://i.postimg.cc/hPSGzXdx/Screenshot-2026-04-19-at-12-00-05-PM.png' },
             { id: 'sword_star',      name: 'Star Sword',            category: 'prismatic', dmg: 40,   baseCost: 40000000000, icon: 'https://i.postimg.cc/QVyDvxSt/Screenshot-2026-04-19-at-12-02-05-PM.png' },
             { id: 'sword_hammer',    name: 'The Hammer of Cosmos',  category: 'prismatic', dmg: 45,   baseCost: 160000000000,icon: 'https://i.postimg.cc/QxXM9FT1/Screenshot-2026-04-19-at-12-01-25-PM.png' },
+            { id: 'sword_paradise',  name: 'Blade of Paradise',     category: 'tropical',  dmg: 52.5, baseCost: 750000000000, icon: 'https://i.postimg.cc/QMzrtQ9J/Screenshot-2026-05-07-at-5-51-54-PM-1-removebg-preview.png' },
         ];
 
         const WORLD_LORE = {
@@ -1032,7 +1012,7 @@
             useItem:    () => playTone({ type:'sine', freq:700, freq2:900, gain:0.14, attack:0.01, decay:0.2, duration:0.25 }),
         };
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('%c Gubby Clicker 2 — v2.13 ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
+            console.log('%c Gubby Clicker 2 — v2.14 ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
             console.log('%c © 2026 Icy / Icy Games — All Rights Reserved ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
             startSpinLoop();
@@ -1354,7 +1334,7 @@
             const el = document.getElementById('intro-tale');
             if (el) el.style.display = 'none';
             localStorage.setItem('gubby_intro_seen', '1');
-            if (!localStorage.getItem('gubby_wn_v213')) {
+            if (!localStorage.getItem('gubby_wn_v214')) {
                 const wn = document.getElementById('whats-new');
                 if (wn) { wn.style.display = 'flex'; lucide.createIcons({ nameAttr: 'data-lucide', rootNode: wn }); }
             }
@@ -1424,7 +1404,7 @@
         function closeWhatsNew() {
             const el = document.getElementById('whats-new');
             if (el) el.style.display = 'none';
-            localStorage.setItem('gubby_wn_v213', '1');
+            localStorage.setItem('gubby_wn_v214', '1');
         }
         function showChangelog() {
             updateState({ showHamburger: false });
@@ -2187,6 +2167,7 @@
                     const cats = [
                         { id:'fruit_i',        label:'Normal Fruits I',  color:'border-green-500 text-green-600' },
                         { id:'fruit_ii',       label:'Normal Fruits II', color:'border-emerald-500 text-emerald-600' },
+                        { id:'fruit_tropical', label:'Tropical Fruits',  color:'border-yellow-500 text-yellow-600' },
                     ];
                     return tabBar + '<div class="flex flex-col gap-3">' + cats.map(c => `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 py-8 px-4 flex justify-center items-center market-item ${c.color}"><span class="font-black text-base uppercase tracking-widest">${c.label}</span></button>`).join('') + '</div>';
                 }
@@ -2211,8 +2192,9 @@
                     { id: 'glacier',   label: 'Glacier Swords',   desc: 'Forged in eternal ice — blades that strike with the fury of the frost.',             color: 'border-sky-500 text-sky-600' },
                     { id: 'deathly',   label: 'Deathly Swords',   desc: 'Cursed blades forged beyond the veil — wielded by those who have faced death itself.', color: 'border-red-900 text-red-900' },
                     { id: 'prismatic', label: 'Prismatic Swords',  desc: 'Weapons of pure light and cosmic energy — each blade bends reality itself.',          color: 'border-violet-500 text-violet-600' },
+                    { id: 'tropical',  label: 'Tropical Swords',   desc: 'Blades born from paradise itself — warm, radiant, and devastatingly powerful.',       color: 'border-yellow-500 text-yellow-600' },
                 ];
-                if (!state.marketCategory || !['glacier','deathly','prismatic'].includes(state.marketCategory)) {
+                if (!state.marketCategory || !['glacier','deathly','prismatic','tropical'].includes(state.marketCategory)) {
                     return tabBar + '<div class="flex flex-col gap-3">' + swordCats.map(c =>
                         `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 py-8 px-4 flex flex-col items-center justify-center market-item ${c.color}">
                             <span class="font-black text-base uppercase tracking-widest text-center">${c.label}</span>
@@ -2346,6 +2328,7 @@
                 special:        { name: 'Special Items',    color: 'border-slate-500 bg-slate-50',     items: [] },
                 fruit_i:        { name: 'Normal Fruits I',  color: 'border-green-500 bg-green-50',     items: [] },
                 fruit_ii:       { name: 'Normal Fruits II', color: 'border-emerald-500 bg-emerald-50', items: [] },
+                fruit_tropical: { name: 'Tropical Fruits',  color: 'border-yellow-500 bg-yellow-50',  items: [] },
             };
             SHOP_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
             FRUIT_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
@@ -2359,7 +2342,7 @@
             </div>`;
 
             const potionCatKeys = ['small','medium','large','op','special'];
-            const fruitCatKeys  = ['fruit_i','fruit_ii'];
+            const fruitCatKeys  = ['fruit_i','fruit_ii','fruit_tropical'];
 
             if (activeStorageTab === 'swords') {
                 const owned = (state.purchasedSwords || []);
@@ -2582,7 +2565,7 @@
                         const unitPrice = getItemPrice(popupItem);
                         const totalPrice = unitPrice * state.itemPopupQty;
                         const canAfford = state.gold >= totalPrice;
-                        const tierColors = { small:'bg-blue-500', medium:'bg-purple-500', large:'bg-orange-500', op:'bg-red-500', fruit_i:'bg-green-500', fruit_ii:'bg-emerald-500',};
+                        const tierColors = { small:'bg-blue-500', medium:'bg-purple-500', large:'bg-orange-500', op:'bg-red-500', fruit_i:'bg-green-500', fruit_ii:'bg-emerald-500', fruit_tropical:'bg-yellow-500' };
                         const tierColor = tierColors[popupItem.category] || 'bg-slate-500';
                         const categoryLabel = isFruit ? popupItem.category.replace('_',' ') : popupItem.category + ' boost';
                         return `<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})">
@@ -3090,7 +3073,7 @@
                     `}
                     </div>
 
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">Gubby Clicker 2 — v2.13 · © 2026 Icy / Icy Games</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">Gubby Clicker 2 — v2.14 · © 2026 Icy / Icy Games</p>
                     <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
@@ -3210,7 +3193,7 @@
                             } else {
                                 updateState({ loadingDone: true });
                                 syncMusic();
-                                if (!localStorage.getItem('gubby_wn_v213')) {
+                                if (!localStorage.getItem('gubby_wn_v214')) {
                                     const wn = document.getElementById('whats-new');
                                     if (wn) { wn.style.display = 'flex'; lucide.createIcons({ nameAttr: 'data-lucide', rootNode: wn }); }
                                 }
