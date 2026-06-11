@@ -15,6 +15,36 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+      import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAxCS2jdacHCr0YQsq62-zRxLeQ8XWeNDw",
+        authDomain: "gubby-clicker-56ed0.firebaseapp.com",
+        databaseURL: "https://gubby-clicker-56ed0-default-rtdb.firebaseio.com",
+        projectId: "gubby-clicker-56ed0",
+        storageBucket: "gubby-clicker-56ed0.firebasestorage.app",
+        messagingSenderId: "899868234028",
+        appId: "1:899868234028:web:9a89d55febddd4b3f75c89",
+        measurementId: "G-CHL9LZEGKV"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const db = getFirestore(app);
+
+      window.db = db;
+      window.fsDoc = doc;
+      window.fsSetDoc = setDoc;
+      window.fsGetDoc = getDoc;
+      window.fsCollection = collection;
+      window.fsGetDocs = getDocs;
+      window._dbReady = true;
+      document.dispatchEvent(new Event('firebase-ready'));
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
@@ -453,6 +483,39 @@
             </div>
             <div style="padding:24px 28px 28px;flex-shrink:0;">
                 <button onclick="closeWhatsNew()" style="width:100%;font-family:'Pixelify Sans',monospace;background:#4f46e5;border:4px solid #3730a3;color:#fff;padding:16px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">UNDERSTOOD, LET'S PLAY!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- World Cup Prediction Modal -->
+    <div id="worldcup-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
+        <div style="background:#fff;border:4px solid #3b82f6;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;">
+            <div style="padding:24px 24px 12px;text-align:center;flex-shrink:0;display:flex;flex-direction:column;align-items:center;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/2026_FIFA_World_Cup_emblem.svg/1920px-2026_FIFA_World_Cup_emblem.svg.png" alt="2026 FIFA World Cup" style="height:100px;object-fit:contain;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />
+                <p style="font-family:'Pixelify Sans',monospace;font-size:18px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:1px;">FIFA World Cup 2026</p>
+                <p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#475569;margin:0 0 6px;line-height:1.7;">The biggest tournament on Earth is here. 48 nations, 3 host countries — USA, Canada & Mexico. One champion. Who do you think lifts the trophy?</p>
+                <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#2563eb;margin:0;letter-spacing:2px;text-transform:uppercase;">Cast your vote below</p>
+            </div>
+            <div id="wc-vote-section" style="padding:12px 20px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <button onclick="castWorldCupVote('spain')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/es.png" style="width:24px;height:auto;border-radius:2px;"> Spain</button>
+                    <button onclick="castWorldCupVote('france')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/fr.png" style="width:24px;height:auto;border-radius:2px;"> France</button>
+                    <button onclick="castWorldCupVote('england')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/gb-eng.png" style="width:24px;height:auto;border-radius:2px;"> England</button>
+                    <button onclick="castWorldCupVote('portugal')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/pt.png" style="width:24px;height:auto;border-radius:2px;"> Portugal</button>
+                    <button onclick="castWorldCupVote('argentina')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/ar.png" style="width:24px;height:auto;border-radius:2px;"> Argentina</button>
+                    <button onclick="castWorldCupVote('brazil')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/br.png" style="width:24px;height:auto;border-radius:2px;"> Brazil</button>
+                    <button onclick="castWorldCupVote('germany')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/de.png" style="width:24px;height:auto;border-radius:2px;"> Germany</button>
+                    <button onclick="castWorldCupVote('netherlands')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/nl.png" style="width:24px;height:auto;border-radius:2px;"> Netherlands</button>
+                    <button onclick="castWorldCupVote('norway')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/no.png" style="width:24px;height:auto;border-radius:2px;"> Norway</button>
+                    <button onclick="castWorldCupVote('belgium')" class="wc-team-btn" style="background:#f8fafc;border:2px solid #cbd5e1;color:#1e293b;padding:12px;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;"><img src="https://flagcdn.com/w40/be.png" style="width:24px;height:auto;border-radius:2px;"> Belgium</button>
+                </div>
+            </div>
+            <div id="wc-tally-section" style="display:none;padding:12px 20px;">
+                <p style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#2563eb;margin:0 0 10px;text-align:center;letter-spacing:2px;text-transform:uppercase;">Live vote tally</p>
+                <div id="wc-tally-bars" style="display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
+            <div style="padding:16px 20px 20px;flex-shrink:0;">
+                <button id="wc-close-btn" onclick="closeWorldCupModal()" style="display:none;width:100%;font-family:'Pixelify Sans',monospace;background:#2563eb;border:3px solid #1d4ed8;color:#fff;padding:14px;font-size:14px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">CLOSE</button>
             </div>
         </div>
     </div>
@@ -1012,6 +1075,11 @@
             useItem:    () => playTone({ type:'sine', freq:700, freq2:900, gain:0.14, attack:0.01, decay:0.2, duration:0.25 }),
         };
         window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const pid = localStorage.getItem('gubby_player_id') || (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));
+                if (!localStorage.getItem('gubby_player_id')) localStorage.setItem('gubby_player_id', pid);
+                PLAYER_ID = localStorage.getItem('gubby_player_id');
+            } catch(e) { PLAYER_ID = 'guest_' + Math.random().toString(36).slice(2); }
             console.log('%c Gubby Clicker 2 — v2.14 ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
             console.log('%c © 2026 Icy / Icy Games — All Rights Reserved ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
@@ -1405,6 +1473,71 @@
             const el = document.getElementById('whats-new');
             if (el) el.style.display = 'none';
             localStorage.setItem('gubby_wn_v214', '1');
+            if (!localStorage.getItem('gubby_wc_voted')) {
+                const wc = document.getElementById('worldcup-modal');
+                if (wc) wc.style.display = 'flex';
+            }
+        }
+
+        let PLAYER_ID = null;
+
+        const WC_TEAMS = {
+            spain: '🇪🇸 Spain', france: '🇫🇷 France', england: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England',
+            portugal: '🇵🇹 Portugal', argentina: '🇦🇷 Argentina', brazil: '🇧🇷 Brazil',
+            germany: '🇩🇪 Germany', netherlands: '🇳🇱 Netherlands', norway: '🇳🇴 Norway', belgium: '🇧🇪 Belgium'
+        };
+
+        function waitForDb() {
+            return new Promise(resolve => {
+                if (window._dbReady) return resolve();
+                document.addEventListener('firebase-ready', () => resolve(), { once: true });
+            });
+        }
+
+        async function castWorldCupVote(team) {
+            const existingVote = localStorage.getItem('gubby_wc_voted');
+            if (existingVote) return;
+            const btn = event && event.target;
+            if (btn) btn.textContent = '...';
+            try {
+                await waitForDb();
+                await window.fsSetDoc(window.fsDoc(window.db, 'votes', PLAYER_ID), { team, votedAt: Date.now() });
+                localStorage.setItem('gubby_wc_voted', team);
+                document.getElementById('wc-vote-section').style.display = 'none';
+                document.getElementById('wc-tally-section').style.display = 'block';
+                document.getElementById('wc-close-btn').style.display = 'block';
+                loadWorldCupTally();
+            } catch(e) { console.error('Vote failed', e); if (btn) btn.textContent = 'Error, try again'; }
+        }
+
+        async function loadWorldCupTally() {
+            try {
+                await waitForDb();
+                const snap = await window.fsGetDocs(window.fsCollection(window.db, 'votes'));
+                const counts = {};
+                Object.keys(WC_TEAMS).forEach(t => counts[t] = 0);
+                snap.forEach(d => { const t = d.data().team; if (counts[t] !== undefined) counts[t]++; });
+                const total = Object.values(counts).reduce((a,b) => a+b, 0) || 1;
+                const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+                const myVote = localStorage.getItem('gubby_wc_voted');
+                const container = document.getElementById('wc-tally-bars');
+                container.innerHTML = sorted.map(([id, count]) => {
+                    const pct = Math.round((count / total) * 100);
+                    const isMe = id === myVote;
+                    return `<div style="display:flex;align-items:center;gap:8px;font-family:'Pixelify Sans',monospace;font-size:12px;font-weight:700;">
+                        <span style="color:#e2e8f0;min-width:110px;">${WC_TEAMS[id]}</span>
+                        <div style="flex:1;background:#1e293b;height:18px;position:relative;border:1px solid #334155;">
+                            <div style="width:${pct}%;height:100%;background:${isMe?'#2563eb':'#334155'};transition:width 0.4s;"></div>
+                        </div>
+                        <span style="color:${isMe?'#93c5fd':'#64748b'};min-width:36px;text-align:right;">${pct}%</span>
+                    </div>`;
+                }).join('');
+            } catch(e) { console.error('Tally failed', e); }
+        }
+
+        function closeWorldCupModal() {
+            const el = document.getElementById('worldcup-modal');
+            if (el) el.style.display = 'none';
         }
         function showChangelog() {
             updateState({ showHamburger: false });
@@ -3196,6 +3329,9 @@
                                 if (!localStorage.getItem('gubby_wn_v214')) {
                                     const wn = document.getElementById('whats-new');
                                     if (wn) { wn.style.display = 'flex'; lucide.createIcons({ nameAttr: 'data-lucide', rootNode: wn }); }
+                                } else if (!localStorage.getItem('gubby_wc_voted')) {
+                                    const wc = document.getElementById('worldcup-modal');
+                                    if (wc) wc.style.display = 'flex';
                                 }
                             }
                         }, 600);
