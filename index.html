@@ -432,12 +432,14 @@
     </div>
 
     <!-- BOSS TALE -->
-    <div id="boss-tale" style="display:none;position:fixed;inset:0;z-index:200000;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;">
+    <div id="boss-tale" style="display:none;position:fixed;inset:0;z-index:200000;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto;">
+        <button onclick="closeBossTale()" style="position:fixed;top:50%;right:18px;transform:translateY(-50%);font-family:'Pixelify Sans',monospace;background:transparent;border:2px solid #4b5563;color:#9ca3af;padding:10px 16px;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;z-index:1;">SKIP</button>
         <div id="boss-tale-lines" style="max-width:820px;width:100%;text-align:center;"></div>
     </div>
 
     <!-- INTRO LORE -->
-    <div id="intro-tale" style="display:none;position:fixed;inset:0;z-index:200001;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;">
+    <div id="intro-tale" style="display:none;position:fixed;inset:0;z-index:200001;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto;">
+        <button onclick="closeIntroTale()" style="position:fixed;top:50%;right:18px;transform:translateY(-50%);font-family:'Pixelify Sans',monospace;background:transparent;border:2px solid #4b5563;color:#9ca3af;padding:10px 16px;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;z-index:1;">SKIP</button>
         <div id="intro-tale-lines" style="max-width:820px;width:100%;text-align:center;"></div>
     </div>
 
@@ -705,14 +707,39 @@
             clearTimeout(_titleTimer);
             if (_titleClicks >= 3) {
                 _titleClicks = 0;
-                _awaitingSeq = true;
-                _seqIdx = 0;
-                clearTimeout(_seqTimer);
-                // Cancel sequence if no input in 5 seconds
-                _seqTimer = setTimeout(() => { _awaitingSeq = false; _seqIdx = 0; }, 5000);
+                const isTouch = window.matchMedia('(pointer: coarse)').matches;
+                if (isTouch) {
+                    // Touch devices have no arrow keys — skip straight to password
+                    promptAdminPassword();
+                } else {
+                    _awaitingSeq = true;
+                    _seqIdx = 0;
+                    clearTimeout(_seqTimer);
+                    // Cancel sequence if no input in 5 seconds
+                    _seqTimer = setTimeout(() => { _awaitingSeq = false; _seqIdx = 0; }, 5000);
+                }
             } else {
                 _titleTimer = setTimeout(() => { _titleClicks = 0; }, 3000);
             }
+        }
+
+        function promptAdminPassword() {
+            const pw = prompt('Enter admin password:');
+            if (!pw) return;
+            tryAdminPassword(pw).then(ok => {
+                if (!ok) { alert('Wrong password.'); return; }
+                updateState({ showAdmin: !state.showAdmin });
+                const _ac = ['#a855f7','#7c3aed','#6d28d9','#c4b5fd','#ffffff'];
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const c = document.createElement('div');
+                        const size = 5 + Math.random() * 8;
+                        c.style.cssText = `position:fixed;top:-10px;left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${_ac[Math.floor(Math.random()*_ac.length)]};z-index:999999;pointer-events:none;border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${1.5+Math.random()*2}s linear forwards;`;
+                        document.body.appendChild(c);
+                        setTimeout(() => c.remove(), 4000);
+                    }, Math.random() * 800);
+                }
+            });
         }
 
         // Step 2: key sequence ↑↑↑↓↓↓
@@ -725,22 +752,7 @@
                     // Sequence complete — Step 3: password
                     _awaitingSeq = false;
                     _seqIdx = 0;
-                    const pw = prompt('Enter admin password:');
-                    if (!pw) return;
-                    tryAdminPassword(pw).then(ok => {
-                        if (!ok) { alert('Wrong password.'); return; }
-                        updateState({ showAdmin: !state.showAdmin });
-                        const _ac = ['#a855f7','#7c3aed','#6d28d9','#c4b5fd','#ffffff'];
-                        for (let i = 0; i < 30; i++) {
-                            setTimeout(() => {
-                                const c = document.createElement('div');
-                                const size = 5 + Math.random() * 8;
-                                c.style.cssText = `position:fixed;top:-10px;left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${_ac[Math.floor(Math.random()*_ac.length)]};z-index:999999;pointer-events:none;border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${1.5+Math.random()*2}s linear forwards;`;
-                                document.body.appendChild(c);
-                                setTimeout(() => c.remove(), 4000);
-                            }, Math.random() * 800);
-                        }
-                    });
+                    promptAdminPassword();
                 } else {
                     _seqTimer = setTimeout(() => { _awaitingSeq = false; _seqIdx = 0; }, 5000);
                 }
@@ -1029,6 +1041,7 @@
             if (!confirm('Reset ALL progress? This cannot be undone.')) return;
             window.removeEventListener('beforeunload', saveGame);
             localStorage.removeItem(SAVE_KEY);
+            localStorage.removeItem('gubby_intro_seen');
             // Write empty marker so loadGame doesn't restore old save
             localStorage.setItem(SAVE_KEY + '_reset', '1');
             location.reload();
@@ -2484,6 +2497,7 @@
                 const glacierOwned   = ownedSwords.filter(s => s.category === 'glacier');
                 const deathlyOwned   = ownedSwords.filter(s => s.category === 'deathly');
                 const prismaticOwned = ownedSwords.filter(s => s.category === 'prismatic');
+                const tropicalOwned  = ownedSwords.filter(s => s.category === 'tropical');
                 const renderSwordSection = (label, color, swords) => {
                     if (!swords.length) return '';
                     return `<div class="border-4 ${color} p-4 sm:p-6">
@@ -2508,6 +2522,7 @@
                     + renderSwordSection('Glacier Swords',   'border-sky-400 bg-sky-50',       glacierOwned)
                     + renderSwordSection('Deathly Swords',   'border-red-900 bg-red-50',        deathlyOwned)
                     + renderSwordSection('Prismatic Swords', 'border-violet-400 bg-violet-50', prismaticOwned)
+                    + renderSwordSection('Tropical Swords',  'border-yellow-400 bg-yellow-50', tropicalOwned)
                     + '</div>';
             }
 
@@ -2988,28 +3003,48 @@
                         </div>
                         <div class="px-5 py-3 flex-1 overflow-y-auto border-b-2 border-purple-900">
                             <p class="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">Known Spells</p>
-                            <div class="grid grid-cols-1 gap-1">
+                            <div class="flex flex-col gap-1">
                                 ${[
-                                    { spell: 'Aurum Revelio',      desc: 'Add currency for current world' },
-                                    { spell: 'Accio Drop',         desc: 'Refresh the active drop' },
-                                    { spell: 'Accio Omnia',        desc: 'Give every item x1' },
-                                    { spell: 'Accio Fruit',        desc: 'Give a fruit (use underscores)' },
-                                    { spell: 'Accio Potion',       desc: 'Give potions by tier' },
-                                    { spell: 'Accio Sword',        desc: 'Unlock a sword (use underscores)' },
-                                    { spell: 'Expelliarmus',       desc: 'Clear all inventory' },
-                                    { spell: 'Protego',            desc: 'Pause boss timer 30s' },
-                                    { spell: 'Finite Quaestum',    desc: 'Complete all active quests' },
-
-                                    { spell: 'Obliviate Quaestum', desc: 'Wipe all quest history' },
-                                    { spell: 'Ascensio',           desc: 'Set prestige level' },
-                                    { spell: 'Ascensio Infinitus', desc: 'Infinity rebirth' },
-                                    { spell: 'Descensio',          desc: 'Reset prestige to 0' },
-                                    { spell: 'Accio Tokenus',      desc: 'Give tokens' },
-                                    { spell: 'Narra Beginning',    desc: 'Replay the intro lore' },
-                                    { spell: 'Narra Boss',         desc: 'Replay the Gubby Lord Jr. tale' },
-                                    { spell: 'Narra Finale',       desc: 'Replay the Finale tale' },
-                                    { spell: 'Avada Kedavra',      desc: 'Instantly slay the active boss' },
-                                ].map(s => `<div class="flex items-baseline gap-2"><span style="font-family:'Pixelify Sans',monospace;font-size:13px;color:#c4b5fd;font-weight:900;flex-shrink:0;">${s.spell}</span><span style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#7c3aed;font-weight:700;">— ${s.desc}</span></div>`).join('')}
+                                    { id: 'currency', label: 'Currency & Items', spells: [
+                                        { spell: 'Aurum Revelio',  desc: 'Add currency for current world' },
+                                        { spell: 'Accio Omnia',    desc: 'Give every item x1' },
+                                        { spell: 'Accio Fruit',    desc: 'Give a fruit (use underscores)' },
+                                        { spell: 'Accio Potion',   desc: 'Give potions by tier' },
+                                        { spell: 'Accio Sword',    desc: 'Unlock a sword (use underscores)' },
+                                        { spell: 'Accio Tokenus',  desc: 'Give tokens' },
+                                        { spell: 'Expelliarmus',   desc: 'Clear all inventory' },
+                                    ]},
+                                    { id: 'quests', label: 'Quests', spells: [
+                                        { spell: 'Finite Quaestum',    desc: 'Complete all active quests' },
+                                        { spell: 'Obliviate Quaestum', desc: 'Wipe all quest history' },
+                                    ]},
+                                    { id: 'prestige', label: 'Prestige', spells: [
+                                        { spell: 'Ascensio',           desc: 'Set prestige level' },
+                                        { spell: 'Ascensio Infinitus', desc: 'Infinity rebirth' },
+                                        { spell: 'Descensio',          desc: 'Reset prestige to 0' },
+                                    ]},
+                                    { id: 'boss', label: 'Boss', spells: [
+                                        { spell: 'Protego',        desc: 'Pause boss timer 30s' },
+                                        { spell: 'Avada Kedavra',  desc: 'Instantly slay the active boss' },
+                                    ]},
+                                    { id: 'lore', label: 'Lore & Misc', spells: [
+                                        { spell: 'Narra Beginning', desc: 'Replay the intro lore' },
+                                        { spell: 'Narra Boss',      desc: 'Replay the Gubby Lord Jr. tale' },
+                                        { spell: 'Narra Finale',    desc: 'Replay the Finale tale' },
+                                        { spell: 'Accio Drop',      desc: 'Refresh the active drop' },
+                                    ]},
+                                ].map(cat => {
+                                    const open = (state.adminOpenCats||[]).includes(cat.id);
+                                    return `<div style="border:1px solid #4c1d95;overflow:hidden;">
+                                        <button onclick="updateState({adminOpenCats:(state.adminOpenCats||[]).includes('${cat.id}')?state.adminOpenCats.filter(c=>c!=='${cat.id}'):[...(state.adminOpenCats||[]),'${cat.id}']})" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:${open?'#2e1065':'#1a0533'};border:none;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:12px;font-weight:900;color:#c4b5fd;text-transform:uppercase;letter-spacing:1px;">
+                                            <span>${cat.label}</span>
+                                            <span style="font-size:10px;">${open ? '▲' : '▼'}</span>
+                                        </button>
+                                        ${open ? `<div style="padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px;background:#0f0520;">
+                                            ${cat.spells.map(s => `<div style="display:flex;align-items:baseline;gap:6px;"><span style="font-family:'Pixelify Sans',monospace;font-size:12px;color:#c4b5fd;font-weight:900;flex-shrink:0;">${s.spell}</span><span style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#7c3aed;font-weight:700;">— ${s.desc}</span></div>`).join('')}
+                                        </div>` : ''}
+                                    </div>`;
+                                }).join('')}
                             </div>
                         </div>
                         <div class="px-5 py-2 flex-shrink-0 flex flex-col gap-0.5 border-b-2 border-purple-900">
