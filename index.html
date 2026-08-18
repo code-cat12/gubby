@@ -15,7 +15,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
@@ -403,13 +402,13 @@
     </div>
 
     <!-- BOSS TALE -->
-    <div id="boss-tale" style="display:none;position:fixed;inset:0;z-index:200000;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto;">
+    <div id="boss-tale" style="display:none;position:fixed;inset:0;z-index:200000;background:#000;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:max(40px,12vh) 24px 48px;">
         <button onclick="closeBossTale()" style="position:fixed;top:50%;right:18px;transform:translateY(-50%);font-family:'Pixelify Sans',monospace;background:transparent;border:2px solid #4b5563;color:#9ca3af;padding:10px 16px;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;z-index:1;">SKIP</button>
         <div id="boss-tale-lines" style="max-width:820px;width:100%;text-align:center;"></div>
     </div>
 
     <!-- INTRO LORE -->
-    <div id="intro-tale" style="display:none;position:fixed;inset:0;z-index:200001;background:#000;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto;">
+    <div id="intro-tale" style="display:none;position:fixed;inset:0;z-index:200001;background:#000;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:max(40px,12vh) 24px 48px;">
         <button onclick="closeIntroTale()" style="position:fixed;top:50%;right:18px;transform:translateY(-50%);font-family:'Pixelify Sans',monospace;background:transparent;border:2px solid #4b5563;color:#9ca3af;padding:10px 16px;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:2px;text-transform:uppercase;z-index:1;">SKIP</button>
         <div id="intro-tale-lines" style="max-width:820px;width:100%;text-align:center;"></div>
     </div>
@@ -437,25 +436,30 @@
 
     <!-- WHAT'S NEW -->
     <div id="whats-new" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
-        <div style="background:#fff;border:4px solid #6366f1;max-width:560px;width:100%;display:flex;flex-direction:column;">
-            <!-- Logo -->
-            <div style="padding:32px 24px 22px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-                <img src="https://i.postimg.cc/B6Y6MPBM/Copy-of-G-(1).png" alt="Gubby Clicker 2" style="height:110px;image-rendering:pixelated;margin-bottom:10px;" />
-                <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#6b7280;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin:0;">Gubby Clicker 2 · v2.14</p>
+        <div style="background:#fff;border:4px solid #7c3aed;max-width:560px;width:100%;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(124,58,237,0.35);">
+            <!-- Logo — no banner -->
+            <div style="padding:32px 24px 18px;display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                <img src="https://i.postimg.cc/bw7VDFc3/Copy-of-Gubby-Clicker-(1).png" alt="Gubby Clicker 2" style="height:110px;image-rendering:pixelated;margin-bottom:10px;" />
+                <p style="font-family:'Pixelify Sans',monospace;font-size:11px;color:#6b7280;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin:0;">Gubby Clicker 2 · v2.21</p>
             </div>
-            <!-- Message -->
-            <div style="padding:0 28px 10px;display:flex;flex-direction:column;gap:14px;text-align:center;">
-                <div style="background:#fef9c3;border:3px solid #fbbf24;padding:16px 18px;">
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;letter-spacing:0.5px;">🏖️ Hey there, Gubby fan!</p>
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#92400e;margin:0;line-height:1.9;">Development on Gubby Clicker 2 is taking a short break. Icy is heading off on a well-deserved vacation from <strong style="color:#b45309;">July 4th all the way to August 7th</strong>. No new updates will be dropping during that time, but don't worry — everything picks right back up once the vacation wraps up!</p>
+            <!-- Two content boxes -->
+            <div style="padding:0 28px 10px;display:flex;flex-direction:column;gap:14px;">
+                <div style="background:linear-gradient(135deg,#fdf4ff,#eff6ff);border:3px solid #7c3aed;padding:16px 18px;">
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;letter-spacing:0.5px;">The Cosmic Update has arrived!</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#4c1d95;margin:0;line-height:1.9;">The universe has opened its doors to Gubby Clicker 2. A brand new <strong style="color:#7c3aed;">Cosmic Quests</strong> system is now live — take on hard challenges, fill up three levels of cosmic progression, and claim exclusive rewards that can't be earned anywhere else. The cosmos is waiting.</p>
                 </div>
-                <div style="background:#fef9c3;border:3px solid #fbbf24;padding:16px 18px;">
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;">🌴 What's in this version?</p>
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#92400e;margin:0;line-height:1.9;">This tropical update brings <strong style="color:#0891b2;">4 brand new tropical fruits</strong> to the marketplace, plus a brand new sword category — <strong style="color:#d97706;">Tropical Swords</strong> — featuring the mighty <strong style="color:#b45309;">Blade of Paradise</strong> at 52.5 dmg. Stock up, suit up, and enjoy the extra boosts while Icy is away!</p>
+                <div style="background:linear-gradient(135deg,#fdf4ff,#eff6ff);border:3px solid #7c3aed;padding:16px 18px;">
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:900;color:#1e293b;margin:0 0 6px;line-height:1.8;">What's in v2.21?</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:13px;font-weight:700;color:#4c1d95;margin:0;line-height:1.9;">3 new cosmic quests — <strong style="color:#7c3aed;">Galactic Devotion, Cosmic Treasury, and Nebula Fueled</strong>. Complete them to earn 5 Tokens each and fill cosmic levels. Level I unlocks the <strong style="color:#db2777;">Nova Heart</strong> (35% off all prices for 2 min), Level II unlocks the <strong style="color:#4f46e5;">Excalibur of the Cosmos</strong> (75 dmg sword), and Level III unlocks the exclusive <strong style="color:#06b6d4;">Cosmic Icy</strong> character. Fruits now count as boosts. Quest progress no longer auto-completes from past actions.</p>
                 </div>
             </div>
-            <div style="padding:24px 28px 28px;flex-shrink:0;">
-                <button onclick="closeWhatsNew()" style="width:100%;font-family:'Pixelify Sans',monospace;background:#4f46e5;border:4px solid #3730a3;color:#fff;padding:16px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">UNDERSTOOD, LET'S PLAY!</button>
+            <!-- Fine print -->
+            <div style="padding:0 28px 14px;">
+                <p style="font-family:'Pixelify Sans',monospace;font-size:10px;color:#9ca3af;font-weight:600;margin:0;line-height:1.7;text-align:center;">Some assets used in this game are sourced from <em>The Strongest Battlegrounds</em> on Roblox. Gubby Clicker 2 and Icy Games are not affiliated with, endorsed by, or associated with The Strongest Battlegrounds or its developers in any way.</p>
+            </div>
+            <!-- Button -->
+            <div style="padding:0 28px 28px;flex-shrink:0;">
+                <button onclick="closeWhatsNew()" style="width:100%;font-family:'Pixelify Sans',monospace;background:linear-gradient(to right,#7c3aed,#4f46e5);border:4px solid #4c1d95;color:#fff;padding:16px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;">INTO THE COSMOS!</button>
             </div>
         </div>
     </div>
@@ -510,6 +514,7 @@
             { id: 'powerful_i',  name: 'Powerful Potion I',   category: 'op',     baseCost: 80000000,   power: 4750000,  duration: 12,  icon: 'https://i.postimg.cc/HJ55Y4fk/potion-295.png'  },
             { id: 'powerful_ii', name: 'Powerful Potion II',  category: 'op',     baseCost: 400000000,  power: 47500000, duration: 10,  icon: 'https://i.postimg.cc/t1PPqtLC/potion-167.png'  },
             { id: 'powerful_iii',name: 'Powerful Potion III', category: 'op',     baseCost: 2000000000, power: 237500000,duration: 10,  icon: 'https://i.postimg.cc/8FWWpBqp/potion-103.png'  },
+            { id: 'nova_heart',  name: 'Nova Heart',          category: 'cosmic', baseCost: 0,          power: 0,        duration: 120, icon: 'https://static.wikia.nocookie.net/doodle-world/images/a/a9/Candy_Heart.png/revision/latest?cb=20220404095013', cosmicReward: true },
         ];
 
         const FRUIT_ITEMS = [
@@ -539,8 +544,9 @@
             { id: 'sword_glass',     name: 'Glass Sword',           category: 'prismatic', dmg: 35,   baseCost: 2500000000,  icon: 'https://i.postimg.cc/z3cN4Xp8/Screenshot-2026-04-19-at-11-59-26-AM.png' },
             { id: 'sword_samurai',   name: 'Samurai Sword',         category: 'prismatic', dmg: 37.5, baseCost: 10000000000, icon: 'https://i.postimg.cc/hPSGzXdx/Screenshot-2026-04-19-at-12-00-05-PM.png' },
             { id: 'sword_star',      name: 'Star Sword',            category: 'prismatic', dmg: 40,   baseCost: 40000000000, icon: 'https://i.postimg.cc/QVyDvxSt/Screenshot-2026-04-19-at-12-02-05-PM.png' },
-            { id: 'sword_hammer',    name: 'The Hammer of Cosmos',  category: 'prismatic', dmg: 45,   baseCost: 160000000000,icon: 'https://i.postimg.cc/QxXM9FT1/Screenshot-2026-04-19-at-12-01-25-PM.png' },
+            { id: 'sword_hammer',    name: 'The Hammer of Void',    category: 'prismatic', dmg: 45,   baseCost: 160000000000,icon: 'https://i.postimg.cc/QxXM9FT1/Screenshot-2026-04-19-at-12-01-25-PM.png' },
             { id: 'sword_paradise',  name: 'Blade of Paradise',     category: 'tropical',  dmg: 52.5, baseCost: 750000000000, icon: 'https://i.postimg.cc/QMzrtQ9J/Screenshot-2026-05-07-at-5-51-54-PM-1-removebg-preview.png' },
+            { id: 'sword_excalibur_cosmos', name: 'Excalibur of the Cosmos', category: 'cosmic', dmg: 75, baseCost: 0, icon: 'https://i.postimg.cc/TYpFSbR8/image.png', cosmicReward: true },
         ];
 
         const WORLD_LORE = {
@@ -580,6 +586,12 @@
             { id: 'buy_10_items',name: 'Shopping Spree',    description: 'Buy and use 10 boost items total', type: 'buy',        target: 10,     reward: 28000  },
         ];
 
+        const COSMIC_QUESTS = [
+            { id: 'cosmic_galactic_devotion', name: 'Galactic Devotion', description: 'Click 1,000,000 times after accepting', type: 'clicks',     target: 1000000    },
+            { id: 'cosmic_treasury',          name: 'Cosmic Treasury',   description: 'Hold 10 billion gold at once',           type: 'gold',        target: 10000000000 },
+            { id: 'cosmic_nebula_fueled',     name: 'Nebula Fueled',     description: 'Use 100 boost items after accepting',    type: 'item_uses',   target: 100        },
+        ];
+
         const QUEST_PREREQS = {
             'clicks_500':   'clicks_100',
             'clicks_1000':  'clicks_500',
@@ -590,9 +602,10 @@
         };
 
         const CHARACTERS = [
-            { id: 'alvin',  name: 'アルビン (Alvin)',  img: 'https://i.postimg.cc/26fjV8bs/image.png' },
-            { id: 'lana',   name: 'ラナ (Lana)',       img: 'https://i.postimg.cc/QxM8Bztn/image.png' },
-            { id: 'eliana', name: 'ソフィー (Sophie)',  img: 'https://i.postimg.cc/yW4nnP6c/Untitled-design-(1)-Photoroom.png' },
+            { id: 'alvin',       name: 'アルビン (Alvin)',  img: 'https://i.postimg.cc/26fjV8bs/image.png' },
+            { id: 'lana',        name: 'ラナ (Lana)',       img: 'https://i.postimg.cc/QxM8Bztn/image.png' },
+            { id: 'eliana',      name: 'ソフィー (Sophie)',  img: 'https://i.postimg.cc/yW4nnP6c/Untitled-design-(1)-Photoroom.png' },
+            { id: 'cosmic_icy',  name: 'Cosmic Icy',        img: 'https://i.postimg.cc/JndvyMbg/Untitled-design.png', cosmicReward: true },
         ];
 
         let state = {
@@ -601,11 +614,12 @@
             showTravelModal: false, showMarketModal: false, showStorageModal: false, showQuestModal: false,
             inventory: [...SHOP_ITEMS, ...FRUIT_ITEMS].reduce((acc, item) => ({...acc, [item.id]: 0}), {}),
             prestigeLevel: 0, marketMultiplier: 1, marketTrend: 'stable', marketQueue: [1.1, 0.8, 1.4],
-            xpSurgeUntil: 0, marketCategory: null, marketTab: 'potions', notification: null,
+            xpSurgeUntil: 0, novaHeartUntil: 0, marketCategory: null, marketTab: 'potions', notification: null,
             dataChipBuffUntil: 0, dataChipLastClaim: '',
             discoEventTimer: 0, showAdmin: false, adminLog: [],
             showItemPopup: false, itemPopupId: null, itemPopupQty: 1,
             activeQuests: [], completedQuests: 0, completedQuestIds: [], tokens: 0,
+            activeCosmicQuests: [], completedCosmicQuestIds: [], completedCosmicQuests: 0, totalItemUses: 0, claimableCosmicLevels: [], showCosmicRewardModal: null, showCosmicCutscene: false,
             claimedEventRewards: [], showEventModal: false,
             equippedCharacter: null, showCharactersModal: false, purchasedCharacters: [],
             equippedSword: null, purchasedSwords: [],
@@ -613,7 +627,7 @@
             darkMode: false, reducedMotion: false, soundEnabled: true, musicEnabled: true, largeText: false, purpleAccent: false,
             loadingDone: false, infinityRebirth: false,
             visitedWorlds: ['plains'],
-            showFragmentsModal: false, showWorldLore: null,
+            showFragmentsModal: false, showWorldLore: null, questTab: 'main', adminOpenCats: [],
             questLastRefresh: Date.now(),
             bossActive: false, bossClicks: 0, bossStartTime: null, bossDefeated: false, infiniteMoney: false, seenBossTale: false,
             finaleDefeated: false, seenFinaleTale: false,
@@ -849,6 +863,15 @@
                     message = 'Quest: use complete / refresh / wipe';
                 }
 
+            // cosmicus quaestum — complete all cosmic quests
+            } else if (cmdText.trim().toLowerCase() === 'cosmicus quaestum') {
+                changes.completedCosmicQuests = 9;
+                changes.activeCosmicQuests = [];
+                changes.completedCosmicQuestIds = COSMIC_QUESTS.map(q => q.id);
+                const alreadyClaimable = state.claimableCosmicLevels || [];
+                changes.claimableCosmicLevels = [...new Set([...alreadyClaimable, 1, 2, 3])];
+                message = 'Cosmicus Quaestum — all cosmic levels complete, claim your rewards!';
+
             // /tale — replay cinematic tales
             } else if (command === '/tale') {
                 if (parts[1] === '2') {
@@ -928,11 +951,17 @@
                     completedQuestIds: state.completedQuestIds,
                     tokens: state.tokens || 0,
                     totalSells: state.totalSells || 0,
+                    totalItemUses: state.totalItemUses || 0,
+                    activeCosmicQuests: state.activeCosmicQuests || [],
+                    completedCosmicQuestIds: state.completedCosmicQuestIds || [],
+                    completedCosmicQuests: state.completedCosmicQuests || 0,
+                    claimableCosmicLevels: state.claimableCosmicLevels || [],
                     // Market
                     marketMultiplier: state.marketMultiplier,
                     marketTrend: state.marketTrend,
                     marketQueue: state.marketQueue,
                     xpSurgeUntil: state.xpSurgeUntil || 0,
+                    novaHeartUntil: state.novaHeartUntil || 0,
                     // Worlds
                     visitedWorlds: state.visitedWorlds,
                     // Settings
@@ -1026,7 +1055,7 @@
             useItem:    () => playTone({ type:'sine', freq:700, freq2:900, gain:0.14, attack:0.01, decay:0.2, duration:0.25 }),
         };
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('%c Gubby Clicker 2 — v2.14 ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
+            console.log('%c Gubby Clicker 2 — v2.21 ', 'background:#1e293b;color:#facc15;font-family:monospace;font-size:18px;font-weight:900;padding:6px 14px;border-radius:4px;letter-spacing:2px;');
             console.log('%c © 2026 Icy / Icy Games — All Rights Reserved ', 'background:#f0fdf4;color:#166534;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;');
             try { render(); } catch(e) { document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;background:#fff;">' + e.message + '</div>'; return; }
             startSpinLoop();
@@ -1114,7 +1143,8 @@
         function getItemPrice(item) {
             const world = DESTINATIONS.find(d => d.id === state.theme);
             const ratio = world ? world.priceRatio : 1;
-            return item.baseCost * ratio;
+            const novaDisc = (state.novaHeartUntil && Date.now() < state.novaHeartUntil) ? 0.35 : 1;
+            return item.baseCost * ratio * novaDisc;
         }
         function getAscensionCost() {
             const rate = CONVERSION_RATES[state.theme];
@@ -1326,6 +1356,7 @@
                     btn.style.cssText = `margin-top:20px;font-family:'Pixelify Sans',monospace;background:transparent;border:3px solid #38bdf8;color:#38bdf8;padding:12px 40px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;animation:bossPulse 1s ease-in-out infinite alternate;`;
                     btn.textContent = 'BEGIN';
                     lines.appendChild(btn);
+                    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
                     return;
                 }
                 const cfg = INTRO_TALE_LINES[lineIdx];
@@ -1335,6 +1366,7 @@
                 let charIdx = 0;
                 const interval = setInterval(() => {
                     p.textContent += cfg.text[charIdx++];
+                    el.scrollTop = el.scrollHeight;
                     if (charIdx >= cfg.text.length) {
                         clearInterval(interval);
                         setTimeout(() => typeLine(lineIdx + 1), cfg.pause);
@@ -1348,10 +1380,6 @@
             const el = document.getElementById('intro-tale');
             if (el) el.style.display = 'none';
             localStorage.setItem('gubby_intro_seen', '1');
-            if (!localStorage.getItem('gubby_wn_v214')) {
-                const wn = document.getElementById('whats-new');
-                if (wn) { wn.style.display = 'flex'; lucide.createIcons({ nameAttr: 'data-lucide', rootNode: wn }); }
-            }
         }
 
         const BOSS_TALE_LINES = [
@@ -1389,6 +1417,7 @@
             const lines = document.getElementById('boss-tale-lines');
             if (!el) return;
             lines.innerHTML = '';
+            el.scrollTop = 0;
             el.style.display = 'flex';
             function typeLine(lineIdx) {
                 if (lineIdx >= BOSS_TALE_LINES.length) {
@@ -1397,6 +1426,7 @@
                     btn.style.cssText = `margin-top:20px;font-family:'Pixelify Sans',monospace;background:transparent;border:3px solid #dc2626;color:#dc2626;padding:12px 40px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;animation:bossPulse 1s ease-in-out infinite alternate;`;
                     btn.textContent = 'CONTINUE';
                     lines.appendChild(btn);
+                    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
                     return;
                 }
                 const cfg = BOSS_TALE_LINES[lineIdx];
@@ -1406,6 +1436,7 @@
                 let charIdx = 0;
                 const interval = setInterval(() => {
                     p.textContent += cfg.text[charIdx++];
+                    el.scrollTop = el.scrollHeight;
                     if (charIdx >= cfg.text.length) {
                         clearInterval(interval);
                         setTimeout(() => typeLine(lineIdx + 1), cfg.pause);
@@ -1418,9 +1449,8 @@
         function closeWhatsNew() {
             const el = document.getElementById('whats-new');
             if (el) el.style.display = 'none';
-            localStorage.setItem('gubby_wn_v214', '1');
+            localStorage.setItem('gubby_wn_v221', '1');
         }
-
         function showChangelog() {
             updateState({ showHamburger: false });
             const wn = document.getElementById('whats-new');
@@ -1456,6 +1486,7 @@
             const lines = document.getElementById('boss-tale-lines');
             if (!el) return;
             lines.innerHTML = '';
+            el.scrollTop = 0;
             el.style.display = 'flex';
             function typeLine(lineIdx) {
                 if (lineIdx >= FINALE_TALE_LINES.length) {
@@ -1464,6 +1495,7 @@
                     btn.style.cssText = `margin-top:20px;font-family:'Pixelify Sans',monospace;background:transparent;border:3px solid #fbbf24;color:#fbbf24;padding:12px 40px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:3px;text-transform:uppercase;animation:bossPulse 1s ease-in-out infinite alternate;`;
                     btn.textContent = 'THE END';
                     lines.appendChild(btn);
+                    setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
                     return;
                 }
                 const cfg = FINALE_TALE_LINES[lineIdx];
@@ -1473,6 +1505,7 @@
                 let charIdx = 0;
                 const interval = setInterval(() => {
                     p.textContent += cfg.text[charIdx++];
+                    el.scrollTop = el.scrollHeight;
                     if (charIdx >= cfg.text.length) {
                         clearInterval(interval);
                         setTimeout(() => typeLine(lineIdx + 1), cfg.pause);
@@ -1530,7 +1563,7 @@
 
 
 
-            checkQuestProgress();
+            checkQuestProgress(); checkCosmicQuestProgress();
         }
 
 
@@ -1587,7 +1620,7 @@
                 state.totalSells = (state.totalSells || 0) + 1;
                 const _sm = getSellMult(); const multMsg = _sm > 1 ? ` (${_sm}x set bonus)` : '';
                 updateState({ gold: state.gold + earned, clicks: 0, notification: { title: "MARKET SOLD!", message: `Sold for ${formatLargeNumber(earned, 2)} ${CURRENCIES[state.theme].name}s!${multMsg}`, type: "success" } });
-                SFX.sell(); checkQuestProgress();
+                SFX.sell(); checkQuestProgress(); checkCosmicQuestProgress();
             }
         }
 
@@ -1611,7 +1644,6 @@
             const cost = getAscensionCost();
             if (state.gold < cost) return;
             const nextPrestige = state.prestigeLevel + 1;
-            const updatedQuests = state.activeQuests.map(q => q.type === 'prestige' ? { ...q, progress: (q.progress||0) + 1 } : q);
             const resetInventory = SHOP_ITEMS.reduce((acc, item) => ({
                 ...acc,
                 [item.id]: 0
@@ -1619,12 +1651,12 @@
             const isMilestone = [5,10,25,50].includes(nextPrestige);
             updateState({
                 prestigeLevel: nextPrestige, gold: state.gold * 0.2, clicks: 0, totalClicksSession: 0,
-                inventory: resetInventory, activeBuff: null, activeQuests: updatedQuests,
+                inventory: resetInventory, activeBuff: null,
                 notification: { title: "Ascended!", message: `Prestige ${nextPrestige} reached!`, type: "success" }
             });
             // Restore infinite money if boss was defeated
             if (state.infiniteMoney) { state.gold = 1e100; }
-            SFX.prestige(); checkQuestProgress();
+            SFX.prestige(); checkQuestProgress(); checkCosmicQuestProgress();
         }
 
         function openItemPopup(itemId) {
@@ -1658,23 +1690,26 @@
             if (state.gold >= total) {
                 const updatedQuests = state.activeQuests.map(q => q.type === 'buy_and_use' && !q.hasBought ? { ...q, hasBought: true } : q);
                 updateState({ gold: state.gold - total, inventory: { ...state.inventory, [item.id]: (state.inventory[item.id]||0) + state.itemPopupQty }, showItemPopup: false, itemPopupId: null, itemPopupQty: 1, activeQuests: updatedQuests });
-                checkQuestProgress();
+                checkQuestProgress(); checkCosmicQuestProgress();
             }
         }
         function useItem(itemId) {
             const item = SHOP_ITEMS.find(i => i.id === itemId);
-            if (!item || state.inventory[itemId] <= 0 || state.activeBuff) return;
+            if (!item || state.inventory[itemId] <= 0) return;
+            if (item.category !== 'cosmic' && state.activeBuff) return;
             const updatedQuests = state.activeQuests.map(q => {
                 if (q.type === 'use' || q.type === 'buy') return { ...q, progress: (q.progress||0) + 1 };
                 if (q.type === 'buy_and_use' && q.hasBought) return { ...q, progress: 1 };
                 return q;
             });
-            if (itemId === 'xpmult') {
-                updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, xpSurgeUntil: Date.now() + 15*60*1000, showStorageModal: false, activeQuests: updatedQuests, notification: { title: 'XP Surge!', message: '1.3x XP for 15 minutes!', type: 'success' } });
+            if (itemId === 'nova_heart') {
+                updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, novaHeartUntil: Date.now() + 120000, showStorageModal: false, activeQuests: updatedQuests, totalItemUses: (state.totalItemUses||0)+1, notification: { title: 'Nova Heart!', message: 'Everything costs 35% of its price for 2 minutes!', type: 'success' } });
+            } else if (itemId === 'xpmult') {
+                updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, xpSurgeUntil: Date.now() + 15*60*1000, showStorageModal: false, activeQuests: updatedQuests, totalItemUses: (state.totalItemUses||0)+1, notification: { title: 'XP Surge!', message: '1.3x XP for 15 minutes!', type: 'success' } });
             } else {
-                updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, activeBuff: { ...item, timeLeft: item.duration }, showStorageModal: false, activeQuests: updatedQuests });
+                updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, activeBuff: { ...item, timeLeft: item.duration }, showStorageModal: false, activeQuests: updatedQuests, totalItemUses: (state.totalItemUses||0)+1 });
             }
-            checkQuestProgress(); SFX.useItem();
+            checkQuestProgress(); checkCosmicQuestProgress(); SFX.useItem();
         }
         function buyFruit(itemId) {
             const item = FRUIT_ITEMS.find(i => i.id === itemId);
@@ -1687,13 +1722,18 @@
                 return q;
             });
             updateState({ gold: state.gold - price, inventory: { ...state.inventory, [itemId]: (state.inventory[itemId]||0) + 1 }, activeQuests: updatedQuests });
-            checkQuestProgress(); SFX.buy();
+            checkQuestProgress(); checkCosmicQuestProgress(); SFX.buy();
         }
         function useFruit(itemId) {
             const item = FRUIT_ITEMS.find(i => i.id === itemId);
             if (!item || state.inventory[itemId] <= 0 || state.activeFruitBuff) return;
-            updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, activeFruitBuff: { ...item, timeLeft: item.duration }, showStorageModal: false });
-            SFX.useItem();
+            const updatedQuests = state.activeQuests.map(q => {
+                if (q.type === 'use' || q.type === 'buy') return { ...q, progress: (q.progress||0) + 1 };
+                if (q.type === 'buy_and_use' && q.hasBought) return { ...q, progress: 1 };
+                return q;
+            });
+            updateState({ inventory: { ...state.inventory, [itemId]: state.inventory[itemId]-1 }, activeFruitBuff: { ...item, timeLeft: item.duration }, showStorageModal: false, activeQuests: updatedQuests, totalItemUses: (state.totalItemUses||0)+1 });
+            checkQuestProgress(); checkCosmicQuestProgress(); SFX.useItem();
         }
         function toggleEquip(itemId) {}
 
@@ -1789,7 +1829,15 @@
             });
             if (available.length > 0) {
                 const quest = available[Math.floor(Math.random() * available.length)];
-                updateState({ activeQuests: [...state.activeQuests, { ...quest, progress: 0, completed: false }] });
+                const startValue = (() => {
+                    switch (quest.type) {
+                        case 'clicks':  return state.lifetimeClicks;
+                        case 'sell':    return state.totalSells || 0;
+                        case 'prestige':return state.prestigeLevel;
+                        default:        return 0;
+                    }
+                })();
+                updateState({ activeQuests: [...state.activeQuests, { ...quest, progress: 0, startValue, completed: false }] });
             }
         }
         function rerollQuests() {
@@ -1803,11 +1851,12 @@
             const updatedQuests = state.activeQuests.map(quest => {
                 if (quest.completed) return quest;
                 let progress = quest.progress || 0;
+                const base = quest.startValue || 0;
                 switch (quest.type) {
-                    case 'clicks': progress = state.lifetimeClicks; break;
-                    case 'gold': progress = state.gold; break;
-                    case 'prestige': progress = state.prestigeLevel; break;
-                    case 'sell': progress = state.totalSells || 0; break;
+                    case 'clicks':  progress = Math.max(0, state.lifetimeClicks - base); break;
+                    case 'gold':    progress = state.gold; break;  // "hold X gold" — no baseline needed
+                    case 'prestige':progress = Math.max(0, state.prestigeLevel - base); break;
+                    case 'sell':    progress = Math.max(0, (state.totalSells || 0) - base); break;
                 }
                 const target = quest.type === 'gold' ? quest.target / CONVERSION_RATES[state.theme] : quest.target;
                 const isComplete = progress >= target;
@@ -1840,6 +1889,98 @@
 
             if (false) {
             }
+        }
+
+        function refreshCosmicQuests() {
+            if (state.gold < 100000) { updateState({ notification: { title: 'Not enough gold', message: 'Refreshing cosmic quests costs 100,000 gold.', type: 'error' } }); return; }
+            updateState({ gold: state.gold - 100000, activeCosmicQuests: [], completedCosmicQuestIds: [], notification: { title: 'Cosmic Quests Refreshed', message: 'Accept new quests to start fresh.', type: 'success' } });
+        }
+
+        function acceptCosmicQuest(questId) {
+            const quest = COSMIC_QUESTS.find(q => q.id === questId);
+            if (!quest) return;
+            if (state.activeCosmicQuests.some(q => q.id === questId)) return;
+            if ((state.completedCosmicQuestIds||[]).includes(questId)) return;
+            const startValue = (() => {
+                switch (quest.type) {
+                    case 'clicks':    return state.lifetimeClicks;
+                    case 'sell':      return state.totalSells || 0;
+                    case 'prestige':  return state.prestigeLevel;
+                    case 'item_uses': return state.totalItemUses || 0;
+                    default:          return 0;
+                }
+            })();
+            updateState({ activeCosmicQuests: [...(state.activeCosmicQuests||[]), { ...quest, progress: 0, startValue, completed: false }] });
+        }
+
+        function claimCosmicQuest(questId) {
+            const quest = (state.activeCosmicQuests||[]).find(q => q.id === questId);
+            if (!quest || !quest.completed) return;
+            const newCount = (state.completedCosmicQuests || 0) + 1;
+            const updates = {
+                tokens: (state.tokens || 0) + 5,
+                completedCosmicQuests: newCount,
+                activeCosmicQuests: state.activeCosmicQuests.filter(q => q.id !== questId),
+                completedCosmicQuestIds: [...(state.completedCosmicQuestIds||[]), questId],
+                notification: { title: 'Cosmic Quest Complete!', message: `${quest.name} — 5 Tokens earned!`, type: 'success' }
+            };
+            // Level milestones — queue for manual claim
+            if (newCount === 3) {
+                updates.claimableCosmicLevels = [...(state.claimableCosmicLevels||[]), 1];
+                updates.notification = { title: 'Level I Complete!', message: 'Claim your Nova Heart reward in Cosmic Quests!', type: 'success' };
+            } else if (newCount === 6) {
+                updates.claimableCosmicLevels = [...(state.claimableCosmicLevels||[]), 2];
+                updates.notification = { title: 'Level II Complete!', message: 'Claim your Excalibur of the Cosmos reward!', type: 'success' };
+            } else if (newCount === 9) {
+                updates.claimableCosmicLevels = [...(state.claimableCosmicLevels||[]), 3];
+                updates.notification = { title: 'Level III Complete!', message: 'Claim your Cosmic Icy reward!', type: 'success' };
+            }
+            updateState(updates);
+            SFX.questClaim();
+        }
+
+        function claimCosmicLevel(level) {
+            if (!(state.claimableCosmicLevels||[]).includes(level)) return;
+            const updates = { claimableCosmicLevels: state.claimableCosmicLevels.filter(l => l !== level), showCosmicRewardModal: level };
+            if (level === 1) {
+                updates.inventory = { ...(state.inventory || {}), nova_heart: (state.inventory?.nova_heart || 0) + 1 };
+            } else if (level === 2) {
+                updates.purchasedSwords = [...new Set([...(state.purchasedSwords||[]), 'sword_excalibur_cosmos'])];
+            } else if (level === 3) {
+                updates.purchasedCharacters = [...new Set([...(state.purchasedCharacters||[]), 'cosmic_icy'])];
+            }
+            updateState(updates);
+            SFX.questClaim && SFX.questClaim();
+        }
+
+        function dismissCosmicRewardModal() {
+            const level = state.showCosmicRewardModal;
+            updateState({ showCosmicRewardModal: null });
+            if (level === 3) {
+                setTimeout(() => updateState({ showCosmicCutscene: true }), 80);
+            }
+        }
+
+        function checkCosmicQuestProgress() {
+            if (!state.activeCosmicQuests || state.activeCosmicQuests.length === 0) return;
+            let updated = false;
+            const updatedQuests = state.activeCosmicQuests.map(quest => {
+                if (quest.completed) return quest;
+                let progress = quest.progress || 0;
+                const base = quest.startValue || 0;
+                switch (quest.type) {
+                    case 'clicks':    progress = Math.max(0, state.lifetimeClicks - base); break;
+                    case 'gold':      progress = state.gold; break;
+                    case 'sell':      progress = Math.max(0, (state.totalSells||0) - base); break;
+                    case 'prestige':  progress = Math.max(0, state.prestigeLevel - base); break;
+                    case 'item_uses': progress = Math.max(0, (state.totalItemUses||0) - base); break;
+                }
+                const isComplete = progress >= quest.target;
+                if (isComplete && !quest.completed) { updated = true; return { ...quest, progress, completed: true }; }
+                else if (progress !== quest.progress) { updated = true; return { ...quest, progress }; }
+                return quest;
+            });
+            if (updated) updateState({ activeCosmicQuests: updatedQuests }, true);
         }
 
         function claimEventReward(rewardId) {
@@ -1896,6 +2037,10 @@
                 if (state.discoEventTimer === 0) shouldRender = true;
             }
             if ((state.xpSurgeUntil || 0) > 0 && Date.now() >= state.xpSurgeUntil) { state.xpSurgeUntil = 0; shouldRender = true; }
+            if ((state.novaHeartUntil || 0) > 0) {
+                if (Date.now() >= state.novaHeartUntil) { state.novaHeartUntil = 0; shouldRender = true; }
+                else { const el = document.querySelector('.nova-timer-display'); if (el) el.textContent = `Nova Heart (${Math.ceil((state.novaHeartUntil - Date.now())/1000)}s)`; }
+            }
             if (state.activeBoss) {
                 if (state.activeBoss.timerLeft <= 1) {
                     state.activeBoss = null; state.bossLost = true; shouldRender = true;
@@ -2182,7 +2327,6 @@
                     const cats = [
                         { id:'fruit_i',        label:'Normal Fruits I',  color:'border-green-500 text-green-600' },
                         { id:'fruit_ii',       label:'Normal Fruits II', color:'border-emerald-500 text-emerald-600' },
-                        { id:'fruit_tropical', label:'Tropical Fruits',  color:'border-yellow-500 text-yellow-600' },
                     ];
                     return tabBar + '<div class="flex flex-col gap-3">' + cats.map(c => `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 py-8 px-4 flex justify-center items-center market-item ${c.color}"><span class="font-black text-base uppercase tracking-widest">${c.label}</span></button>`).join('') + '</div>';
                 }
@@ -2207,9 +2351,8 @@
                     { id: 'glacier',   label: 'Glacier Swords',   desc: 'Forged in eternal ice — blades that strike with the fury of the frost.',             color: 'border-sky-500 text-sky-600' },
                     { id: 'deathly',   label: 'Deathly Swords',   desc: 'Cursed blades forged beyond the veil — wielded by those who have faced death itself.', color: 'border-red-900 text-red-900' },
                     { id: 'prismatic', label: 'Prismatic Swords',  desc: 'Weapons of pure light and cosmic energy — each blade bends reality itself.',          color: 'border-violet-500 text-violet-600' },
-                    { id: 'tropical',  label: 'Tropical Swords',   desc: 'Blades born from paradise itself — warm, radiant, and devastatingly powerful.',       color: 'border-yellow-500 text-yellow-600' },
                 ];
-                if (!state.marketCategory || !['glacier','deathly','prismatic','tropical'].includes(state.marketCategory)) {
+                if (!state.marketCategory || !['glacier','deathly','prismatic'].includes(state.marketCategory)) {
                     return tabBar + '<div class="flex flex-col gap-3">' + swordCats.map(c =>
                         `<button onclick="updateState({marketCategory:'${c.id}'})" class="w-full bg-white border-4 py-8 px-4 flex flex-col items-center justify-center market-item ${c.color}">
                             <span class="font-black text-base uppercase tracking-widest text-center">${c.label}</span>
@@ -2273,17 +2416,19 @@
                         ${CHARACTERS.map(char => {
                             const tokens = state.tokens || 0;
                             const isPurchased = (state.purchasedCharacters || []).includes(char.id);
+                            const isCosmicReward = !!char.cosmicReward;
                             const isUnlocked = isPurchased;
-                            const showBuy = !isPurchased && tokens >= 5;
+                            const showBuy = !isPurchased && !isCosmicReward && tokens >= 5;
                             const isEquipped = state.equippedCharacter === char.id;
-                            return `<div class="flex items-center gap-4 p-4 border-4 ${isEquipped ? 'border-indigo-500 bg-indigo-50' : isUnlocked ? 'border-slate-300 bg-white' : showBuy ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-slate-50 opacity-70'}">
+                            const lockedLabel = isCosmicReward ? 'Complete Cosmic Quests Level III' : tokens >= 5 ? '5 Tokens — Click to Buy' : 'Requires 5 Tokens';
+                            return `<div class="flex items-center gap-4 p-4 border-4 ${isEquipped ? 'border-indigo-500 bg-indigo-50' : isUnlocked ? 'border-slate-300 bg-white' : showBuy ? 'border-amber-300 bg-amber-50' : isCosmicReward ? 'border-violet-200 opacity-70' : 'border-slate-200 bg-slate-50 opacity-70'}" style="${isCosmicReward && !isUnlocked ? 'background:linear-gradient(135deg,#fdf4ff,#eff6ff);' : ''}">
                                 <div class="relative flex-shrink-0">
                                     <img src="${char.img}" style="width:64px;height:64px;object-fit:contain;image-rendering:pixelated;${!isUnlocked&&!showBuy?'filter:grayscale(1);':''}" />
-                                    ${!isUnlocked && !showBuy ? `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><i data-lucide="lock" style="width:24px;height:24px;color:#64748b;"></i></div>` : ''}
+                                    ${!isUnlocked && !showBuy ? `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><i data-lucide="lock" style="width:24px;height:24px;color:${isCosmicReward?'#7c3aed':'#64748b'};"></i></div>` : ''}
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="font-black text-base uppercase text-slate-900">${char.name}</p>
-                                    <p class="text-xs font-bold ${isUnlocked ? 'text-emerald-600' : showBuy ? 'text-amber-600' : 'text-slate-400'} mt-0.5">${isUnlocked ? 'Unlocked' : showBuy ? '5 Tokens — Click to Buy' : 'Requires 5 Tokens'}</p>
+                                    <p class="font-black text-base uppercase ${isCosmicReward && !isUnlocked ? 'text-violet-900' : 'text-slate-900'}">${char.name}</p>
+                                    <p class="text-xs font-bold mt-0.5 ${isUnlocked ? 'text-emerald-600' : showBuy ? 'text-amber-600' : isCosmicReward ? 'text-violet-400' : 'text-slate-400'}">${isUnlocked ? 'Unlocked' : lockedLabel}</p>
                                     ${isEquipped ? '<p class="text-xs font-black text-indigo-600 mt-0.5">Currently equipped</p>' : ''}
                                 </div>
                                 ${isUnlocked
@@ -2341,6 +2486,7 @@
                 large:          { name: 'Strong Potions',   color: 'border-orange-500 bg-orange-50',   items: [] },
                 op:             { name: 'OP Boosts',        color: 'border-red-500 bg-red-50',         items: [] },
                 special:        { name: 'Special Items',    color: 'border-slate-500 bg-slate-50',     items: [] },
+                cosmic:         { name: 'Cosmic Items',     color: 'border-violet-500 bg-violet-50',   items: [] },
                 fruit_i:        { name: 'Normal Fruits I',  color: 'border-green-500 bg-green-50',     items: [] },
                 fruit_ii:       { name: 'Normal Fruits II', color: 'border-emerald-500 bg-emerald-50', items: [] },
                 fruit_tropical: { name: 'Tropical Fruits',  color: 'border-yellow-500 bg-yellow-50',  items: [] },
@@ -2348,12 +2494,15 @@
             SHOP_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
             FRUIT_ITEMS.forEach(item => { if (state.inventory[item.id] > 0 && cats[item.category]) cats[item.category].items.push(item); });
             const hasAny = Object.values(cats).some(c => c.items.length > 0);
+            const novaActive = (state.novaHeartUntil || 0) > Date.now();
+            const novaSecsLeft = novaActive ? Math.ceil((state.novaHeartUntil - Date.now()) / 1000) : 0;
 
             const activeStorageTab = state.storageTab || 'potions';
             const tabBar = `<div class="flex gap-1.5 mb-5">
                 <button onclick="updateState({storageTab:'potions'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='potions' ? 'bg-indigo-600 border-indigo-700 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Potions</button>
                 <button onclick="updateState({storageTab:'fruits'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='fruits' ? 'bg-green-600 border-green-700 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Fruits</button>
                 <button onclick="updateState({storageTab:'swords'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='swords' ? 'bg-red-600 border-red-800 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}">Swords</button>
+                <button onclick="updateState({storageTab:'cosmic'})" class="flex-1 py-3 font-black uppercase text-sm tracking-widest border-4 ${activeStorageTab==='cosmic' ? 'bg-violet-600 border-violet-700 text-white' : 'bg-white border-slate-300 text-slate-400 hover:text-slate-700'}" style="${activeStorageTab==='cosmic' ? 'background:linear-gradient(to right,#7c3aed,#4f46e5);' : ''}">Cosmic</button>
             </div>`;
 
             const potionCatKeys = ['small','medium','large','op','special'];
@@ -2366,7 +2515,6 @@
                 const glacierOwned   = ownedSwords.filter(s => s.category === 'glacier');
                 const deathlyOwned   = ownedSwords.filter(s => s.category === 'deathly');
                 const prismaticOwned = ownedSwords.filter(s => s.category === 'prismatic');
-                const tropicalOwned  = ownedSwords.filter(s => s.category === 'tropical');
                 const renderSwordSection = (label, color, swords) => {
                     if (!swords.length) return '';
                     return `<div class="border-4 ${color} p-4 sm:p-6">
@@ -2387,12 +2535,35 @@
                         </div>
                     </div>`;
                 };
+                const cosmicOwned = ownedSwords.filter(s => s.category === 'cosmic');
+                const tropicalOwned = ownedSwords.filter(s => s.category === 'tropical');
                 return tabBar + '<div class="flex flex-col gap-6">'
                     + renderSwordSection('Glacier Swords',   'border-sky-400 bg-sky-50',       glacierOwned)
                     + renderSwordSection('Deathly Swords',   'border-red-900 bg-red-50',        deathlyOwned)
                     + renderSwordSection('Prismatic Swords', 'border-violet-400 bg-violet-50', prismaticOwned)
+                    + renderSwordSection('Cosmic Swords',    'border-violet-500',               cosmicOwned)
                     + renderSwordSection('Tropical Swords',  'border-yellow-400 bg-yellow-50', tropicalOwned)
                     + '</div>';
+            }
+
+            if (activeStorageTab === 'cosmic') {
+                const novaCount = state.inventory?.nova_heart || 0;
+                const novaItem = SHOP_ITEMS.find(i => i.id === 'nova_heart');
+                return tabBar + `<div class="flex flex-col gap-4">
+                    ${novaActive ? `<div class="p-3 border-4 border-violet-400 text-center font-black text-xs uppercase tracking-widest" style="background:linear-gradient(135deg,#fdf4ff,#eff6ff);color:#7c3aed;">Nova Heart Active — ${novaSecsLeft}s remaining</div>` : ''}
+                    ${novaCount > 0 && novaItem ? `
+                    <div class="border-4 border-violet-400 p-4" style="background:linear-gradient(135deg,#fdf4ff,#eff6ff,#f0f9ff);">
+                        <div class="flex items-center gap-4">
+                            <img src="${novaItem.icon}" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;" />
+                            <div class="flex-1">
+                                <p class="font-black text-sm uppercase text-violet-900">${novaItem.name}</p>
+                                <p class="text-xs font-bold text-violet-400 mt-0.5">Everything costs 35% of its price for 2 minutes</p>
+                                <p class="text-xs font-black mt-1" style="background:linear-gradient(to right,#db2777,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">x${novaCount} owned</p>
+                            </div>
+                            <button onclick="useItem('nova_heart')" class="${novaActive ? 'cursor-not-allowed' : ''} px-4 py-2 font-black uppercase text-xs border-4 border-violet-800 text-white flex-shrink-0" style="${novaActive ? 'background:#c4b5fd;' : 'background:linear-gradient(to right,#7c3aed,#4f46e5);'}">${novaActive ? 'Active' : 'Use'}</button>
+                        </div>
+                    </div>` : `<div class="text-center py-16"><p class="text-2xl font-black uppercase mb-2" style="color:#c4b5fd;">No Cosmic Items</p><p class="text-sm font-bold text-violet-300">Complete Cosmic Quests to earn rewards!</p></div>`}
+                </div>`;
             }
 
             const visibleCatKeys = activeStorageTab === 'fruits' ? fruitCatKeys : potionCatKeys;
@@ -2582,7 +2753,7 @@
                         const unitPrice = getItemPrice(popupItem);
                         const totalPrice = unitPrice * state.itemPopupQty;
                         const canAfford = state.gold >= totalPrice;
-                        const tierColors = { small:'bg-blue-500', medium:'bg-purple-500', large:'bg-orange-500', op:'bg-red-500', fruit_i:'bg-green-500', fruit_ii:'bg-emerald-500', fruit_tropical:'bg-yellow-500' };
+                        const tierColors = { small:'bg-blue-500', medium:'bg-purple-500', large:'bg-orange-500', op:'bg-red-500', fruit_i:'bg-green-500', fruit_ii:'bg-emerald-500', fruit_tropical:'bg-yellow-500',};
                         const tierColor = tierColors[popupItem.category] || 'bg-slate-500';
                         const categoryLabel = isFruit ? popupItem.category.replace('_',' ') : popupItem.category + ' boost';
                         return `<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showItemPopup:false,itemPopupId:null,itemPopupQty:1,showMarketModal:true})">
@@ -2709,9 +2880,102 @@
                             ${renderDecos(20,'top:-20px;left:-14px', -15,'bottom:-18px;right:-10px')}
                         <div class="bg-white p-6 sm:p-10 pixel-card w-full max-h-[90vh] overflow-y-auto modal-content">
                             <div class="flex justify-between items-center mb-6 sm:mb-8">
+                                ${state.questTab === 'cosmic' ? `
+                                <img src="https://i.postimg.cc/bw7VDFc3/Copy-of-Gubby-Clicker-(1).png" style="height:80px;image-rendering:pixelated;" />
+                                ` : `
                                 <div><h4 class="font-black text-2xl sm:text-3xl uppercase text-slate-900">Quests</h4><p class="text-xs sm:text-sm font-bold text-slate-500 mt-1">${state.completedQuests} completed · ${state.activeQuests.length} active</p></div>
+                                `}
                                 <button onclick="updateState({showQuestModal:false})" class="text-slate-500 hover:text-slate-900 text-2xl sm:text-3xl font-black">✕</button>
                             </div>
+                            <div class="flex gap-2 mb-3">
+                                <button onclick="updateState({questTab:'main'})" class="px-4 py-2 font-black uppercase text-xs tracking-widest border-4 ${state.questTab==='main' ? 'bg-amber-500 border-amber-700 text-white' : 'bg-white border-slate-300 text-slate-500'}">Quests</button>
+                                <button onclick="updateState({questTab:'cosmic'})" class="px-4 py-2 font-black uppercase text-xs tracking-widest border-4 ${state.questTab==='cosmic' ? 'bg-indigo-600 border-indigo-700 text-white' : 'bg-white border-slate-300 text-slate-500'}">Cosmic Quests</button>
+                            </div>
+                            ${state.questTab === 'cosmic' ? (() => {
+                                const completedCount = state.completedCosmicQuests || 0;
+                                const activeC = state.activeCosmicQuests || [];
+                                const doneIds = state.completedCosmicQuestIds || [];
+                                const canRefresh = state.gold >= 100000;
+                                const claimable = state.claimableCosmicLevels || [];
+                                const lvlLabels = ['Level I','Level II','Level III'];
+                                const lvlRewards = [
+                                    { name: 'Nova Heart', desc: 'Everything costs 35% price for 2 min', icon: 'https://static.wikia.nocookie.net/doodle-world/images/a/a9/Candy_Heart.png/revision/latest?cb=20220404095013' },
+                                    { name: 'Excalibur of the Cosmos', desc: '75 dmg cosmic sword', icon: 'https://i.postimg.cc/TYpFSbR8/image.png' },
+                                    { name: 'Cosmic Icy', desc: 'Equippable cosmic character', icon: 'https://i.postimg.cc/JndvyMbg/Untitled-design.png' },
+                                ];
+                                // Which level bar to show: first claimable, else in-progress
+                                const firstClaimable = claimable.length > 0 ? claimable[0] : null;
+                                const displayLvl = firstClaimable ? firstClaimable - 1 : Math.min(2, Math.floor(completedCount / 3));
+                                const lvlDone = firstClaimable ? 3 : completedCount % 3 === 0 && completedCount > 0 && completedCount < 9 ? 3 : completedCount % 3;
+                                const lvlPct = Math.min(100, (lvlDone / 3) * 100);
+                                const allDone = completedCount >= 9 && claimable.length === 0;
+                                const reward = lvlRewards[displayLvl];
+                                return `
+                                <div class="mb-4">
+                                    <button onclick="refreshCosmicQuests()" class="w-full py-2 font-black uppercase text-xs tracking-widest border-4 ${canRefresh ? 'border-violet-700 text-white' : 'border-slate-300 text-slate-400 cursor-not-allowed'}" style="${canRefresh ? 'background:linear-gradient(to right,#db2777,#4f46e5,#7c3aed);' : 'background:#f1f5f9;'}">Refresh Cosmic Quests · 100k</button>
+                                </div>
+                                <div class="mb-5 p-4 border-4 border-violet-300" style="background:linear-gradient(135deg,#fdf4ff,#eff6ff,#f0f9ff);">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-black uppercase tracking-widest" style="background:linear-gradient(to right,#db2777,#2563eb,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${allDone ? 'Mastered' : lvlLabels[displayLvl]}</span>
+                                        <span class="text-xs font-black text-violet-500">${allDone ? '9/9' : lvlDone + ' / 3'}</span>
+                                    </div>
+                                    <div class="w-full h-5 border-4 border-slate-900 overflow-hidden mb-3">
+                                        <div style="width:${allDone ? 100 : lvlPct}%;height:100%;background:linear-gradient(to right,#fbcfe8,#bae6fd,#3b82f6,#7c3aed);transition:width 0.4s;"></div>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <img src="${reward.icon}" style="width:36px;height:36px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;${firstClaimable ? '' : 'opacity:0.5;filter:grayscale(0.4);'}" />
+                                            <div>
+                                                <p class="text-xs font-black uppercase ${firstClaimable ? 'text-violet-900' : 'text-violet-400'}">${reward.name}</p>
+                                                <p class="text-xs font-bold text-violet-400">${reward.desc}</p>
+                                            </div>
+                                        </div>
+                                        ${firstClaimable ? `<button onclick="claimCosmicLevel(${firstClaimable})" class="px-4 py-2 font-black uppercase text-xs border-4 border-violet-800 text-white animate-pulse flex-shrink-0" style="background:linear-gradient(to right,#7c3aed,#4f46e5);">Claim!</button>` : `<span class="text-xs font-black text-violet-300 uppercase">Complete level to unlock</span>`}
+                                    </div>
+                                </div>
+                                ${activeC.length > 0 ? activeC.map(quest => {
+                                    const pct = Math.min(100, (quest.progress / quest.target) * 100);
+                                    return `<div class="border-4 border-violet-400 mb-4 overflow-hidden" style="background:linear-gradient(135deg,#fdf4ff,#eff6ff,#f0f9ff);">
+                                        <div class="p-5">
+                                            <div class="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <h5 class="font-black text-base uppercase text-violet-900">${quest.name}</h5>
+                                                    <p class="text-xs font-bold text-violet-400 mt-0.5">${quest.description}</p>
+                                                </div>
+                                                <span class="text-xs font-black px-2 py-1 border-2 ${quest.completed ? 'border-emerald-500 text-emerald-600' : 'border-violet-400 text-violet-600'}" style="${quest.completed ? 'background:#ecfdf5;' : 'background:linear-gradient(135deg,#fdf4ff,#eff6ff);'}">${quest.completed ? 'Complete!' : 'Active'}</span>
+                                            </div>
+                                            <div class="w-full h-4 border-2 border-violet-200 overflow-hidden mb-2" style="background:#faf5ff;">
+                                                <div style="width:${pct}%;height:100%;background:linear-gradient(to right,#f9a8d4,#93c5fd,#3b82f6,#7c3aed);transition:width 0.3s;"></div>
+                                            </div>
+                                            <div class="flex items-center justify-between mt-1">
+                                                <div>
+                                                    <p class="text-xs font-black text-violet-400 mb-1">${formatCost(quest.progress)} / ${formatCost(quest.target)}</p>
+                                                    <div class="flex items-center gap-1.5"><i data-lucide="gift" class="w-3 h-3 flex-shrink-0" style="color:#7c3aed;"></i><span class="text-xs font-black" style="background:linear-gradient(to right,#db2777,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Reward: 5 Tokens</span></div>
+                                                </div>
+                                                ${quest.completed ? `<button onclick="claimCosmicQuest('${quest.id}')" class="px-4 py-1.5 font-black uppercase text-xs border-4 border-violet-800 text-white animate-pulse" style="background:linear-gradient(to right,#7c3aed,#4f46e5);">Claim · 5 Tokens</button>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                }).join('') : ''}
+                                <div class="flex flex-col gap-3">
+                                    ${COSMIC_QUESTS.map(quest => {
+                                        const isActive = activeC.some(q => q.id === quest.id);
+                                        const isDone = doneIds.includes(quest.id);
+                                        if (isActive) return '';
+                                        return `<div class="border-2 p-4 ${isDone ? 'border-emerald-300 opacity-60' : 'border-violet-200'}" style="${isDone ? 'background:#f0fdf4;' : 'background:linear-gradient(135deg,#fdf4ff,#eff6ff,#f0f9ff);'}">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="flex-1">
+                                                    <h6 class="font-black text-sm uppercase ${isDone ? 'text-emerald-600 line-through' : 'text-violet-900'} mb-0.5">${quest.name}</h6>
+                                                    <p class="text-xs font-bold ${isDone ? 'text-emerald-400 line-through' : 'text-violet-400'} mb-1">${quest.description}</p>
+                                                    <div class="flex items-center gap-1.5"><i data-lucide="gift" class="w-3 h-3 flex-shrink-0" style="color:${isDone ? '#6ee7b7' : '#7c3aed'};"></i><span class="text-xs font-black ${isDone ? 'text-emerald-400' : ''}" style="${isDone ? '' : 'background:linear-gradient(to right,#db2777,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;'}">Reward: 5 Tokens</span></div>
+                                                </div>
+                                                ${isDone ? `<span class="text-xs font-black text-emerald-500 border-2 border-emerald-300 px-2 py-1" style="background:#f0fdf4;">Done</span>` : `<button onclick="acceptCosmicQuest('${quest.id}')" class="px-3 py-1.5 font-black uppercase text-xs border-4 border-violet-800 text-white flex-shrink-0" style="background:linear-gradient(to right,#4f46e5,#7c3aed);">Accept</button>`}
+                                            </div>
+                                        </div>`;
+                                    }).join('')}
+                                </div>
+                                `;
+                            })() : `
                             <div class="flex gap-3 mb-6">
                                 <button onclick="generateQuest()" class="pixel-button bg-amber-500 border-amber-700 text-white px-6 py-3 font-black uppercase flex-1">Get New Quest</button>
                                 <button onclick="rerollQuests()" class="${state.gold >= 10000 ? 'pixel-button bg-rose-500 border-rose-700 text-white' : 'pixel-button bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed'} px-6 py-3 font-black uppercase flex-1">Reroll All · 10k</button>
@@ -2775,12 +3039,48 @@
                                     }).join('')}
                                 </div>
                             </div>
+                            `}
                         </div>
                         </div>
                     </div>` : ''}
 
                     ${state.showEventModal ? renderEventModal() : ''}
                     ${state.showCharactersModal ? renderCharactersModal() : ''}
+
+                    ${state.showCosmicRewardModal ? (() => {
+                        const lvl = state.showCosmicRewardModal;
+                        const rewards = [
+                            { name: 'Nova Heart', desc: 'Find it in Storage under the Cosmic tab. Use it to make everything cost 35% of its price for 2 minutes.', icon: 'https://static.wikia.nocookie.net/doodle-world/images/a/a9/Candy_Heart.png/revision/latest?cb=20220404095013' },
+                            { name: 'Excalibur of the Cosmos', desc: 'A 75-damage cosmic sword. Find it in Storage under the Swords tab and equip it.', icon: 'https://i.postimg.cc/TYpFSbR8/image.png' },
+                            { name: 'Cosmic Icy', desc: 'An exclusive cosmic character. Equip it from the Characters menu.', icon: 'https://i.postimg.cc/JndvyMbg/Untitled-design.png' },
+                        ];
+                        const r = rewards[lvl - 1];
+                        return `<div class="fixed inset-0 z-[99999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);">
+                            <div class="max-w-sm w-full border-4 border-violet-400 text-center" style="background:linear-gradient(135deg,#fdf4ff,#eff6ff,#f0f9ff);box-shadow:0 0 60px rgba(124,58,237,0.5);">
+                                <div class="p-8 flex flex-col items-center gap-4">
+                                    <p class="text-xs font-black uppercase tracking-widest text-violet-400">Level ${lvl} Reward</p>
+                                    <img src="${r.icon}" style="width:90px;height:90px;object-fit:contain;image-rendering:pixelated;" />
+                                    <div>
+                                        <h3 class="font-black text-xl uppercase text-violet-900 mb-1">${r.name}</h3>
+                                        <p class="text-sm font-bold text-violet-500">${r.desc}</p>
+                                    </div>
+                                    <button onclick="dismissCosmicRewardModal()" class="w-full py-3 font-black uppercase text-sm tracking-widest border-4 border-violet-800 text-white mt-2" style="background:linear-gradient(to right,#7c3aed,#4f46e5);">OK</button>
+                                </div>
+                            </div>
+                        </div>
+                        ${lvl === 3 ? `<video src="https://files.catbox.moe/7zlxx3.mp4" preload="auto" style="display:none;"></video>` : ''}`;
+                    })() : ''}
+
+                    ${state.showCosmicCutscene ? `
+                    <div class="fixed inset-0 z-[999999] bg-black" style="display:flex;align-items:center;justify-content:center;">
+                        <div id="cosmic-cutscene-loader" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:2;">
+                            <div style="width:12px;height:12px;border-radius:50%;background:#7c3aed;animation:pulse 1s infinite;"></div>
+                        </div>
+                        <video id="cosmic-cutscene-video" src="https://files.catbox.moe/7zlxx3.mp4" playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;"
+                            oncanplaythrough="(function(){var l=document.getElementById('cosmic-cutscene-loader');if(l)l.style.display='none';document.getElementById('cosmic-cutscene-video').play();})()"
+                            onended="setTimeout(()=>updateState({showCosmicCutscene:false}),1000)">
+                        </video>
+                    </div>` : ''}
 
                     ${state.showSummonModal ? `
                     <div class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md modal-backdrop" onclick="if(event.target===event.currentTarget)updateState({showSummonModal:false})">
@@ -2885,6 +3185,7 @@
                                     ]},
                                     { id: 'quests', label: 'Quests', spells: [
                                         { spell: 'Finite Quaestum',    desc: 'Complete all active quests' },
+                                        { spell: 'Cosmicus Quaestum',  desc: 'Complete all cosmic levels + grant rewards' },
                                         { spell: 'Obliviate Quaestum', desc: 'Wipe all quest history' },
                                     ]},
                                     { id: 'prestige', label: 'Prestige', spells: [
@@ -3039,6 +3340,7 @@
                         <div class="h-16 mb-2 flex items-end justify-center gap-2">
                             ${state.activeBuff ? `<div class="bg-white px-4 py-2 border-4 border-indigo-500" style="box-shadow:4px 4px 0 rgba(0,0,0,0.2);"><span class="buff-timer-display text-xs font-black uppercase text-indigo-600 tracking-wider">${state.activeBuff.name} (${state.activeBuff.timeLeft}s)</span></div>` : ''}
                             ${state.activeFruitBuff ? `<div class="bg-white px-4 py-2 border-4 border-green-500" style="box-shadow:4px 4px 0 rgba(0,0,0,0.2);"><span class="fruit-timer-display text-xs font-black uppercase text-green-600 tracking-wider">${state.activeFruitBuff.name} (${state.activeFruitBuff.timeLeft}s)</span></div>` : ''}
+                            ${(state.novaHeartUntil||0) > Date.now() ? `<div class="px-4 py-2 border-4 border-violet-500" style="box-shadow:4px 4px 0 rgba(0,0,0,0.2);background:linear-gradient(135deg,#fdf4ff,#eff6ff);"><span class="nova-timer-display text-xs font-black uppercase tracking-wider" style="color:#7c3aed;">Nova Heart (${Math.ceil((state.novaHeartUntil - Date.now())/1000)}s)</span></div>` : ''}
                         </div>
                         <div class="gubby-float">
                             <div onmousedown="handleMainClick(event)" ontouchstart="handleMainClick(event)" class="gubby-container w-72 h-72 flex items-center justify-center">
@@ -3110,7 +3412,7 @@
                     `}
                     </div>
 
-                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">Gubby Clicker 2 — v2.14 · © 2026 Icy / Icy Games</p>
+                    <p style="font-family:'Pixelify Sans',monospace;font-size:11px;opacity:0.35;letter-spacing:1px;position:fixed;bottom:6px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:50;white-space:nowrap;color:#000;">Gubby Clicker 2 — v2.21 · © 2026 Icy / Icy Games</p>
                     <button onclick="event.stopPropagation();openSocialModal()" style="position:fixed;bottom:12px;left:12px;z-index:50;display:block;width:44px;height:44px;opacity:0.85;background:none;border:none;padding:0;cursor:pointer;"><img src="https://i.postimg.cc/504dVYdc/Codes.webp" style="width:44px;height:44px;image-rendering:pixelated;" /></button>
 
                 </div>
@@ -3230,7 +3532,7 @@
                             } else {
                                 updateState({ loadingDone: true });
                                 syncMusic();
-                                if (!localStorage.getItem('gubby_wn_v214')) {
+                                if (!localStorage.getItem('gubby_wn_v221')) {
                                     const wn = document.getElementById('whats-new');
                                     if (wn) { wn.style.display = 'flex'; lucide.createIcons({ nameAttr: 'data-lucide', rootNode: wn }); }
                                 }
